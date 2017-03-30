@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}
+    Update Profile
+{% endblock %}
+
+{% block body %}
+    {% load staticfiles %}
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6 col-offset-3" style="margin: 50px;">
+            <h3>Update Profile</h3>
+            <hr>
+            <form method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Update Profile" class="btn btn-primary">
+            </form>
+        </div>
+    </div>
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
+{% endblock %}
+

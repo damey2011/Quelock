@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% block title %}
+    {{ req_user.user.first_name }} {{ req_user.user.last_name }} - Quelock
+{% endblock %}
+{% load static %}
+{% block body %}
+    <div class="container">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-lg-9">
+                {{ info }}
+                <hr>
+                <div class="profile-card">
+                    <div class="picture-div">
+                        <img src="{% static 'images/user.png' %}" alt="{{ req_user.display_picture }}" class="profile-picture" style="margin-bottom: 15px;">
+                        {% if user == req_user.user %}
+                            <div class="upld-btn"><a href="{{ req_user.user.username }}/update" class="ion-android-settings btn btn-sm">  Edit Profile</a></div>
+                        {% endif %}
+                    </div>
+
+                    <div class="photo-right-col">
+                        <h4 class="user-name">{{ req_user.user.first_name }} {{ req_user.user.last_name }}
+                            {% if user.is_authenticated %}
+                                {% if follows_back %}
+                                    <span class="badge">follows you</span>
+                                {% endif %}
+                            {% endif %}
+                        </h4>
+                        {% if req_user.bio != None or req_user.bio != "" %}
+                            <div class="bio-div">
+                                <span class="ion-ios-albums-outline"> </span>
+                                <span class="bio"> |  {{ req_user.bio }}</span>
+                            </div>
+                        {% endif %}
+
+
+                        {% if user.is_authenticated %}
+                            {% if user != req_user.user %}
+                                <ul class="btn-list profile-visitor-action">
+                                    {% if is_following %}
+                                        <li><a onclick="unfollow({{ req_user.user.id }})" class="btn btn-sm clicked btn-default follow"> - unfollow</a></li>
+                                    {% else %}
+                                        <li><a onclick="follow({{ req_user.user.id }})" class="btn btn-sm btn-default follow"> + follow </a></li>
+                                    {% endif %}
+                                    <li class="profile-message"><a onclick="openMessageModal('{{ req_user }}')" href="#">message</a></li>
+                                </ul>
+                            {% endif %}
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-12">
+                        <div class="overflow-menu-container">
+                            <ul class="profile-overflow-menu">
+                                <a onclick="load_answers_tab()" href="#answers" data-toggle="tab"><li class="profile-overflow-menu-item">answers</li></a>
+                                <a onclick="load_questions_tab()" href="#questions" data-toggle="tab"><li class="profile-overflow-menu-item">questions</li></a>
+                                <a onclick="load_followers_tab()" href="#followers" data-toggle="tab"><li class="profile-overflow-menu-item">followers</li></a>
+                                <a onclick="load_following_tab()" href="#followings" data-toggle="tab"><li class="profile-overflow-menu-item">following</li></a>
+                                <a href=""><li class="profile-overflow-menu-item">topics</li></a>
+                                <a href=""><li class="profile-overflow-menu-item">activity</li></a>
+                            </ul>
+                        </div>
+                        <div class="profile-desktop-menu">
+                            <ul class="list-group profile-menu-options">
+                                <a onclick="load_answers_tab()" href="#answers" data-toggle="tab"><li class="list-group-item ans" aria-hidden="true"><span class="fa fa-pencil fa-fw"></span>Answers <span class="badge"> {{ no_of_answers }}</span></li></a>
+                                <a onclick="load_questions_tab()" href="#questions" data-toggle="tab"><li class="list-group-item que"> <span class="fa fa-book fa-fw" aria-hidden="true"></span> Questions <span class="badge"> {{ no_of_questions }}</span></li></a>
+                                <a onclick="load_followers_tab()" href="#followers" data-toggle="tab"><li class="list-group-item folr"> <span class="ion-person-stalker" aria-hidden="true"></span> Followers <span class="badge"> {{ req_user.get_no_of_followers }}</span></li></a>
+                                <a onclick="load_following_tab()" href="#followings" data-toggle="tab"><li class="list-group-item foln"> <span class="ion-person-stalker" aria-hidden="true"></span> Followings <span class="badge"> {{ req_user.get_no_of_following }}</span></li></a>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-md-9 col-sm-12">
+                        <div class="tab-content">
+                            <div class="tab-pane fade in active" id="answers">
+                                <div class="answers">
+                                    <!--Post here-->
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="followings">
+                                <div class="loading-image">
+                                    <img src="{% static 'images/loading.gif' %}" class='loading-icon' alt="" style="margin: 0px auto;">
+                                </div>
+                                <div class="following">
+
+                                </div>
+
+                            </div>
+
+                            <div class="tab-pane fade" id="followers">
+                                <div class="loading-image">
+                                    <img src="{% static 'images/loading.gif' %}" class='loading-icon' alt="">
+                                </div>
+                                <div class="followers">
+
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="questions">
+                                <div class="loading-image">
+                                    <img src="{% static 'images/loading.gif' %}" class='loading-icon' alt="">
+                                </div>
+                                <div class="questions">
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 edit-right-col">
+                <div>
+                    <hr class="divider"/>
+                    <h5 class="profile-tab-header">User Details</h5>
+                    <hr class="divider"/>
+                    {% if req_user.works != 'NA' %}
+                        <h5>Worked At</h5>
+                        <div class="working-place">{{ req_user.works }}</div>
+                        <br>
+                    {% endif %}
+                    {% if req_user.answer_views != 'NA' %}
+                        <br>
+                    {% endif %}
+                    {% if user == req_user.user %}
+                        <h5>Topics you follow</h5>
+                        <hr>
+                        <ul class="list-group common-user-group topic-explore-list">
+
+                        </ul>
+                    {% else %}
+                        <hr class="divider"/>
+                        <h5 class="profile-tab-header">Topics followed by {{ req_user.user.first_name }} that you don't follow</h5>
+                        <ul class="list-group common-user-group topic-explore-list">
+
+                        </ul>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- upvoters Modal --->
+    <div class="modal fade" id="upvotersModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header upvoters-modal-header">
+
+                </div>
+                <h4 style="color: #444444; text-align: center">Upvoters</h4>
+                <div class="modal-body upvoters-modal-body">
+                    <ul class="upvoters-list">
+
+                    </ul>
+
+                    <div class="load-btn-upvoters">
+                        <div class="loading-1-upvoters">
+                            <img src="/static/images/loading-2.gif" alt="" class="loading"> Loading...
+                        </div>
+                        <a onclick='show_upvoters({{ answer.id }})' class='btn-load-upvoters' style="display: none;"><span class='fa fa-refresh'></span> Load More</a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-danger upvoters-modal-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div> <!--End of modal -->
+
+    <!-- comments modal -->
+    <div class="modal fade" id="commentsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header comment-modal-header">
+
+                </div>
+                <h4 style="color: #444444; text-align: center">Comments</h4>
+                <div class="modal-body comment-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-danger comments-modal-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+    <!-- end of comments modal -->
+
+    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header comment-modal-header">
+                    <h4>Compose Message</h4>
+                </div>
+                <div class="modal-body comment-modal-body">
+                    <b>To:</b>
+                    <div class="receipient">
+                        <span class="receipient-name">{{ req_user.user.first_name }} {{ req_user.user.last_name }}, </span>
+                        <span class="receipient-bio">{{ req_user.bio }}</span>
+                    </div>
+                    <br>
+                    <div class="message-field">
+                        <textarea placeholder="Type your message..." name="message" id="message" class="form-control message-textfield" rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" onclick="sendMessage({{ req_user.user_id }})" class="btn btn-sm btn-primary send-message-btn" >Send</a>
+                    <a href="#" class="comments-modal-close" data-dismiss="modal">Close</a>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script async src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script async src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
+    <script>
+        var user = '{{ user }}';
+        var req_user = '{{ req_user.user }}'
+        var csrftoken = '{{ csrf_token }}';
+        var loading1src = '{% static 'images/loading1.gif' %}'
+        var dp_url = '{{ req_user.get_dp_url }}';
+        var img_url = '{{ req_user.display_picture.url }}';
+        var is_loggedin = '{{ user.is_authenticated }}';
+    </script>
+
+    <script src="{% static 'scripts/custom.js' %}"></script>
+    <script>
+        $(document).ready(
+                function() {
+                    loadProfilePicture();
+                    load_answers_tab();
+                    loadTopicsThatUserFollows();
+                }
+        );
+
+        function load_answers_tab(){
+            $('.loading-image').show();
+            $('.answers').load('{% static 'html/answer.html' %}')
+            $('.loading-image').hide();
+        }
+
+
+        function load_following_tab(){
+            $('.loading-image').show();
+            $('.following').load('{% static 'html/following.html' %}')
+            $('.loading-image').hide();
+        }
+
+        function load_followers_tab(){
+            $('.loading-image').show();
+            $('.followers').load('{% static 'html/followers.html' %}')
+            $('.loading-image').hide();
+        }
+
+        function load_questions_tab(){
+            $('.loading-image').show();
+            $('.questions').load('{% static 'html/questions.html' %}')
+            $('.loading-image').hide();
+        }
+
+        //Load the profile photo if it exists
+        function loadProfilePicture() {
+            if(img_url){
+                $('.profile-picture').attr('src', img_url);
+            }
+        }
+    </script>
+
+
+{% endblock %}

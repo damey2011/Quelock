@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load staticfiles %}
+        <div class="container">
+
+        <div class="row edit-page">
+
+        <div class="col-lg-3 edit-left-col">
+            <hr class="divider"/>
+            <h5 style="color: #777777">Community Rules</h5>
+            <hr class="divider"/>
+        </div>
+
+        <div class="col-lg-6">
+           <div class="center-pane">
+                <h3 style="color: #444444">{{ page_title }}</h3>
+               <hr>
+                <b style="font-weight: bolder"><h1>{{ answer.question.title }}</h1></b>
+               <div class="post-content">
+                   {{ answer.question.question_details|safe }}
+               </div>
+               <a class="show_" onclick="show_or_hide()">show details</a>
+                <form action="" method="post" name="question-form" id="question-form">
+                 {% csrf_token %}
+                 <div id="details"></div>
+                 <br>
+
+                <p><input type="submit" value="Update Answer" class="btn btn-default"></p>
+                </form>
+           </div>
+        </div>
+
+        <div class="col-lg-3 edit-right-col">
+            <hr class="divider"/>
+            <h5 style="color: #777777">Guidelines to asking Questions</h5>
+            <hr class="divider"/>
+
+        </div>
+
+    </div>
+    </div>
+
+    <script src="{%  static 'scripts/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'trumbowyg/trumbowyg.min.css' %}">
+    <script src="{% static 'trumbowyg/trumbowyg.min.js' %}"></script>
+    <script src="{% static 'trumbowyg/plugins/trumbowyg.upload.min.js '%}"></script>
+
+    <script>
+        $('img').addClass('img-responsive').css('overflow', 'hidden');
+
+        $("#details").trumbowyg({
+
+          btnsDef: {
+                // Customizables dropdowns
+                image: {
+                    dropdown: ['insertImage', 'upload', 'noEmbed'],
+                    ico: 'insertImage'
+                }
+            },
+            btns: [
+                ['viewHTML'],
+                ['undo', 'redo'],
+                ['formatting'],
+                'btnGrp-design',
+                ['link'],
+                ['image'],
+                'btnGrp-justify',
+                'btnGrp-lists',
+                ['foreColor', 'backColor'],
+                ['preformatted'],
+                ['horizontalRule'],
+                ['fullscreen']
+            ],
+            plugins: {
+                upload: {
+                    serverPath: 'http://' + window.location.host + '/upload/',
+                    fileFieldName: 'image',
+                }
+            }
+            });
+
+        {# SET THE ANSWER TO THE TEXT EDITOR#}
+        var body = '{{ answer.body | safe }}';
+
+        $('.trumbowyg-editor').html(body.toString());
+
+        $('.post-content').hide();
+
+        function show_or_hide(){
+            $('.post-content').show();
+            $('.show_').hide();
+        }
+
+
+    </script>
+
+
+
+{% endblock %}

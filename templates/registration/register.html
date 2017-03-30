@@ -1,0 +1,53 @@
+<title>Sign Up</title>
+{% load staticfiles %}
+{% block body %}
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min_lumen.css'%}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'Font Awesome/css/font-awesome.min.css' %}">
+    <div class="main-reg-body">
+        <div class="col-lg-3 col-md-6"></div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="logo-reg">Quelock</div>
+                    <div class="logo-reg-details">If you are going to use a passage of Lorem Ipsum</div>
+                    <div class="container-fluid reg-form-container" style="margin-top: 40px; padding: 25px;">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <label for="firstname">First Name:</label>
+                            <input type="text" class="form-control" name="first_name"><br>
+                            <label for="lastname">Last Name:</label>
+                            <input type="text" class="form-control" name="last_name"><br>
+                            <label for="lastname">Username:</label>
+                            <input type="text" class="form-control" name="username"><br>
+                            <label for="email">Email Address:</label>
+                            <input type="email" class="form-control" name="email_address"><br>
+                            <label for="password1">Password:</label>
+                            <input type="password" class="form-control" name="password" id="p1"><br>
+                            <label for="password2">Confirm Password:</label>
+                            <input type="password" class="form-control" name="confirm_password" id="p2"><br>
+                            <div class="tac">By Clicking Join, you agree to the User Agreement and Privacy Policy</div>
+                            <br>
+                            <input type="submit" id="submit" class="btn btn-primary btn-sm">Join</input>
+                            <hr/>
+                        </form>
+                    <div class="aoa">Already own an account? <a href="#">Sign In</a></div>
+                </div>
+            </div>
+        <div class="col-lg-3 col-md-6"></div>
+
+        </div>
+        <script src="{% static 'scripts/jquery.min.js' %}"></script>
+{#        <script src="{% static 'scripts/bootstrap.min.js' %}"></script>#}
+        <script>
+            $(document).ready(function(){
+               $('#submit').click(function(){
+                   if($('#p1').val != $('#p2').val){
+                       alert('Passwords dont match');
+                       $('#p1', '#p2').css('border', '2px solid red');
+                   }
+               });
+            });
+        </script>
+{% endblock %}
+
+
+

@@ -1,0 +1,108 @@
+<html lang="en">
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min_lumen.css'%}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'ionic/css/ionicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Font Awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'Font Awesome/fonts/fontawesome-webfont.ttf' %}">
+    <link rel="stylesheet" href="{% static 'm-toast/jquery.m.toast.css' %}">
+    <meta name="viewport" content="width=device-width">
+    <title>{% block title %}{% endblock %}</title>
+    {% block script %}{% endblock %}
+</head>
+
+
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" style="position: fixed;">
+    <div class="container">
+        <div class="navbar-header">
+
+            <div class="navbar-brand"><a href="#">Quelock</a></div>
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <button class="search-header-btn" onclick="show_hide_search_bar()">
+                <span class="ion-ios-search"></span>
+            </button>
+        </div>
+
+        <div class="navbar-collapse collapse" id="navbar-main">
+{#            <form class="navbar-form navbar-left" role="search">#}
+{#                <div class="search-bar">#}
+{#                    <input type="text" class="form-control search-box" placeholder="Ask the community">#}
+{#                </div>#}
+{#            </form>#}
+
+            <ul class="navbar-right nav navbar-nav">
+                <li class="bar-search-btn-li"><a onclick="show_hide_search_bar()" href="#" class="bar-search-btn"><span class="ion-android-search"></span></a></li>
+                <li class="{{ feeds_active }}"><a href="{% url 'index_home' %}"><span class="fa fa-feed"></span> Feeds</a></li>
+                <li class="{{ trending_active }}"><a href="{% url 'trending_by_interactions' %}"><span class="ion-android-notifications"> </span>  Notifications</a></li>
+                <li class="{{ explore_active }}"><a href="{% url 'explore_questions' %}"><span class="fa fa-globe"></span> Explore</a></li>
+                <li class="{{ archive_active }}"><a href="{% url 'archived' %}"><span class="fa fa-thumb-tack"></span> Archives</a></li>
+                <li class="{{ trending_active }}"><a href="{% url 'trending_by_interactions' %}"><span class="fa fa-area-chart"> </span>  Trending</a></li>
+                <li class="{{ account_active }}"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-user-md"> </span>  Account</a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        {% if user.is_authenticated %}
+                            <li><a href="/profile/{{ user.username }}"><span class="fa fa-sign-out"> </span>View Profile</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/profile/{{ user.username }}/messages"><span class="fa fa-sign-out"> </span>Messages</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/logout"><span class="fa fa-sign-out"> </span>Logout</a></li>
+                        {% else %}
+                            <li><a href="/login"><span class="fa fa-sign-in"> </span>Login</a></li>
+{#                            <li><a href="/signup"><span class="fa fa-sign-up"> </span>Signup</a></li>#}
+                        {% endif %}
+                    </ul>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="search-addition">
+        <div class="container">
+            <div class="search-holder">
+                <input type="text" class="custom-form-control search-input" placeholder="Ask a question ">
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="hidden-" style="display: none;"></div>
+
+{% block body %}
+
+{% endblock %}
+
+<div class="clear-for-footer"></div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom mobile-footer-menu">
+    <div class="navbar-inner">
+        <div class="container">
+            <ul class="footer-menu-list">
+                <li><a href=""><span class="ion-ios-home-outline"></span><br><p>Feed</p></a></li>
+                <li><a href="{% url 'explore_questions' %}"><span class="ion-ios-compose-outline"></span><br><p>Answer</p></a></li>
+                <li><a href="{% url 'archived' %}"><span class="ion-ios-pricetag-outline"></span><br><p>Archive</p></a></li>
+                <li><a href="/profile/{{ user.username }}"><span class="ion-ios-person-outline"></span><br><p>Profile</p></a></li>
+            </ul>
+        </div>
+    </div>
+
+</nav>
+
+
+<script>
+    $('.search-input').keyup(function(e){
+    if(e.keyCode == 13){
+        window.location.href = '/search/?sort_type=1&search_term='+$(this).val();
+    }
+});
+</script>
+</body>
+
+</html>
+

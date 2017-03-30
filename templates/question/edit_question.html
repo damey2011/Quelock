@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load staticfiles %}
+    <body>
+        <div class="container">
+
+        <div class="row edit-page">
+
+        <div class="col-lg-3 edit-left-col">
+            <hr class="divider"/>
+            <h5 style="color: #777777">Community Rules</h5>
+            <hr class="divider"/>
+        </div>
+
+        <div class="col-lg-6">
+           <div class="center-pane">
+                <h3 style="color: #444444">{{ page_title }}</h3>
+                <form action="" method="post" name="question-form" id="question-form">
+                 {% csrf_token %}
+                 <label for="title">Title: </label><input type="text" id="title" name="title" class="form-control" value="{{ question.title }}" required><br>
+                    <label for="details">Details: </label><div id="details"></div>
+                 <br>
+
+                <p><input type="submit" value="Update Question" class="btn btn-default"></p>
+                </form>
+           </div>
+            <div class="no-namee">
+
+            </div>
+        </div>
+
+        <div class="col-lg-3 edit-right-col">
+            <hr class="divider"/><hr/>
+            <h5 style="color: #777777">Guidelines to asking Questions</h5>
+            <hr class="divider"/>
+
+        </div>
+
+    </div>
+    </div>
+    </body>
+
+    <!--UPLOAD MODAL-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times; </button>
+                    <h4 class="modal-title" id="myModalLabel">This Modal title </h4>
+                </div>
+                <div class="modal-body">
+                    Add some text here &apos;
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Submit changes</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+    </div>
+
+    <script src="{%  static 'scripts/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'trumbowyg/trumbowyg.min.css' %}">
+    <script src="{% static 'trumbowyg/trumbowyg.min.js' %}"></script>
+    <script src="{% static 'trumbowyg/plugins/trumbowyg.upload.min.js '%}"></script>
+
+    <script>
+        var q_body = '{{ question.question_details|safe }}';
+        var l_plo = $.parseHTML(q_body);
+
+        $("#details").trumbowyg({
+
+            btnsDef: {
+                    // Customizables dropdowns
+                    image: {
+                        dropdown: ['insertImage', 'upload', 'noEmbed'],
+                        ico: 'insertImage'
+                    }
+            },
+            btns: [
+                    ['viewHTML'],
+                    ['undo', 'redo'],
+                    ['formatting'],
+                    'btnGrp-design',
+                    ['link'],
+                    ['image'],
+                    'btnGrp-justify',
+                    'btnGrp-lists',
+                    ['foreColor', 'backColor'],
+                    ['preformatted'],
+                    ['horizontalRule'],
+                    ['fullscreen']
+            ],
+            plugins: {
+                 upload: {
+                     serverPath: 'http://' + window.location.host + '/upload/',
+                     fileFieldName: 'image',
+                 }
+            }
+        });
+
+        $('.trumbowyg-editor').html($.parseHTML(q_body));
+
+    </script>
+
+
+</html>
+{% endblock %}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    {% load staticfiles %}
+    <link rel="stylesheet" href= "{% static 'bootstrap/bootstrap.min_lumen.css' %}" type="text/css">
+    <link rel="stylesheet" href= "{% static 'css/style.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Font Awesome/css/font-awesome.min.css' %}">
+
+    </head>
+
+    <body class="main-reg-body">
+        <div class="col-lg-3 col-md-6"></div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div class="logo-reg">Create a New Account</div>
+            <hr>
+            <form action="" method="post" class="form-horizontal">
+                {% csrf_token %}
+                {% include 'form_template.html' %}
+                <button type="submit" class="btn btn-primary" style="width: 70px; margin-left: 50%;">Sign Up</button>
+            </form>
+        </div>
+        <div class="col-lg-3 col-md-6"></div>
+
+
+    </body>
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script>
+        $(function(){
+            $('input').addClass('form-control');
+        })
+    </script>
+</html>

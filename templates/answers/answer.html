@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% block title %}{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }}'s answer to
+    {{ answer.question.title }}{% endblock %}
+{% block body %}
+    {% load staticfiles %}
+    <div class="container">
+        <div class="answer" style="margin-top: 70px;">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class='row'>
+                        <div class="answer-title">
+                            <h4><a href="/questions/{{ answer.question.slug }}">{{ answer.question.title }}</a></h4>
+                            <hr class="divider">
+                        </div>
+
+                        <div class='col-lg-1'>
+                            <img src='{{ answer.writer.get_dp_url }}' alt='{{ answer.writer.user.first_name }}'
+                                 style='float: left' class='commenter-dp'>
+                        </div>
+                        <div class='col-lg-11' style='line-height: 25px;'>
+                            <span class='commenter-name'><a
+                                    href="/profile/{{ answer.writer.user.username }}">{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }}</a></span>
+                            <span class='bio'>{{ answer.writer.bio }}</span>
+                            <span class='pull-right badge'>{{ answer.writer.profile_no_of_views }}</span>
+                            <br/><span
+                                class='total-user-views glyphicon glyphicon-eye-open'> {{ answer.no_of_views }} </span>
+                            views
+                            <br>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class='answer-content answer-{{ answer.id }}'>
+                        <div class="answer-body">
+                            {{ answer.body|safe }}
+                        </div>
+
+                        <br>
+                        <p>
+                            {% if answer.no_of_upvotes != 0 %}
+                                {{ answer.no_of_upvotes }} upvoted this answer &bullet;
+                                <a class="comment-link" onclick="open_upvoters_modal({{ answer.id }})">view upvotes</a>
+                            {% endif %}
+                        </p>
+                        <p>
+                            {% if user.is_authenticated %}
+                                {% if answer.writer.user == user %}
+                                    <span class='fa fa-thumbs-o-up'></span>  {{ answer.no_of_upvotes }}
+                                    <span style='margin-right: 10px;'></span>
+
+                                    <span class='fa fa-thumbs-o-up'></span>  {{ answer.no_of_downvotes }}
+                                    <span style='margin-right: 10px;'></span>
+                                {% else %}
+                                    {% if already_upvoted %}
+                                        <button class='btn btn-default btn-sm upvote-{{ answer.id }}'
+                                                onclick="r_upvote({{ answer.id }})"><span class='fa fa-thumbs-o-up'></span> Upvoted<span></span></button>
+                                    {% else %}
+                                        <button class='btn btn-default btn-sm upvote-{{ answer.id }}'
+                                                onclick="upvote({{ answer.id }})"><span class='fa fa-thumbs-o-up'></span> Upvote<span
+                                                ></span></button>
+                                        <span style='margin-right: 10px;'></span>
+                                    {% endif %}
+
+                                    {% if already_downvoted %}
+                                        <a class='comment-link downvote-{{ answer.id }}'
+                                                onclick="r_downvote({{ answer.id }})"><span
+                                                class='fa fa-thumbs-o-down'></span>Downvoted<span style='margin-right: 10px;'></span></a>
+                                    {% else %}
+                                        <a class='comment-link downvote-{{ answer.id }}'
+                                                onclick="downvote({{ answer.id }})"><span class='fa fa-thumbs-o-down'></span>Downvote<span style='margin-right: 10px;'></span></a>
+                                    {% endif %}
+                                {% endif %}
+                                {# Bookmark #}
+                                {% if is_bookmarked %}
+                                    <span class='btn-group' style='float: right; margin-right: 20px;'>
+                                        {% if user == answer.writer.user %}
+                                            <button class='btn btn-default btn-sm'><a
+                                                    href='/answers/edit/?answer={{ answer.id }}'><span
+                                                    class='fa fa-edit'></span> Edit</a></button>
+                                        {% endif %}
+                                        <button class='btn btn-primary btn-sm bookmark clicked'
+                                                onclick="unBookmarkAnswer({{ answer.id }})"><span
+                                                class='fa fa-thumb-tack'></span> archived
+                                        </button>
+                                                    </span>
+                                {% else %}
+                                    <span class='btn-group' style='float: right; margin-right: 20px;'>
+                                                        {% if user == answer.writer.user %}
+                                                            <button class='btn btn-default btn-sm'><a
+                                                                    href='/answers/edit/?answer={{ answer.id }}'><span
+                                                                    class='fa fa-edit'></span> Edit</a></button>
+                                                        {% endif %}
+                                        <button class='btn btn-primary btn-sm bookmark'
+                                                onclick="bookmarkAnswer({{ answer.id }})"><span
+                                                class='fa fa-thumb-tack'></span> archive
+                                        </button>
+                                                    </span>
+                                {% endif %}
+                            {% else %}
+                                <span class='fa fa-thumbs-o-up'></span>  {{ answer.no_of_upvotes }}
+                                <span style='margin-right: 10px;'></span>
+                                <span class='fa fa-thumbs-o-down'></span>  {{ answer.no_of_downvotes }}
+                                <span style='margin-right: 10px;'></span>
+                            {% endif %}
+                            <a class='comment-link' onclick='openAnswerCommentBox({{ answer.id }})'><span class='fa fa-comments-o'></span> comment</a>
+                        </p>
+                    </div>
+                    <hr>
+                    <h3>Comments</h3>
+
+                    <div class="answer-comments card answer-box" style="background-color: #fff; padding: 10px; width: 100%;">
+                        <!-->
+
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <h4>About the Writer</h4>
+                    <hr class="divider">
+                    {% if answer.writer.display_picture != None %}
+                        <img src="{{ answer.writer.get_dp_url }}" alt="{{ answer.writer.user.first_name }}"
+                             class="profile-picture-answer">
+                    {% else %}
+                        <img src="{% static 'images/user.png' %}" alt="" class="profile-picture-answer">
+                    {% endif %}
+                    <hr>
+                    <div class="answer-writer-details">
+                        <a href="/profile/{{ answer.writer.user.username }}"><p>{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }} </a>| <span class="badge">{{ answer.writer.profile_no_of_views }} profile views</span>
+                        {% if answer.writer.works != 'NA' %}
+                            <p> &middot; {{ answer.writer.works }}</p>
+                        {% endif %}
+                        {% if answer.writer.followers != 'NA' %}
+                            {% if answer.writer.followers >= 1 %}
+                                <p> &middot; {{ answer.writer.get_no_of_followers }} followers</p>
+                            {% else %}
+                                <p> &middot; {{ answer.writer.get_no_of_followers }} follower</p>
+                            {% endif %}
+                        {% endif %}
+                        {% if user.is_authenticated %}
+                            {% if user != answer.writer.user %}
+                                {% if is_following %}
+                                    <a onclick="unfollow({{ answer.writer.user.id }})" class="btn btn-default btn-sm follow"> - unfollow</a>
+                                {% else %}
+                                    <a onclick="follow({{ answer.writer.user.id }})" class="btn btn-default btn-sm follow"> + follow </a>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--Upvoters modal -->
+    <div class="modal fade" id="upvotersModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header upvoters-modal-header">
+
+                </div>
+                <h4 style="color: #444444; text-align: center">Upvoters</h4>
+                <div class="modal-body upvoters-modal-body">
+                    <ul class="upvoters-list">
+
+                    </ul>
+
+                    <div class="load-btn-upvoters">
+                        <div class="loading-1-upvoters">
+                            <img src="/static/images/loading-2.gif" alt="" class="loading"> Loading...
+                        </div>
+                        <a onclick='show_upvoters({{ answer.id }})' class='btn-load-upvoters' style="display: none;"><span class='fa fa-refresh'></span> Load More</a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-danger upvoters-modal-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+    <!--end of upvoters modal -->
+
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
+    <script src="{% static 'scripts/custom.js' %}"></script>
+
+
+    <script>
+        var csrftoken = '{{ csrf_token }}';
+        var user = '{{ user }}';
+        var answer_id = '{{ answer.id }}';
+        var original_upvoters_url = '/answers/upvoters/?answer={{ answer.id }}';
+        var next_upvoters_url = original_upvoters_url;
+
+        $(document).ready(function () {
+            loadComments(answer_id);
+        });
+
+    </script>
+
+{% endblock %}

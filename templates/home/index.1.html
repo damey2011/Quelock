@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="asset/bootstrap/bootstrap.min_lumen.css">
+    <link rel="stylesheet" href="asset/css/style.css">
+    </head>
+
+    
+    <body>
+        <div class="navbar navbar-default">
+            <div class="navbar-header">
+                <div class="navbar-brand"><a href="#">Site Name Here</a></div>
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                    <span class="fa fa-th"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse" id="navbar-main">
+                <ul class="nav navbar-nav pull-right">
+                    <li><a href="#"><span class="glyphicon glyphicon-th"></span> Feeds</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-star"></span> Bookmarks</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-stats"></span> Trending</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-user"></span> My Profile</a></li>
+                </ul>
+            </div>
+        </div>
+        <!--Main Body of the page-->
+        <!--<div class="alert alert-dismissible alert-warning">-->
+            <!--<button type="button" class="close" data-dismiss="alert">&times;</button>-->
+            <!--<p><span class="glyphicon glyphicon-alert"></span> We recommend that you change your password soon</p>-->
+        <!--</div>-->
+        <div class="container">
+            <div class="col-lg-3">
+                <h3>Topics Trending Now</h3>
+                <ul class="list-group">
+                    <a href="#">
+                        <li class="list-group-item">
+                            Cras justo odio
+                        </li>
+                    </a>
+                    <a href="#">
+                        <li class="list-group-item">
+                            Dapibus ac facilisis in
+                        </li>
+                    </a>
+                    <a href="#">
+                        <li class="list-group-item">
+                            Morbi leo risus
+                        </li>
+                    </a>
+                </ul>
+            </div>
+            <div class="col-lg-6">
+
+                <hr class="theme-line"/>
+
+
+                <div class="card">
+                     <div class="post strong-padding">
+                        <h3 id="post-title">Lorem Ipsum</h3>
+                        by <a href="#">Damilola Adeyemi</a>, description goes here....<br>
+                        <small style="color:grey;">18hours ago</small>&nbsp
+                        <strong style="color: lightgrey;">3298 views</strong>
+                        <hr/>
+                        <div class="post-content">
+                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including.
+                            <img src="asset/images/img3.jpg" class="image" alt="Image 1">
+                            Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
+
+                            The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
+                        </div>
+                        <br>
+                        <p>
+                            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-thumbs-up"></span>  121</button>
+                            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-thumbs-down"></span>  11</button>
+                            <button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-comment"></span>  4</button>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-3">
+                <h4>Complete Your Profile</h4>
+                Your Profile is 60% Complete
+                <br>
+                <div class="bs-component">
+                    <div class="progress">
+                        <div class="progress-bar" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <span>Click <a href="#">here</a> to go to your profile</span>
+                <br>
+                <h4>You might also like: </h4>
+
+            </div>
+
+        </div>
+
+
+    </body>
+    <script src="asset/scripts/jquery.min.js"></script>
+    <script src="asset/scripts/bootstrap.min.js"></script>
+    <script>
+        $(function(){
+            loadPosts();
+            organize_Posts();
+        })
+
+        function loadPosts(){
+            $.getJSON("/asset/data/posts.json", function(obj){
+               $.each(obj, function(key, value){
+                   $('.middle-post-row').html().append('')
+               })
+            });
+        }
+
+        function organize_Posts(){
+            var post_content = $('.post-content').html();
+            var truncated_post = post_content.substr(0, 200);
+
+            if (post_content.length > 200){
+                $('.post-content').html(truncated_post).append('.....<a href="" class="btn btn-default btn-sm read-more-link" style="width: 100%; margin: 5px 5px;">Read More</a>');
+                $('.post-img').hide();
+            }
+            else{
+                $('.post-content').html(post_content);
+                $('.post-img').show();
+            }
+            $("body").on("click", ".read-more-link", function(event){
+                event.preventDefault();
+                $(this).parent(".post-content").html(post_content).append('<a href="" class="btn btn-default btn-sm show-less-link" style="width: 100%; margin: 5px 5px;">Show Less</a>')
+                $('.post-img').show();
+            });
+
+            $("body").on("click", ".show-less-link", function(event){
+                event.preventDefault();
+                $(this).parent(".post-content").html(truncated_post).append('......<a href="" class="btn btn-default btn-sm read-more-link" style="width: 100%; margin: 5px 5px;">Read More</a>')
+                $('.post-img').hide();
+                $('html, body').animate({
+                    scrollTop: $(this).curr('.card').offset().top
+                }, 2000);
+                // Here to scroll to the previous div that has the id of post title
+
+            });
+        }
+
+    </script>
+</html>

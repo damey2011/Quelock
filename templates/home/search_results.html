@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}
+    Search Results - {{ search_term }}
+{% endblock %}
+{% load static %}
+{% block body %}
+    <div class="row" style="margin-top: 50px;">
+        <div class="container">
+            <div class="col-lg-2">
+
+            </div>
+            <div class="col-lg-8">
+                <div class="search-results">
+                    <h4>Search Results For <span class="s-term">"{{ search_term }}"</span></h4>
+                        <div class="sort-type">
+                            <ul>
+                                <a href="/search/?sort_type=1&page=1&search_term={{ search_term }}"><li>Questions</li></a>
+                                <a href="/search/?sort_type=2&page=1&search_term={{ search_term }}"><li>People</li></a>
+                                <a href="/search/?sort_type=3&page=1&search_term={{ search_term }}"><li>Topics</li></a>
+                            </ul>
+                        </div>
+                    <div class="results-pane">
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script src="{% static 'scripts/custom.js' %}"></script>
+    <script>
+
+        var sort_type = '{{ sort_type }}';
+        var search_term = '{{ search_term }}';
+        var page = 1;
+        var csrftoken = '{{ csrf_token }}';
+
+        $(document).ready(function () {
+            sort_type = parseInt(sort_type);
+            if (search_term != 'None') {
+                console.log('Ready');
+                switch (sort_type) {
+                    case 1:
+                        load_search_results_question();
+                        break;
+                    case 2:
+                        load_search_results_people();
+                        break;
+                    case 3:
+                        load_search_results_topics();
+                        break;
+                    default:
+                        load_search_results_question();
+                }
+            }
+            else{
+                $('.search-results > h4').html('No Search Term Entered.')
+            }
+
+        });
+
+        function load_search_results_answer(){
+
+        }
+
+        function load_search_results_question(){
+            $.ajax({
+                url: '/ajax/search/?sort_type=1&page='+page+'&search_term='+search_term,
+                data: {'csrfmiddlewaretoken': csrftoken, 'page': page},
+                success: function(data){
+                    if(data.length > 0){
+                        $.each(data, function (key, value) {
+                            $('.results-pane').append(explore_questions_dom(value));
+                        });
+                    }
+                    else{
+                        $('.results-pane').append("<h3 class='search-feedback'>No Question matching this query</h3>");
+                    }
+                },
+                complete: function(){
+                    page+=1;
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            })
+
+            $('.sort-type ul a:nth-child(1)').addClass('active-search-tab')
+        }
+
+        function load_search_results_topics(){
+            $.ajax({
+                url: '/ajax/search/?sort_type=3&page='+page+'&search_term='+search_term,
+                data: {'csrfmiddlewaretoken': csrftoken, 'page': page},
+                success: function(data){
+                    if(data.length > 0){
+                        $.each(data, function (key, value) {
+                            $('.results-pane').append(explore_topic_dom(value));
+                        });
+                    }
+                    else{
+                        $('.results-pane').append("<h3 class='search-feedback'>No Topic matching this query</h3>");
+                    }
+                },
+                complete: function(){
+                    page+=1;
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            })
+
+            $('.sort-type ul a:nth-child(3)').addClass('active-search-tab')
+        }
+
+        function load_search_results_people(){
+            $.ajax({
+                url: '/ajax/search/?sort_type=2&page='+page+'&search_term='+search_term,
+                data: {'csrfmiddlewaretoken': csrftoken, 'page': page},
+                success: function(data){
+                    console.log(data);
+                    if(data.length > 0){
+                        $.each(data, function (key, value) {
+                            $('.results-pane').append(explore_people_dom(value));
+                        });
+                    }
+                    else{
+                        $('.results-pane').append("<h3 class='search-feedback'>No User matching this query</h3>");
+                    }
+                },
+                complete: function(){
+                    page+=1;
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            })
+            $('.sort-type ul a:nth-child(2)').addClass('active-search-tab')
+
+        }
+
+
+    </script>
+{% endblock %}

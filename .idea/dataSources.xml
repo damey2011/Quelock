@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="4061794716">
+    <data-source source="LOCAL" name="Quelock" uuid="5efb4846-bbbc-413d-9b78-3b672d66fc2c">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/db.sqlite3</jdbc-url>
+      <libraries>
+        <library>
+          <url>file://$USER_HOME$/Documents/Java Projects/StoreKeeper-master/library/sqlite-jdbc-3.8.11.1.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+  </component>
+</project>

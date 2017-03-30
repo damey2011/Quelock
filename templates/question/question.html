@@ -1,0 +1,405 @@
+{% extends 'base.html' %}
+{% block title %}
+    {{ question.title }} - Quelock
+{% endblock %}
+{% block body %}
+    {% load static %}
+
+    <div class="container" style="padding-left: 25px;">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-lg-8 left-col">
+
+                <div class="strong-padding profile-card question-container" style="margin-left: auto;">
+                    <div class="">
+                       <!----  QUESTION GOES IN HERE -------------->
+                        <div class="tag-text">hit the + sign to assign topics to help find answers</div>
+                        <ul class="tags-bar">
+                            {% for tag in tags %}
+                                <li class="question-tag tag-{{ tag.under.id }}"><a href="/topics/{{ tag.under.slug }}">{{ tag.under.title }} </a><span class="ion-android-close tag-delete" onclick="deleteTag({{ tag.under.id }})"></span></li>
+                            {% endfor %}
+                        </ul>
+                        <span class="add-tag-btn ion-android-add-circle"></span>
+                        <div class="tag-input-div">
+                            <input type="text" class="custom-form-control hide-item tag-input" placeholder="Enter topic name here and hit enter">
+                            <div class="tags-dropdown hide-item">
+                                <div class="tag-list-dropdown">
+                                    <ul class="list-group tags-result-list">
+                                        <a href="#">
+                                            <li class="list-group-item">
+                                                <div class="list-group-item-heading">Life Mystery</div>
+                                                <div class="list-group-item-text">What happens in the world which we cannot explain</div>
+                                            </li>
+                                        </a>
+                                    </ul>
+                                </div>
+                                <div class="tag-dropdown-bottom">
+                                    <div class='list-group-item cannot-find-result'>
+                                        <div class='list-group-item-heading tag-name'>Not Here?</div>
+                                        <a target='_blank' href='/topics/create' class='topic-create-click tag-text'>create topic</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="divider">
+                        </div>
+
+                        <h3 class="question-title" id='question-title' style="margin-top: 3px;">{{ question.title }}</h3>
+
+                        <div class='question_desc_div'>
+                            <p class='question_desc'>
+                                {{ question.question_details|safe }}
+                            </p>
+                        </div>
+                        <br>
+
+                        <p class="question-tool-bar">
+                            {% if user.is_authenticated %}
+                                <a href="/questions/{{ question.slug }}/edit" class='btn btn-primary btn-sm'>
+                                    <span class='ion-edit'></span> Edit
+                                </a>
+                                <a onclick="toggleAsk()" class="request-answer-toggle btn btn-primary btn-sm">Request <span class="caret"></span></a>
+                                {% if user_follows %}
+                                    <a onclick="unfollow_question({{ question.id }})" class='question-follow-{{ question.id }} question-toolbar-link'><span class='ion-reply'></span> Unfollow</a>
+                                {% else %}
+                                    <a onclick="follow_question({{ question.id }})" class='question-follow-{{ question.id }} question-toolbar-link'><span class='ion-reply'></span> Follow</a>
+                                {% endif %}
+                            {% endif %}
+                            <a class='question-toolbar-link'><span class='ion-share'></span> Share</a>
+
+                        </p>
+                    </div>
+
+                </div>
+
+                <span class="request-answers-div">
+                    <div class="request-answers-header">
+                        <h4>Request Answers:</h4>
+                    </div>
+                    <div class="request-user-item">
+                        <div class="request-user-img-div"><img class="request-user-img" src="{% static 'images/user.png' %}" alt=""></div>
+                        <div class="request-user">
+                            <a href="" class="request-user-name">Damilola Adeyemi</a>
+                            <div class="request-user-no-answers">40 Answers Written</div>
+                        </div>
+                        <div class="request-action">
+                            <a href="" class="ion-ios-plus-outline"></a>
+                        </div>
+                    </div>
+                    <div class="request-user-item">
+                        <div class="request-user-img-div"><img class="request-user-img" src="{% static 'images/user.png' %}" alt=""></div>
+                        <div class="request-user">
+                            <a href="" class="request-user-name">Damilola Adeyemi</a>
+                            <div class="request-user-no-answers">40 Answers Written</div>
+                        </div>
+                        <div class="request-action">
+                            <a href="" class="ion-ios-plus-outline"></a>
+                        </div>
+                    </div>
+                    <div class="request-user-item">
+                        <div class="request-user-img-div"><img class="request-user-img" src="{% static 'images/user.png' %}" alt=""></div>
+                        <div class="request-user">
+                            <a href="" class="request-user-name">Damilola Adeyemi</a>
+                            <div class="request-user-no-answers">40 Answers Written</div>
+                        </div>
+                        <div class="request-action">
+                            <a href="" class="ion-ios-plus-outline"></a>
+                        </div>
+                    </div>
+
+                </span>
+
+
+
+                {% if user.is_authenticated %}
+                    {% if not user_has_answered_question_already %}
+
+                        <br>
+                        <div class="can-you-answer-div">
+                            <p>Do you know something about this?</p>
+                            <a class="btn btn-primary" onclick="answer_question()"><span class="ion-ios-compose-outline"></span> Answer</a>
+                        </div>
+
+                        <div class="answer-pane"></div>
+                    {% endif %}
+                {% else %}
+                    You are not logged in, please login to answer the question
+                {% endif %}
+
+                <hr>
+
+                <div class="answers">
+                    <div class="no-of-answers" style="font-weight: bolder"></div>
+                    <br>
+
+                    <!-- COMMENTS GO HERE -->
+                </div>
+
+
+            </div>
+            <div class="col-lg-4">
+                <h5 class="side-header">Question Stats</h5>
+                <hr class="divider">
+                <div class="stats-content">
+                    <ul>
+                        <li><span class="ion-person-stalker"></span> {{ question.no_following_quest }} Followers</li>
+                        <li><span class="ion-ios-clock-outline"></span> {{ question.date_asked }}, {{ question.time_asked }}</li>
+                        <li><span class="ion-ios-eye"></span> {{ question.no_of_views }} Views</li>
+                    </ul>
+                </div>
+
+                <h5 class="side-header">You might want to read these</h5>
+                <hr class="divider">
+
+
+                <div class="related-posts-div">
+                    <ul class="related-posts-list">
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <hr/>
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <h3>Top Stories From Your Feeds</h3>
+                <hr>
+                <div class="col-lg-4 top-stories-footer">
+                    <a href="">
+                        <div class="tile">
+                            <span class="date">Aug 31</span>
+
+                            <h3 class="post-topic">Topic Goes Here</h3>
+
+                            <div class="post-content">
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4">
+                    <a href="">
+                        <div class="tile">
+                            <span class="date">Aug 31</span>
+
+                            <h3 class="post-topic">Topic Goes Here</h3>
+
+                            <div class="post-content">
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4">
+                    <a href="">
+                        <div class="tile">
+                            <span class="date">Aug 31</span>
+
+                            <h3 class="post-topic">Topic Goes Here</h3>
+
+                            <div class="post-content">
+
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <script src="{% static 'scripts/jquery.min.js' %}"></script>
+        <script>
+            var question_id = {{ question.id }};
+            var host = window.location.host;
+            var csrftoken = '{{ csrf_token }}';
+            var is_loggedin = '{{ user.is_authenticated }}';
+            var user = '{{ user }}';
+            var req_user = '';
+            var default_profile_picture = '{% static 'images/user.png' %}';
+        </script>
+        <script async src="{% static 'scripts/bootstrap.min.js' %}"></script>
+        <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
+        <script src="{% static 'scripts/custom.js' %}"></script>
+
+        <script>
+            $(document).ready(function () {
+                loadQuestionAnswers();
+            });
+
+            function toggleAsk(){
+                $('.request-answers-div').toggleClass('answer-ask');
+            }
+
+            $('.add-tag-btn').click(function(){
+                if($('.tag-input').hasClass('hide-item')) $('.tag-input').slideDown().focus().removeClass('hide-item');
+                else $('.tag-input').slideUp().focus().addClass('hide-item');
+            });
+
+            $(':not(div.tags-dropdown)').on('click', function(){
+               $('div.tags-dropdown').addClass('hide-item').slideUp();
+            });
+
+            $('.tag-input').on('keyup', function () {
+                if($(this).val().length > 3){
+                    $('div.tags-dropdown').removeClass('hide-item').slideDown();
+                    searchTopics($(this).val(), 'tags');
+                }
+                else $('div.tags-dropdown').addClass('hide-item').slideUp();
+
+            });
+            
+            function searchQuestionTags(results){
+                $('.tags-result-list').html('');
+                for(var topic in results){
+                    $('.tags-result-list').append("<li onclick='addTagToQuestion("+results[topic].id+", \""+results[topic].title+"\", \""+results[topic].slug+"\")' class='list-group-item'>\
+                        <div class='list-group-item-heading tag-name'>"+results[topic].title+"</div>\
+                        <div class='list-group-item-text tag-desc'>"+results[topic].desc+"</div>\
+                    </li>")
+                };
+
+            }
+
+            function searchTopics(keyword, caller){
+                $.ajax({
+                    url: '/topics/search/?keyword='+keyword,
+                    data: {'csrfmiddlewaretoken': csrftoken},
+                    success: function(data){
+                        if(caller='tags')searchQuestionTags(data);
+                    }
+                });
+            }
+
+            function addTagToQuestion(topic_id, topic_title, topic_slug){
+                $.ajax({
+                    url: '/questions/assign_topic/?question='+question_id+'&topic='+topic_id,
+                    type: 'POST',
+                    data: {'csrfmiddlewaretoken':csrftoken},
+                    success:function(){
+                        $('.tags-bar').append("<li class='question-tag tag-"+topic_id+"'><a href='/topics/"+topic_slug+"'>"+topic_title+"</a>\
+                                <span class='ion-android-close tag-delete' onclick='deleteTag("+topic_id+")'></span></li>");
+                        $('.tag-input').val('');
+                    },
+                    error: function(){
+
+                    }
+                })
+            }
+
+            function deleteTag(topic_id){
+                $('.tag-'+topic_id).css('display', 'none');
+                $.ajax({
+                    url: '/questions/unassign_topic/?question='+question_id+'&topic='+topic_id,
+                    type: 'POST',
+                    data: {'csrfmiddlewaretoken':csrftoken},
+                    success: function () {
+                        $.toast('Tag has been deleted', {'duration': 1000, 'align': 'top'});
+                    }
+                })
+            }
+
+
+
+        </script>
+    </footer>
+
+    <div class="modal fade" id="answerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 style="color: #444444">Answer Question</h3>
+                </div>
+                <div class="modal-body">
+                    <b style="font-weight: bolder"><h1>{{ question.title }}</h1></b>
+                    <small>{{ question.question_details|safe }} </small>
+                    <a class="show_" onclick="show_or_hide()">show details</a>
+                    <form action="/questions/{{ question.slug }}/answerit/" method="post" name="question-form"
+                          id="question-form">
+                        {% csrf_token %}
+                        <div id="details"></div>
+                        <br>
+                        <div class="anonymous">Answer Anonymously:- <input type="checkbox" value="1" name="anonymous"></div>
+                        <p><input type="submit" value="Submit Answer" class="btn btn-default">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" style="float: right;">Close</button>
+                        </p>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="commentsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header comment-modal-header">
+
+                </div>
+                <h4 style="color: #444444; text-align: center">Comments</h4>
+                <div class="modal-body comment-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-danger comments-modal-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+
+
+
+    <link rel="stylesheet" href="{% static 'trumbowyg/trumbowyg.min.css' %}">
+    <script src="{% static 'trumbowyg/trumbowyg.min.js' %}"></script>
+    <script src="{% static 'trumbowyg/plugins/trumbowyg.upload.min.js' %}"></script>
+
+    <script>
+        $('.modal-body > small').hide();
+        $("#details").trumbowyg({
+
+            btnsDef: {
+                // Customizables dropdowns
+                image: {
+                    dropdown: ['insertImage', 'upload', 'noEmbed'],
+                    ico: 'insertImage'
+                }
+            },
+            btns: [
+                ['viewHTML'],
+                ['undo', 'redo'],
+                ['formatting'],
+                'btnGrp-design',
+                ['link'],
+                ['image'],
+                'btnGrp-justify',
+                'btnGrp-lists',
+                ['foreColor', 'backColor'],
+                ['preformatted'],
+                ['horizontalRule'],
+                ['fullscreen']
+            ],
+            plugins: {
+                upload: {
+                    serverPath: 'http://' + window.location.host + '/upload/',
+                    fileFieldName: 'image',
+                }
+            }
+        });
+
+        function show_or_hide(){
+            $('.modal-body > small').show();
+            $('.modal-body > a').hide();
+        }
+
+    </script>
+
+{% endblock %}
+
+

@@ -1,0 +1,32 @@
+{% extends 'home/explore_base.html' %}
+{% load static %}
+{% block tabcontent %}
+    <div style="margin-top: 10px">
+        <ul class="list-group common-user-group question-explore-list">
+
+        </ul>
+    </div>
+    <div class="load-btn">
+        <div class="loading-1">
+            <img src="/static/images/loading-2.gif" alt="" class="loading"> Loading...
+        </div>
+        <a onclick='load_more(8)' class='btn-load'><span class='fa fa-refresh'></span> Load More</a>
+    </div>
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script>
+        var csrftoken = '{{ csrf_token }}';
+        var original_explore_questions_url = "/questions/api/explore";
+        var next_explore_questions_url;
+        var user = '{{ user }}';
+    </script>
+    <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
+    <script src="{% static 'scripts/custom.js' %}"></script>
+    <script>
+
+        $(document).ready(function () {
+            next_explore_questions_url = original_explore_questions_url
+            loadExploreQuestions();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,19 @@
+<ul class="list-group following-window">
+    <div class="list-group-header">
+        <h4 class="profile-tab-header">Following</h4>
+
+    </div>
+</ul>
+
+<div class="load-btn">
+    <div class="loading-1">
+        <img src="/static/images/loading-2.gif" alt="" class="loading"> Loading...
+    </div>
+    <a onclick='load_more(1)' class='btn-load'><span class='fa fa-refresh'></span> Load More</a>
+</div>
+
+<script>
+    $('.btn-load').hide();
+    nextUrl = original_getfollowings_url;
+    load_following(user);
+</script>

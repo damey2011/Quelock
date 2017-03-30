@@ -1,0 +1,17 @@
+<div class="post">
+    <h4 class="profile-tab-header">Answers written by user</h4>
+
+</div>
+
+<div class="load-btn">
+    <div class="loading-1">
+        <img src="/static/images/loading-2.gif" alt="" class="loading"> Loading...
+    </div>
+    <a onclick='load_more(4)' class='btn-load'><span class='fa fa-refresh'></span> Load More</a>
+</div>
+
+<script>
+    $('.btn-load').hide();
+    nextAnswersPage = original_getanswers_page;
+    loadAnswers();
+</script>

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}
+    Report {{ type }}
+{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<body>
+{% block body %}
+    <div class="container">
+        <div class="row edit-page">
+            <div class="col-lg-3">
+
+            </div>
+            <div class="col-lg-6">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <h4 class="report-head">Report {{ type }}</h4>
+                    <hr class="divider">
+                    <input type="hidden" value="{{ type_sing }}" name="type">
+                    <input type="hidden" value="{{ type_id }}" name="type_id">
+                    <label for=""></label>
+                    <ul class="list-group">
+                        {% for reason in reasons %}
+                            <li class="list-group-item report-reason-list-item">
+                               <input type="radio" name="reason" value="{{ reason.header }}">
+                               <div class="report-reason-list-item-body">
+                                   <h5 class="list-group-item-header">{{ reason.header }}</h5>
+                                   <p class="list-group-item-text small">{{ reason.text }}</p>
+                               </div>
+                           </li>
+                        {% endfor %}
+                            <li class="list-group-item report-reason-list-item">
+                                <input type="radio" name="reason" value="other">
+                                <div class="report-reason-list-item-body">
+                                    <h5 class="list-group-item-header">Other</h5>
+                                    <p class="list-group-item-text small">specify</p>
+                                </div>
+                            </li>
+                            <li class="list-group-item report-reason-list-item">
+                                <label for="">Not listed Above ? </label>
+                               <input type="text" class="other-reason form-control" name="reason" disabled>
+                               <div class="report-reason-list-item-body">
+                                   <h5 class="list-group-item-header">{{ reason.header }}</h5>
+                                   <p class="list-group-item-text small">{{ reason.text }}</p>
+                               </div>
+                           </li>
+                    </ul>
+
+                    <input type="submit" value="Send Report" class="btn btn-primary">
+                </form>
+            </div>
+            <div class="col-lg-3">
+
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script async src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script>
+        $('input[type=radio]').change(function(){
+            if($(this).val() == 'other'){
+                $('.other-reason').removeAttr('disabled').focus();
+            }
+            else{
+                $('.other-reason').val('').attr('disabled', 'true');
+            }
+        });
+    </script>
+{% endblock %}
+</body>
+</html>

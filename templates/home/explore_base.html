@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}
+    Explore
+{% endblock %}
+{% block body %}
+    {% load static %}
+
+    <div class="container">
+        <div class="row" style="margin-top: 70px;">
+            <div class="col-lg-2">
+
+            </div>
+            <div class="col-lg-8">
+                <ul class="nav nav-tabs">
+                    <li class="{{ topic_active }}"><a href="{% url 'explore_topic' %}"><span class="fa fa-book"></span> Topics</a></li>
+                    <li class="{{ people_active }}"><a href="{% url 'explore_people' %}"><span class="fa fa-users"></span> People</a></li>
+                    <li class="{{ questions_active }}"><a href="{% url 'explore_questions' %}"><span class="fa fa-question"></span> Questions</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="pane1">
+                        {% block tabcontent %}
+
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

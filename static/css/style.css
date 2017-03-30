@@ -1,0 +1,371 @@
+/**My Custom styles**/
+*{
+    /*box-sizing: border-box;*/
+    margin: 0;
+    padding: 0;
+
+}
+
+body{
+    background-color: rgba(119, 119, 119, 0.1);
+}
+
+
+.navbar-default{
+    width: 100%;
+    background-color: #2574A9;
+    margin: 0 auto;
+    position: relative;
+}
+
+.navbar-brand a{
+    text-decoration: none;
+    font-size: 1.6em;
+    font-weight: 300;
+    color: #fff;
+}
+
+/*.nav-right li{
+    margin: 0px 5px 0 0;
+    display: inline-block;
+    list-style-type: none;
+}*/
+
+#navbar-main > ul > li > a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 10pt;
+    font-weight: 400;
+}
+
+#search{
+    /*margin-right: 25px;*/
+}
+
+/*.searchbox{*/
+    /*margin-top: 10px;*/
+    /*max-height: 30px;*/
+    /*max-width: 450px;*/
+    /*min-width: 325px;*/
+    /*border-top: 0px;*/
+    /*border-right: 0px;*/
+    /*border-left: 0px;*/
+    /*color: #fff;*/
+    /*background-color: rgba(37, 116, 169, 0.1);*/
+    /*float: none;*/
+/*}*/
+
+.form-control::-moz-placeholder {
+  color: #EBEFF2;
+  opacity: 1;
+}
+.form-control:-ms-input-placeholder {
+  color: #EBEFF2;
+}
+.form-control::-webkit-input-placeholder {
+  color: #EBEFF2;
+}
+
+.card {
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  /*overflow: hidden;*/
+  -webkit-box-shadow: 0px 4px 4px 1px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.2);
+  box-shadow: 0px 4px 3px 4px rgba(0,0,0,0.2);
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+  margin-bottom: 20px;
+    border-top: 0;
+}
+a.card {
+  color: inherit;
+}
+
+.post-content{
+    font-size: 11pt;
+}
+
+img.image {
+  line-height: 0;
+  position: relative;
+  max-height: 50%;
+  width: 100%;
+}
+
+.strong-padding {
+  padding: 15px;
+}
+
+.theme-line{
+    color: #2574A9;
+    box-shadow: 0.5em;
+}
+
+.list-group > a:hover > li{
+    background-color: rgba(37, 116, 169, 1.0);
+    color: #fff;
+    border-radius: 0;
+    text-decoration: none;
+}
+
+
+
+/*Register Page*/
+.logo-reg{
+    color: #fff;
+    font-size: 20pt;
+    font-weight: bold;
+    text-align: center;
+}
+
+.logo-reg-details{
+    color: #EBEFF2;
+    font-size: 10pt;
+    font-weight: 400;
+    text-align: center;
+}
+
+.main-reg-body{
+    margin: 30px 0 0 30px;
+}
+
+.reg-form-container{
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+.reg-form-container label{
+    color: #000;
+    opacity: 1;
+    font-weight: 300;
+}
+
+.reg-form-container .tac{
+    color: #000;
+    font-weight: 300;
+    text-align: center;
+}
+
+.reg-form-container .btn{
+    margin-left: 45%;
+}
+
+.reg-form-container input{
+    border-radius: 2px;
+}
+
+.aoa{
+    color: #000;
+    font-weight: 500;
+    text-align: center;
+}
+
+/*Registratio Success*/
+.reg-succ{
+    font-size: 24pt;
+    font-weight: 500;
+    color: #fff;
+}
+
+.reg-succ-details{
+    font-size: 12pt;
+    font-weight: 400;
+    color: #fff;
+}
+
+/*Profile*/
+.profile-picture{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+
+.picture-div{
+    margin-left: 20px;
+}
+
+.upld-btn{
+    margin-left: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.card > .row > .col-lg-9 > ul{
+    list-style-type: none;
+    margin-top: 15px;
+}
+
+.card > .row > .col-lg-9 > ul > li{
+    display: inline-block;
+    margin-right: 20px;
+    margin-top: 10px;
+    font-size: 11pt;
+}
+
+.card > .row > .col-lg-9 > ul > li >div > a{
+    text-decoration: none;
+}
+
+.card > .row > .col-lg-9 > ul > li >div > a:hover{
+    text-indent: 3px;
+}
+
+.card > .row > .col-lg-9 > ul > li > a:hover{
+    text-decoration: none;
+    text-indent: 3px;
+    margin-left: 2px;
+    margin-top: 4px;
+    font-weight: bolder;
+}
+
+.topic-details{
+    margin-left: 17px;
+}
+
+.user-name{
+    font-weight: bold;
+    font-size: 15pt;
+    margin-left: 20px;
+}
+
+.bio{
+    font-size: 11pt;
+    /*margin-left: 20px;*/
+}
+
+.btn-list{
+    margin-left: 20px;
+}
+
+.list-group > a{
+    text-decoration: none;
+}
+
+/*Posts*/
+.left-col{
+    padding: 0px 50px 20px 10px;
+}
+
+.related-posts-list{
+    list-style-type: none;
+    /*line-height: 0.9cm; */
+}
+
+.related-posts-list > li{
+    margin-bottom: 10px;
+}
+
+.commenter-dp{
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+.commenter-name{
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.answer-box .bio{
+    font-size: 10pt;
+    color: grey;
+}
+
+.answer-box .total-answer-view{
+    color: dimgrey;
+    font-size: 11pt;
+}
+
+body .footer{
+    height: inherit;
+    width: 100%;
+    background:rgba(37, 116, 169, 1);
+    padding: 25px;
+}
+
+.tile {
+  -webkit-box-shadow: 0px 1px 2px 1px rgba(0,0,0,0.12);
+  -moz-box-shadow: 0px 1px 2px 1px rgba(0,0,0,0.12);
+  box-shadow: 0px 1px 2px 1px rgba(0,0,0,0.12);
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+  width: 100%;
+  padding: 17px;
+  background:rgba(255, 255, 255, 1);
+}
+
+a.tile {
+  color: inherit;
+}
+
+.top-stories-footer > a:hover{
+    background:rgba(37, 116, 169, 0.2);
+}
+
+/*Topic*/
+.topic-picture{
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+.topic-name{
+    font-weight: bold;
+    font-size: 15pt;
+    margin-left: 20px;
+}
+
+.topic-details{
+    font-size: 11pt;
+    /*margin-left: 20px;*/
+}
+
+.question_desc_div > div > ul > li{
+    margin-left: 20px;
+}
+
+.question_desc > img {
+    margin: 10px;
+    /*max-width: 700px;*/
+    /*max-height: 1000px;*/
+    overflow: hidden;
+}
+
+
+/*Create question*/
+
+.center-pane{
+    padding: 20px;
+    background-color: white;
+}
+
+.trumbowyg-editor{
+    background-color: #FFFFFF;
+}
+
+.archived > ul > a:hover{
+    color: #FFFFFF;
+    background-color: #777777;
+}
+
+.answer-writer-details{
+    /*text-align: center;*/
+    padding-left: 10px;
+    border-left: 4px solid white;
+    width: 100%;
+}
+
+.profile-picture-answer{
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 50%;
+    margin: auto auto;
+}
+
+.loading-icon{
+    margin: 40px auto 0 auto;
+}

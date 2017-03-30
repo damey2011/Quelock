@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}
+    Your Quelock Feed
+{% endblock %}
+{% load static %}
+{% block body %}
+    <div class="container">
+        <div class="row" style="margin-top: 70px;">
+            <div class="col-lg-3">
+
+            </div>
+            <div class="col-lg-6">
+
+                Hello there,, your feeds coming soon
+            </div>
+            <div class="col-lg-3">
+                <button id="note">Click me</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
+    <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script>
+        $('#note').click(function(){
+            $.toast('Answer was upvoted', {'duration': 5000, 'align': 'top'});
+        })
+    </script>
+{% endblock %}

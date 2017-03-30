@@ -1,0 +1,23 @@
+{% extends 'profile/profile.html' %}
+{% block tabcontent %}
+<ul class="list-group follower-window">
+    <div class="list-group-header">
+        <h4>Followers</h4>
+        <hr>
+    </div>
+</ul>
+
+<div class="load-btn">
+    <div class="loading-1">
+        <img src="/static/images/loading-2.gif" alt="" class="loading"> Loading...
+    </div>
+    <a onclick='load_more(2)' class='btn-load'><span class='fa fa-refresh'></span> Load More</a>
+</div>
+
+<script>
+    $('.btn-load').hide();
+    nextPage = original_getfollowers_url;
+    load_followers(user);
+</script>
+
+{% endblock %}

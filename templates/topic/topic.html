@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block body %}
+    {% block title %}
+        {{ topic.title }}
+    {% endblock %}
+    {% load staticfiles %}
+    <div class="container">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-lg-9">
+                <div class="topic-card">
+                    <div class="picture-div">
+                        {% if topic.image_name %}
+                            <img src="{{ topic.image_name.url }}" alt="{{ topic.created_by.first_name }}" class="profile-picture" style="margin-bottom: 15px;">
+                        {% else %}
+                            <div class="profile-picture" style="font-size: 80pt; vertical-align: middle; text-align: center;">{{ topic.title|slice:":1" }}</div>
+                        {% endif %}
+                        {% if user == req_user.user %}
+                            <div class="upld-btn"><a href="{{ req_user.user.username }}/update" class="ion-android-settings btn btn-sm">  Edit Profile</a></div>
+                        {% endif %}
+                    </div>
+
+                    <div class="photo-right-col">
+                        <h4 class="user-name">{{ topic.title }}</h4>
+                        {% if topic.desc != None or topic.desc != "" %}
+                            <div class="bio-div">
+                                <span class="ion-ios-albums-outline"> </span>
+                                <span class="bio"> |  {{ topic.desc }}</span>
+                            </div>
+                        {% endif %}
+
+
+                        {% if user.is_authenticated %}
+                            {% if user != req_user.user %}
+                                <ul class="btn-list profile-visitor-action">
+                                    {% if is_following %}
+                                        <li><div class="btn btn-default topic-follow-{{ topic.id }} clicked" onclick="unfollow_topic({{ topic.id }})">- unfollow</div></li>
+                                    {% else %}
+                                        <li><div class="btn btn-default topic-follow-{{ topic.id }}" onclick="follow_topic({{ topic.id }})">+ follow</div></li>
+                                    {% endif %}
+
+                                    <li class="turn-on-notify"><a href="#">Turn on Notifications</a></li>
+                                </ul>
+                            {% endif %}
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <h5>users with common interest</h5>
+                        <hr/>
+                        <ul class="list-group common-user-group">
+
+                        </ul>
+                        <div class="loading-1-users">Loading...</div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="post"style="width: 100%;">
+                            <h5>Most Recent Answers in {{ topic.title }}</h5>
+                            <hr/>
+                            <!--Post enters here-->
+                        </div>
+                        <div class="load-btn">
+                            <div class="loading-1">
+                                <img src="/static/images/loading-2.gif" alt="" class="loading"> Loading...
+                            </div>
+                            <a onclick='load_more(5)' class='btn-load'><span class='fa fa-refresh'></span> Load More</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 related-col">
+                <h5>Other Topics You might be interested in</h5>
+                <hr/>
+                <ul class="other-topics">
+                    <!---- Topics go in here -->
+                </ul>
+                <div class="loading-1">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- comments modal -->
+    <div class="modal fade" id="commentsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header comment-modal-header">
+
+                </div>
+                <h4 style="color: #444444; text-align: center">Comments</h4>
+                <div class="modal-body comment-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-danger comments-modal-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+    <!-- end of comments modal -->
+
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
+    <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script>
+        var csrftoken = '{{ csrf_token }}';
+        var user = '{{ user }}';
+        var req_user = '';
+        var topic_load_url = '/topics/recent_answers/?topic={{ topic.id }}';
+        var related_users_load_url = '/topics/common_interest_users/?topic={{ topic.id }}'
+    </script>
+    <script src="{% static 'scripts/custom.js' %}"></script>
+    <script>
+        $('.btn-load').hide();
+        $(document).ready(function(){
+            loadTopicAnswers();
+            loadRelatedTopics();
+            loadUsersWithCommonInterest();
+        });
+    </script>
+
+{% endblock %}
+

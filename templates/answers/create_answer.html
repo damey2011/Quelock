@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load staticfiles %}
+    <body>
+        <div class="container">
+
+        <div class="row edit-page">
+
+        <div class="col-lg-3 edit-left-col">
+            <hr class="divider"/>
+            <h5 style="color: #777777">Community Rules</h5>
+            <hr class="divider"/>
+        </div>
+
+        <div class="col-lg-6">
+           <div class="center-pane">
+                <h3 style="color: #444444">{{ page_title }}</h3>
+               <hr>
+                <b style="font-weight: bolder"><h1>{{ question.title }}</h1></b>
+               <div class="post-content">
+                   {{ question.question_details|safe }}
+               </div>
+                <form action="" method="post" name="question-form" id="question-form">
+                 {% csrf_token %}
+                 <div id="details"></div>
+                 <br>
+                 <div class="anonymous">Answer Anonymously:- <input type="checkbox" value="1" name="anonymous"></div>
+
+                <p><input type="submit" value="Submit Answer" class="btn btn-default"></p>
+                </form>
+           </div>
+        </div>
+
+        <div class="col-lg-3 edit-right-col">
+            <hr class="divider"/>
+            <h5 style="color: #777777">Guidelines to asking Questions</h5>
+            <hr class="divider"/>
+
+        </div>
+
+    </div>
+    </div>
+    </body>
+
+    <!--UPLOAD MODAL-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times; </button>
+                    <h4 class="modal-title" id="myModalLabel">This Modal title </h4>
+                </div>
+                <div class="modal-body">
+                    Add some text here
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Submit changes</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+    </div>
+
+    <script src="{%  static 'scripts/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'trumbowyg/trumbowyg.min.css' %}">
+    <script src="{% static 'trumbowyg/trumbowyg.min.js' %}"></script>
+    <script src="{% static 'trumbowyg/plugins/trumbowyg.upload.min.js '%}"></script>
+
+    <script>
+        $('img').addClass('img-responsive').css('overflow', 'hidden');
+        organize_Posts();
+        var token = $("question-form").find('input[name=csrfmiddlewaretoken]').val();
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: token},
+        });
+        $("#details").trumbowyg({
+
+      btnsDef: {
+            // Customizables dropdowns
+            image: {
+                dropdown: ['insertImage', 'upload', 'noEmbed'],
+                ico: 'insertImage'
+            }
+        },
+        btns: [
+            ['viewHTML'],
+            ['undo', 'redo'],
+            ['formatting'],
+            'btnGrp-design',
+            ['link'],
+            ['image'],
+            'btnGrp-justify',
+            'btnGrp-lists',
+            ['foreColor', 'backColor'],
+            ['preformatted'],
+            ['horizontalRule'],
+            ['fullscreen']
+        ],
+        plugins: {
+            upload: {
+                serverPath: 'http://' + window.location.host + '/upload/',
+                fileFieldName: 'image',
+            }
+        }
+        });
+
+    function csrfSafeMethod(method){
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    function organize_Posts(){
+            var post_content = $('.post-content').html();
+            var truncated_post = post_content.substr(0, 200);
+
+            if (post_content.length > 200){
+                $('.post-content').html(truncated_post).append('.....<a href="" class="btn btn-default btn-sm read-more-link" style="width: 100%; margin: 5px 5px;">Read More</a>');
+                $('img').hide();
+            }
+            else{
+                $('.post-content').html(post_content);
+                $('img').show();
+            }
+            $("body").on("click", ".read-more-link", function(event){
+                event.preventDefault();
+                $(this).parent(".post-content").html(post_content).append('<a href="" class="btn btn-default btn-sm show-less-link" style="width: 100%; margin: 5px 5px;">Show Less</a>')
+                $('img').show();
+            });
+
+            $("body").on("click", ".show-less-link", function(event){
+                event.preventDefault();
+                $(this).parent(".post-content").html(truncated_post).append('......<a href="" class="btn btn-default btn-sm read-more-link" style="width: 100%; margin: 5px 5px;">Read More</a>')
+                $('img').hide();
+                $('html, body').animate({
+                    scrollTop: $(this).curr('.card').offset().top
+                }, 2000);
+                // Here to scroll to the previous div that has the id of post title
+
+            });
+        }
+
+
+    </script>
+
+
+</html>
+{% endblock %}
