@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.views.generic import View
 
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -132,16 +133,40 @@ class RelatedTopics(ListAPIView):
     serializer_class = TopicSerializer
 
 
-class RecentTopicAnswers(ListAPIView):
-    def get_queryset(self):
-        topic_id = self.request.GET.get('topic')
-        topic = Topic.objects.get(pk=topic_id)
-        q = QuestionTopic.objects.filter(under=topic).values('question')
-        a = Answer.objects.filter(question__in=q).order_by('-date_written', '-time_written')
-        return a
+# class RecentTopicAnswers(ListAPIView):
+#     def get_queryset(self):
+#         topic_id = self.request.GET.get('topic')
+#         q = QuestionTopic.objects.filter(under_id=topic_id).values('question')
+#         a = Answer.objects.filter(question__in=q).order_by('-date_written', '-time_written')
+#         return a
+#
+#     serializer_class = AnswerSerializer
+#     pagination_class = TopicAnswersPagination
 
-    serializer_class = AnswerSerializer
-    pagination_class = TopicAnswersPagination
+
+class RecentTopicAnswers(View):
+    def get(self, request):
+        topic_id = request.GET.get('topic')
+        try:
+            page = request.GET.get('page')
+        except PageNotAnInteger:
+            page = 1
+        q = QuestionTopic.objects.filter(under_id=topic_id).values('question')
+        a = Answer.objects.filter(question__in=q).select_related().order_by('-date_written', '-time_written')
+        p = Paginator(a, 1)
+        try:
+            p = p.page(page)
+        except PageNotAnInteger:
+            p = p.page(1)
+
+        try:
+            next_page = p.next_page_number()
+        except EmptyPage:
+            next_page = None
+            return HttpResponse(None)
+
+        return render_to_response('answers/answer_item.html',
+                                  {'answers': p, 'request': request, 'next_page': next_page})
 
 
 class ExploreTopicAPI(ListAPIView):
@@ -185,4 +210,5 @@ class SearchTopic(ListAPIView):
             Q(desc__icontains=keyword)
         ).distinct()
         return matches
+
     serializer_class = TopicSerializer

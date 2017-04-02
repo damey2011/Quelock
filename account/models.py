@@ -36,18 +36,6 @@ def shorten_number(n):
         return n
 
 
-def calculate_to_k(number):
-    no_of_fol = 0
-    try:
-        if number > 1000:
-            no_of_fol = str(round(number / 1000, 1)) + 'k'
-        else:
-            no_of_fol = number
-    except Exception as e:
-        pass
-    return no_of_fol
-
-
 class UserOtherDetails(models.Model):
     user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     profile_no_of_views = models.IntegerField(null=True, default=0)
@@ -141,3 +129,9 @@ class PrivateMessages(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_owner_related")
     read = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now=True)
+
+
+class UserNotifications(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_user")
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE,
+                                   related_name="%(app_label)s_%(class)s_subscriber")

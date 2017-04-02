@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
-from account.serializers import UserSerializer, UserOtherDetailsSerializer
+from account.serializers import UserOtherDetailsSerializer
 from answers.models import Answer
 from questions.serializers import QuestionSerializer
 
@@ -34,7 +34,7 @@ class AnswerSerializer(ModelSerializer):
             'archived',
             'thanked',
             'edit_suggested',
-            'anonymous'
+            'anonymous',
         ]
 
     def get_no_of_comments(self, obj):

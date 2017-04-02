@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'^follow/', views.follow_topic, name='follow_topic'),
     url(r'^unfollow/', views.unfollow_topic, name='unfollow_topic'),
     url(r'^iffollow/', views.iffollow_topic_ajax, name='iffollow_topic'),
-    url(r'^recent_answers/', views.RecentTopicAnswers.as_view(), name='recent_answers'),
+    url(r'^ajax/answers/', views.RecentTopicAnswers.as_view(), name='recent_answers'),
     url(r'^related/', views.RelatedTopics.as_view(), name='related_topics'),
     url(r'^common_interest_users/', views.CommonInterestUsers.as_view(), name='common_interest'),
     url(r'^api/explore', views.ExploreTopicAPI.as_view()),

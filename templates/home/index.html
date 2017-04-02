@@ -11,7 +11,10 @@
             </div>
             <div class="col-lg-6">
 
-                Hello there,, your feeds coming soon
+                <ul class="feeds">
+
+                </ul>
+
             </div>
             <div class="col-lg-3">
                 <button id="note">Click me</button>
@@ -23,9 +26,28 @@
     <script src="{% static 'scripts/jquery.min.js' %}"></script>
     <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
     <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script src="{% static 'scripts/custom.js' %}"></script>
     <script>
+
+        var csrftoken = '{{ csrf_token }}';
         $('#note').click(function(){
             $.toast('Answer was upvoted', {'duration': 5000, 'align': 'top'});
-        })
+        });
+
+        $(document).ready(function () {
+           loadAnswerFeeds()
+        });
+
+
+        function loadAnswerFeeds(){
+            $.ajax({
+                url: '/ajax/feeds/a/?page=3',
+                data: {'csrfmiddlewaretoken': csrftoken},
+                success: function (data) {
+                    console.log(data)
+                    $('.feeds').append(data);
+                }
+            })
+        }
     </script>
 {% endblock %}

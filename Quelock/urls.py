@@ -9,7 +9,8 @@ from account.views import RetrieveMessageThreads
 from answers.views import TrendingAnswersView
 
 urlpatterns = [
-    url(r'^$', views.index, name='index_home'),
+    url(r'^$', views.FeedAnswersView.as_view(), name='index_home'),
+    url(r'^q/', views.FeedQuestionsView.as_view(), name='index_questions'),
     url(r'^admin/', admin.site.urls),
     url(r'^signup/', include('registration.urls')),
     # Question API
@@ -28,6 +29,8 @@ urlpatterns = [
     url(r'^trending/', TrendingAnswersView.as_view(), name='trending_by_interactions'),
     url(r'^report/', Report.as_view(), name='report'),
     url(r'^search/', Search.as_view(), name='search'),
+    url(r'^ajax/feeds/a/$', views.FeedAnswerR2R.as_view(), name='feed_ans_api'),
+    url(r'^ajax/feeds/q$', views.FeedQuestionsAPI.as_view(), name='feed_ques_api'),
     url(r'^ajax/search/$', SearchAPI.as_view(), name='search_api'),
     url(r'^messages$', RetrieveMessageThreads.as_view(), name='message_threads'),
     url(r'^messages/user/(?P<pk>\d+)/$', RetrieveMessage.as_view(), name='message_thread'),

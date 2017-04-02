@@ -1,0 +1,143 @@
+{% load answer_extras %}
+{% load static %}
+{% if answers  %}
+    {% if total_answers %}
+        {% if total_answers > 1%}
+            <b class="profile-tab-header"> {{ total_answers }} Answers Written </b>
+        {% else %}
+            <b class="profile-tab-header"> {{ total_answers }} Answer Written </b>
+        {% endif %}
+
+        <hr class="divider">
+    {% endif %}
+    {% if next_page %}
+        <input type="hidden" value="{{ next_page }}" id="next_page">
+    {% endif %}
+    {% for answer in answers %}
+        <li class='list-group-item answer-{{ answer.id }} trending-answer-{{ answer.id }} card'>
+            {% topic_tags as tt %}
+            <ul class="answer-question-tags">
+                {% for tag in tt %}
+                    <a href="/topics/{{ tag.under.slug }}"><li class="badge badge-follow-btn topic-tag">{{ tag.under.title }}</li></a>
+                {% endfor %}
+            </ul>
+            <h5 class='answer-question'><a href='/questions/{{ answer.question.slug }}' target='_blank'>{{ answer.question.title }}</a></h5>
+            <div class='writer-div'>
+                {% if answer.anonymous %}
+                    <img class='related-user-thumbnail' src='{% static 'images/user.png' %}' alt='{{ answer.writer.user.username }}'>
+                     <span class='list-group-item-heading'>Anonymous Writer</span>
+                {% else %}
+                     <img class='related-user-thumbnail' src='{{ answer.writer.display_picture.url }}' alt='{{ answer.writer.user.username }}'>
+                     <a class='list-group-item-heading' target='_blank' href='/profile/{{ answer.writer.user.username }}'>{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }},</a>
+
+                    <span class='small'>{{ answer.writer.bio }}</span>
+                    <span class="writer-username">@{{ answer.writer.user.username }}</span>
+                {% endif %}
+
+                <p class='small time-written'>Answer written {{ answer.date_written }}, {{ answer.time_written }}</p>
+                <p class="answer-stats"><span class="ion-ios-eye-outline">  {{ answer.answerViews }}</span><span class="ion-ios-chatboxes-outline">  {{ answer.getComments }}</span><span class="ion-ios-arrow-up">  {{ answer.upvotesCount }}</span></p>
+            </div>
+            <div class='list-group-item-text feed-answer-text feed-answer-text-{{ answer.id }}'>
+                {{ answer.body | safe }}
+                <br>
+                {% isupvoted as u %}
+                {% isdownvoted as d %}
+                {% isthanked as t %}
+                {% bookmarked as b %}
+                {% editsuggested as e %}
+
+{#                {% if isupvoted answer=answer user=request.user %}#}
+{#                {% endif %}#}
+                <div class='read-more-container read-more-container-{{ answer.id }}'>
+                    <a class='feed-read-more-btn feed-read-more-btn-{{ answer.id }}' onclick='read_more({{ answer.id }})'>Continue Reading</a>
+                </div>
+            </div>
+            {% if request.user.is_authenticated %}
+                {% if request.user == answer.writer.user %}
+                    <div class="answer-toolbar writer-answer-toolbar">
+                       <button disabled class='btn disabled btn-primary btn-xs'><span class='fa fa-thumbs-o-up'></span> upvotes | {{ answer.upvotesCount }}</button>
+                        <a href="/answers/edit/?answer={{ answer.id }}">EDIT</a> &middot;
+                        <a href="#" onclick="delete_answer({{ answer.id }})">DELETE</a>
+                    </div>
+                {% else %}
+                    <div class='answer-toolbar'>
+                        <p class='answer-toolbar-desktop'>
+                            {% if u %}
+                                <button class='btn btn-default clicked btn-xs upvote-{{ answer.id }}' onclick='r_upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvoted | {{ answer.upvotesCount }}</button>
+                            {% else %}
+                                <button class='btn btn-primary btn-xs upvote-{{ answer.id }}' onclick='upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvote | {{ answer.upvotesCount }}</button>
+                            {% endif %}
+
+                            {% if d %}
+                                <a class='dwnv downvote-{{ answer.id }}' onclick='r_downvote({{ answer.id }})' href='#'> Downvoted </a>&middot;
+                            {% else %}
+                                <a class='dwnv downvote-{{ answer.id }}' onclick='downvote({{ answer.id }})' href='#'> Downvote </a>&middot;
+                            {% endif %}
+
+                                <a class='comment-link comment' onclick='openAnswerCommentBox({{ answer.id }})'> add comment <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>&middot;
+                                <a href='/report/?type=A&type_id={{ answer.id }}&next=http://127.0.0.1:8000/trending/'> report</a>&middot;
+
+                            {% if t %}
+                                <a class='thnk clicked thank-{{ answer.id }}' href='#'> Gratified </a>&middot;
+                            {% else %}
+                                <a class='thnk thank-{{ answer.id }}' href='#'> Gratify </a>&middot;
+                            {% endif %}
+
+                            {% if e %}
+                                <a class='editsug clicked comment-link editsug-{{ answer.id }}' onclick='suggest_edit({{ answer.id }})' href='#'> Edit Suggested </a>
+                            {% else %}
+                                <a class='editsug comment-link editsug-{{ answer.id }}' onclick='suggest_edit({{ answer.id }})' href='#'> Suggest Edits </a>
+                            {% endif %}
+
+                            {% if b %}
+                                <button class='btn clicked btn-primary btn-xs archive-{{ answer.id }}' style='float: right;' onclick='unBookmarkAnswer({{ answer.id }})'><span class='fa fa-bookmark'></span> archived</button>
+                            {% else %}
+                                <button class='btn btn-primary btn-xs archive-{{ answer.id }}' style='float: right;' onclick='bookmarkAnswer({{ answer.id }})'><span class='fa fa-bookmark'></span> archive</button>
+                            {% endif %}
+
+                        </p>
+                        <span class='answer-toolbar-mobile'>
+                            {% if u %}
+                                <button class='btn btn-primary clicked btn-xs upvote-{{ answer.id }}' onclick='r_upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvoted | {{ answer.upvotesCount }}</button>
+                            {% else %}
+                                <button class='btn btn-default clicked btn-xs upvote-{{ answer.id }}' onclick='upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvote | {{ answer.upvotesCount }}</button>
+                            {% endif %}
+
+                                <a class='comment-link comment' onclick='openAnswerCommentBox({{ answer.id }})'> + add comment <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>
+
+                            <div class='dropup more-options-dropdown pull-right'>
+                                <span class='ion-ios-more-outline answer-more-options-btn' type='button' id='dropdownMenu1' data-toggle='dropdown'></span>
+                                <ul class='dropdown-menu answer-dropdown-options' role='menu' aria-labelledby='dropdownMenu1'>
+                                    <li role='presentation' class='dropdown-header'>User Actions</li>
+                                    {% if d %}
+                                        <li role='presentation'><a role='menuitem' onclick='r_downvote({{ answer.id }})' href='#' tabindex='-1' class='comment-link downvote-{{ answer.id }}'>Downvoted</a></li>
+                                    {% else %}
+                                        <li role='presentation'><a role='menuitem' onclick='downvote({{ answer.id }})' href='#' tabindex='-1' class='comment-link downvote-{{ answer.id }}'>Downvote</a></li>
+                                    {% endif %}
+                                    {% if b %}
+                                        <li role='presentation'><a role='menuitem' onclick='unBookmarkAnswer({{ answer.id }})' tabindex='-1' class='comment-link archive-{{ answer.id }}'>Archived</a></li>
+                                    {% else %}
+                                        <li role='presentation'><a role='menuitem' onclick='unBookmarkAnswer({{ answer.id }})' tabindex='-1' class='comment-link archive-{{ answer.id }}'>Archive</a></li>
+                                    {% endif %}
+                                    {% if t %}
+                                        <li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link thank-{{ answer.id }}'>Gratified</a></li>
+                                    {% else %}
+                                        <li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link thank-{{ answer.id }}'>Gratify</a></li>
+                                    {% endif %}
+
+                                    {% if e %}
+                                        <li role='presentation'><a role='menuitem' href='#' tabindex='-1' class='comment-link editsug-{{ answer.id }}'>Edits Suggested</a></li>
+                                    {% else %}
+                                        <li role='presentation'><a role='menuitem' onclick='suggest_edit({{ answer.id }})' href='#' tabindex='-1' class='comment-link editsug-{{ answer.id }}'>Suggest Edits</a></li>
+                                    {% endif %}
+                                    <li role='presentation'><a role='menuitem' tabindex='-1' href='/report/?type=Q&type_id={{ answer.id }}&next=http://127.0.0.1:8000/trending/'>Report</a></li>
+                                </ul>
+                            </div>
+                        </span>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </li>
+        <br>
+    {% endfor %}
+{% endif %}

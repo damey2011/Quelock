@@ -1,19 +1,26 @@
+from itertools import chain
+import random
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse, Http404
+from django.shortcuts import render, redirect, render_to_response
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from account.models import UserFollowings, UserOtherDetails, Reports
+from Quelock.pagination import FeedsPagination
+from Quelock.serializers import FeedItemSerializer, UpvotedAnswersSerializer
+from account.models import UserFollowings, UserOtherDetails, Reports, AlreadyReadAnswers
 from account.pagination import UserOtherDetailsPagination
 from account.serializers import UserOtherDetailsSerializer
-from questions.models import QuestionImageUpload, Question
+from answers.models import Answer, UpVotes
+from answers.serializers import AnswerSerializer
+from questions.models import QuestionImageUpload, Question, QuestionTopic, QuestionFollowing, ReadQuestions
 from questions.serializers import QuestionSerializer
-from topics.models import Topic
+from topics.models import Topic, TopicFollowing
 from topics.serializers import TopicSerializer
 
 
@@ -184,3 +191,107 @@ class SearchAPI(APIView):
             serializer = TopicSerializer(t, many=True)
             return Response(serializer.data)
         return Response(None)
+
+
+class FeedsAnswersAPI(ListAPIView):
+    serializer_class = AnswerSerializer
+    pagination_class = FeedsPagination
+
+    def get_queryset(self):
+        # Answers under topics user is following
+        topics_followed = TopicFollowing.objects.filter(user_id=self.request.user.id).values('follows')
+        questions = QuestionTopic.objects.filter(under_id__in=topics_followed).values('question')
+        answers = Answer.objects.filter(question_id__in=questions)
+
+        # Answers written by people you follow
+        user_following = UserFollowings.objects.filter(user_id=self.request.user.id).values('is_following')
+        answers2 = Answer.objects.filter(writer_id__in=user_following)
+
+        # Answers upvoted by people you follow
+        upvotes = UpVotes.objects.filter(user_id__in=user_following).select_related().values('answer')
+        answers3 = Answer.objects.filter(id__in=upvotes)
+
+        # Combining the result sets
+        all_answers = answers | answers2 | answers3
+
+        already_read = AlreadyReadAnswers.objects.filter(user_id=self.request.user.id).values('answer')
+
+        try:
+            already_loaded = self.request.GET['loaded']
+        except MultiValueDictKeyError:
+            already_loaded = []
+
+        all_answers = all_answers.exclude(id__in=already_read).exclude(id__in=already_loaded)
+        all_answers = all_answers.distinct().order_by('-total_activities')[:300]
+
+        return all_answers
+
+
+class FeedAnswerR2R(View):
+    def get(self, request):
+        topics_followed = TopicFollowing.objects.filter(user_id=request.user.id).values('follows')
+        questions = QuestionTopic.objects.filter(under_id__in=topics_followed).values('question')
+        answers = Answer.objects.filter(question_id__in=questions).select_related()
+
+        # Answers written by people you follow
+        user_following = UserFollowings.objects.filter(user_id=request.user.id).values('is_following')
+        answers2 = Answer.objects.filter(writer_id__in=user_following).select_related()
+
+        # Answers upvoted by people you follow
+        upvotes = UpVotes.objects.filter(user_id__in=user_following).select_related().values('answer')
+        answers3 = Answer.objects.filter(id__in=upvotes).select_related()
+
+        # Combining the result sets
+        all_answers = answers | answers2 | answers3
+
+        already_read = AlreadyReadAnswers.objects.filter(user_id=request.user.id).values('answer')
+
+        try:
+            already_loaded = self.request.GET['loaded']
+        except MultiValueDictKeyError:
+            already_loaded = []
+
+        all_answers = all_answers.exclude(id__in=already_read).exclude(id__in=already_loaded).exclude(
+            writer_id=request.user.id)
+        all_answers = all_answers.distinct().order_by('-total_activities')[:300]
+
+        p = Paginator(all_answers, 5)
+        p = p.page(request.GET['page'])
+
+        return render_to_response('answers/answer_item.html', {'answers': p, 'request': request})
+
+
+class FeedQuestionsAPI(ListAPIView):
+    serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        user_following = UserFollowings.objects.filter(user_id=self.request.user.id).values('is_following')
+        # Questions followed by people you follow
+        question_ff = QuestionFollowing.objects.filter(user_id__in=user_following).values('question')
+        questions = Question.objects.filter(id__in=question_ff).order_by('?')
+
+        topics_followed = TopicFollowing.objects.filter(user_id=self.request.user.id).values('follows')
+        questions2 = QuestionTopic.objects.filter(under_id__in=topics_followed).values('question')
+        questions2 = Question.objects.filter(id__in=questions2).order_by('?')
+
+        questions = questions | questions2
+
+        try:
+            loaded_questions = self.request.GET['loaded']
+        except MultiValueDictKeyError:
+            loaded_questions = []
+
+        read_questions = ReadQuestions.objects.filter(user_id=self.request.user.id).values('question')
+        questions.exclude(id__in=read_questions).exclude(id__in=loaded_questions).distinct()
+
+        return questions
+
+
+class FeedAnswersView(View):
+    def get(self, request):
+        return render(request, 'home/index.html')
+
+
+class FeedQuestionsView(View):
+    def get(self, request):
+        return render(request, 'home/index.html')

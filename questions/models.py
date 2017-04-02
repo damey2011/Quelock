@@ -63,3 +63,9 @@ class QuestionFollowing(models.Model):
 class AnonymousQuestionsWriters(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class ReadQuestions(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now=True)

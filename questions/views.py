@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.utils import timezone
 from django.utils.datetime_safe import date, time
 from django.views import View
@@ -114,23 +114,26 @@ class QuestionCreateView(View):
         return redirect('/questions/' + str(question.slug))
 
 
+# class QuestionAnswers(ListAPIView):
+#     serializer_class = AnswerSerializer
 #
-# class QuestionAnswers(APIView):
-#     def get(self, request, pk):
-#         answers = Answer.objects.filter(question=Question.objects.get(pk=pk))
-#         serializer = AnswerSerializer(answers, many=True)
-#         return Response(serializer.data)
+#     def get_queryset(self):
+#         try:
+#             answers = Answer.objects.filter(question_id=self.kwargs['pk'])
+#         except:
+#             answers = None
+#         return answers
 
 
-class QuestionAnswers(ListAPIView):
-    serializer_class = AnswerSerializer
-
-    def get_queryset(self):
+class QuestionAnswers(View):
+    def get(self, request, pk):
         try:
-            answers = Answer.objects.filter(question=Question.objects.get(pk=self.kwargs['pk']))
+            answers = Answer.objects.filter(question_id=pk)
+            total = answers.count()
         except:
             answers = None
-        return answers
+        return render_to_response('answers/answer_item.html',
+                                  {'answers': answers, 'request': request, 'total_answers': total})
 
 
 class QuestionEditView(View):
@@ -238,7 +241,8 @@ class IsFollowingQuestion(View):
 
 class AssignTopic(View):
     def post(self, request):
-        if QuestionTopic.objects.filter(question_id=request.GET.get('question'), under_id=request.GET.get('topic')).exists():
+        if QuestionTopic.objects.filter(question_id=request.GET.get('question'),
+                                        under_id=request.GET.get('topic')).exists():
             pass
         else:
             qt = QuestionTopic()

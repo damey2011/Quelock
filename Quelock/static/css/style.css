@@ -7,8 +7,17 @@
     font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif;
 }
 
+a{
+    color: #148b8b;
+}
+
+a:hover{
+    color: rgba(20, 139, 139, 0.9);
+}
+
 body{
     background-color: rgba(119, 119, 119, 0.1);
+    /*background-color: #24292e;*/
 }
 
 .page-that-need-marginbody{
@@ -233,8 +242,18 @@ body{
     display: none;
 }
 
+.answer-toolbar-desktop a{
+    font-size: 12px;
+}
+
 .answer-toolbar-desktop{
     display: none;
+}
+
+.writer-answer-toolbar a{
+    font-size: small;
+    font-weight: 300;
+    font-variant: ruby;
 }
 
 .clear-for-footer{
@@ -344,6 +363,15 @@ body{
     padding: 3px;
 }
 
+.answer-stats{
+    display: inline-block;
+    margin-top: -7px;
+    line-height: 1.5;
+    font-size: 12px;
+    font-weight:bolder;
+    color: #148b8b;
+}
+
 /*.............................*/
 #search{
     /*margin-right: 25px;*/
@@ -374,18 +402,20 @@ body{
 }
 
 .card {
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    border-radius: 2px;
+    -webkit-border-radius: 1px;
+    -moz-border-radius: 1px;
+    border-radius: 1px;
     /*overflow: hidden;*/
-    -webkit-box-shadow: 0px 4px 4px 1px rgba(0,0,0,0.2);
-    -moz-box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.2);
-    box-shadow: 0px 4px 3px 4px rgba(0,0,0,0.2);
+    -webkit-box-shadow: 0px 2px 4px 1px rgba(0,0,0,0.2);
+    -moz-box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.2);
+    box-shadow: 0px 4px 3px 2px rgba(0,0,0,0.2);
     display: inline-block;
     *display: inline;
     *zoom: 1;
-    margin: 0 0px 20px 0;
+    /*margin: 0 0 20px 0;*/
     border-top: 0;
+    width: 100%;
+    margin-bottom: 10px;
 }
 a.card {
     color: inherit;
@@ -852,8 +882,8 @@ a.tile {
     font-size: 12px;
 }
 .related-topic-thumbnail{
-    max-height: 30px;
-    max-width: 30px;
+    height: 30px;
+    width: 30px;
     border-radius: 50%;
     border: 2px solid rgba(49, 59, 50, 0.71);
 }
@@ -882,6 +912,19 @@ a.tile {
     background-color: rgba(46, 131, 255, 0.58);
 }
 
+.item-no-badge{
+    font-size: 8px;
+    color: azure;
+    background-color: #148b8b;
+}
+
+.writer-username{
+    font-size: 12px;
+    font-weight: 200;
+    color: grey;
+    display: block;
+}
+
 .common-user-group, .message-thread-ul{
     border: 0;
     box-shadow: #052531;
@@ -894,11 +937,12 @@ a.tile {
 }
 
 .related-user-thumbnail, .message-thread-user-thumbnail{
-    max-height: 35px;
-    max-width: 35px;
+    height: 35px;
+    width: 35px;
     border: 2px solid rgba(49, 59, 50, 0.71);
     float: left;
     margin-right: 7px;
+    border-radius: 50%;
 }
 
 .question-follow{
@@ -913,8 +957,13 @@ a.tile {
 }
 
 .btn-xs{
-    padding: 5px;
-    font-size: smaller;
+    font-size: x-small;
+}
+
+.btn-xs:hover{
+    background-color: #FFFFFF;
+    color: #333333;
+
 }
 
 .dwnv{
@@ -1331,6 +1380,87 @@ a.tile {
     color: white;
 }
 
+.feed-answer-text{
+    max-height: 80px;
+    overflow: hidden;
+    color: rgba(51,51,51,0.7);
+    font-weight:200;
+    padding-bottom: -10px;
+    line-height: 1.5;
+}
+
+.answer-toolbar{
+    padding: 7px 0 0px 0;
+}
+
+.read-more-container{
+    display: block;
+    position:absolute;
+    width: 100%;
+    height: 50px;
+    margin-left:-15px;
+    bottom: 60px;
+    background:linear-gradient(transparent, #fff);
+}
+
+.feed-read-more-btn{
+    padding: 5px;
+    background-color: white;
+    border: 1px solid rgba(51,51,51,0.4);
+    display:block;
+    position: relative;
+    max-width: 150px;
+    text-align:center;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    border-radius: 3px;
+    cursor: pointer;
+    color: #148b8b;
+}
+
+.feed-read-more-btn:hover{
+    background-color: #baaf97;
+    color: white;
+    text-decoration: none;
+    border:none;
+}
+
+.answer-question{
+    font-size: 19px;
+}
+
+.feed-answer-item{
+    padding-bottom: 0;
+    margin: 10px;
+    width: 100%;
+}
+
+.feed-answer-content-full{
+    max-height: 100%;
+}
+
+.writer-div{
+    line-height: 1.5;
+}
+
+.feed-answer-text img{
+    max-width: 70%;
+    display: block;
+    margin: 0 auto;
+}
+.time-written{
+    font-size:12px;
+    display: block;
+    padding: 2px;
+    line-height:1.5;
+    color: #415d75;
+}
+
+.topic-tag{
+    font-size: 12px;
+}
+
 
 @media screen and (min-width: 768px){
     .profile-desktop-menu{
@@ -1390,6 +1520,18 @@ a.tile {
     
     .search-holder{
         width: 100%;
+    }
+
+    .read-more-container{
+        bottom: 45px;
+    }
+
+    .feed-read-more-btn{
+        top: 5px;
+    }
+
+    .feed-answer-item{
+        padding-bottom: 10px
     }
 }
 

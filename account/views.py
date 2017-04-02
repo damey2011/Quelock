@@ -17,7 +17,7 @@ from topics.serializers import TopicSerializer
 
 class ProfileView(View):
     def get(self, request, username):
-        requested_user = UserOtherDetails.objects.get(user=User.objects.get(username=username))
+        requested_user = UserOtherDetails.objects.get(user__username=username)
         requested_user.profile_no_of_views += 1
         requested_user.save()
         try:

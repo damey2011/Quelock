@@ -82,6 +82,38 @@ function answer(value){
                             </div>"
 }
 
+function new_answer(value){
+    return " <li class='list-group-item answer-"+value.id+" trending-answer-"+value.id+" feed-answer-item'>\
+                    <span class='small wrote-an-answer-to'>Damilola wrote an answer to What is your worst experience</span>\
+                    <h5 class='answer-question'><a href='/questions/"+value.question.slug+"'>"+value.question.title+"</a></h5>\
+                    <div class='writer-div'>\
+                        <img class='related-user-thumbnail' src='http://127.0.0.1:8000/media/dps/SI_20150706_222145.jpg' alt='Damilola'>\
+                        <a class='list-group-item-heading' target='_blank' href='/profile/damey2011'>Damilola Adeyemi,</a>\
+                        <span class='small'>Software Architect</span>\
+                        <p class='small'>Answer written 13 Mar, 2017, 17:56:00</p>\
+                    </div>\
+                    <div class='list-group-item-text feed-answer-text feed-answer-text-"+value.id+"'>\
+                       "+value.body+"\
+                    <br>\
+                        <div class='read-more-container read-more-container-47'>\
+                            <a href='#' class='feed-read-more-btn feed-read-more-btn-"+value.id+"' onclick='read_more("+value.id+")'>Continue Reading</a>\
+                        </div>\
+                    </div>\
+                    <div class='answer-toolbar'>\
+                        <p class='answer-toolbar-desktop'>\
+                            "+check_logged_perm(value)+"\
+                        </p>\
+                        <span class='answer-toolbar-mobile'>\
+                            "+check_logged_perm2(value)+"\
+                        </span>\
+                    </div>\
+                </li>"
+}
+
+function read_more(answer){
+    $('.feed-answer-text-'+answer).addClass('feed-answer-content-full');
+    $('.read-more-container-'+answer).fadeOut();
+}
 
 var original_getanswers_page = '/answers/'+req_user+'/';
 var nextAnswersPage = original_getanswers_page;
@@ -136,8 +168,7 @@ function check_logged_perm(value){
             <a href='/answers/edit/?answer="+value.id+"'>edit</a> &middot;\
             <a onclick='delete_answer("+value.id+")' class='comment-link' >delete</a>";
     }
-};
-
+}
 function check_logged_perm2(value){
     if(user !=  'AnonymousUser' && user != value.writer.user.username){
         return "    "+check_if_answer_already_upvoted(true, value)+"\
@@ -165,8 +196,7 @@ function check_logged_perm2(value){
             <a href='/answers/edit/?answer="+value.id+"'>edit</a> &middot;\
             <a onclick='delete_answer("+value.id+")' class='comment-link'>delete</a>";
     }
-};
-
+}
 function check_if_bookmarked(mobile, value){
     if(!mobile){
         if(value.archived){
@@ -210,19 +240,19 @@ function check_if_answer_already_upvoted(mobile, value){
 function check_if_answer_already_downvoted(mobile, value){
     if(!mobile){
         if(!value.downvoted) {
-            return "<a class='dwnv downvote-"+value.id+"' onclick='downvote("+value.id+")'> Downvote </a>";
+            return "<a class='dwnv downvote-"+value.id+"' onclick='downvote("+value.id+")' href='#'> Downvote </a>";
         }
         else{
             $('.upvote-'+value.id).addClass('disabled');
-            return "<a class='dwnv clicked downvote-"+value.id+"' onclick='r_downvote("+value.id+")'> Downvoted</a>";
+            return "<a class='dwnv clicked downvote-"+value.id+"' onclick='r_downvote("+value.id+")' href='#'> Downvoted</a>";
         }
     }
     else{
         if(value.downvoted){
-            return "<li role='presentation'><a role='menuitem' onclick='r_downvote("+value.id+")' tabindex='-1' class='comment-link clicked downvote-"+value.id+"'>Downvoted</a></li>";
+            return "<li role='presentation'><a role='menuitem' onclick='r_downvote("+value.id+")' href='#' tabindex='-1' class='comment-link clicked downvote-"+value.id+"'>Downvoted</a></li>";
         }
         else{
-            return "<li role='presentation'><a role='menuitem' onclick='downvote("+value.id+")' tabindex='-1' class='comment-link downvote-"+value.id+"'>Downvote</a></li>";
+            return "<li role='presentation'><a role='menuitem' onclick='downvote("+value.id+")' href='#' tabindex='-1' class='comment-link downvote-"+value.id+"'>Downvote</a></li>";
         }
     }
 }
@@ -230,18 +260,18 @@ function check_if_answer_already_downvoted(mobile, value){
 function check_if_already_thanked(mobile, value){
     if(!mobile){
         if(!value.thanked) {
-            return "<a class='comment-link thnk thank-"+value.id+"' onclick='thank("+value.id+")'> Acknowledge </a>";
+            return "<a class='comment-link thnk thank-"+value.id+"' onclick='thank("+value.id+")' href='#'> Gratify </a>";
         }
         else{
-            return "<a class='thnk clicked thank-"+value.id+"'> Acknowledgement Sent</a>";
+            return "<a class='thnk clicked thank-"+value.id+"' href='#'> Gratified </a>";
         }
     }
     else{
         if(value.thanked){
-            return "<li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link thank-"+value.id+"'>Acknowledgement Sent</a></li>";
+            return "<li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link thank-"+value.id+"'>Gratified</a></li>";
         }
         else{
-            return "<li role='presentation'><a role='menuitem' onclick='thank("+value.id+")' tabindex='-1' class='comment-link thank-"+value.id+"'>Acknowledge</a></li>";
+            return "<li role='presentation'><a role='menuitem' onclick='thank("+value.id+")' tabindex='-1' href='#' class='comment-link thank-"+value.id+"'>Gratify</a></li>";
         }
     }
 }
@@ -249,7 +279,7 @@ function check_if_already_thanked(mobile, value){
 function check_if_edits_suggested(mobile, value){
     if(!mobile){
         if(!value.edit_suggested) {
-            return "<a class='editsug comment-link editsug-"+value.id+"' onclick='suggest_edit("+value.id+")'> Suggest Edits </a>";
+            return "<a class='editsug comment-link editsug-"+value.id+"' onclick='suggest_edit("+value.id+")' href='#'> Suggest Edits </a>";
         }
         else{
             return "<a class='editsug clicked editsug-"+value.id+"'> Suggestion Sent</a>";
@@ -260,7 +290,7 @@ function check_if_edits_suggested(mobile, value){
             return "<li role='presentation'><a role='menuitem' tabindex='-1' class='clicked editsug-"+value.id+"'>Suggestion Sent</a></li>";
         }
         else{
-            return "<li role='presentation'><a role='menuitem' onclick='suggest_edit("+value.id+")' tabindex='-1' class='comment-link editsug-"+value.id+"'>Suggest Edits</a></li>";
+            return "<li role='presentation'><a role='menuitem' onclick='suggest_edit("+value.id+")' href='#' tabindex='-1' class='comment-link editsug-"+value.id+"'>Suggest Edits</a></li>";
         }
     }
 }
@@ -273,7 +303,7 @@ function upvote(answer_id) {
         'csrfmiddlewaretoken': csrftoken
     }, function (data) {
         if (data == true) {
-            $('.upvote-' + answer_id).html("<span class='fa fa-thumbs-o-up'></span> Upvoted").attr('onclick', 'r_upvote(' + answer_id + ')').addClass('clicked')
+            $('.upvote-' + answer_id).html("<span class='fa fa-thumbs-o-up'></span> Upvoted").attr('onclick', 'r_upvote(' + answer_id + ')').addClass('clicked');
             $('.downvote-' + answer_id).attr('disabled', 'true');
             $.toast('Answer was upvoted', {'duration': 1000, 'align': 'top'});
         }
@@ -296,7 +326,7 @@ function r_upvote(answer_id) {
 function downvote(answer_id) {
     $.post('/answers/downvote/?answer=' + answer_id + '&action=downvote', {'csrfmiddlewaretoken': csrftoken}, function (data) {
         if (data == true) {
-            $('.downvote-' + answer_id).html('Downvoted').attr('onclick', 'r_downvote(' + answer_id + ')').addClass('clicked')
+            $('.downvote-' + answer_id).html('Downvoted').attr('onclick', 'r_downvote(' + answer_id + ')').addClass('clicked');
             $('.upvote-' + answer_id).attr('disabled', 'true');
             $.toast('Answer was downvoted<br><i>Note: downvotes bring down writer and answer reputation</i>', {'duration': 1000, 'align': 'top'});
         }
@@ -306,7 +336,7 @@ function downvote(answer_id) {
 function r_downvote(answer_id) {
     $.post('/answers/downvote/?answer=' + answer_id + '&action=r_downvote', {'csrfmiddlewaretoken': csrftoken}, function (data) {
         if (data == true) {
-            $('.downvote-' + answer_id).html('Downvote').attr('onclick', 'downvote(' + answer_id + ')').removeClass('clicked')
+            $('.downvote-' + answer_id).html('Downvote').attr('onclick', 'downvote(' + answer_id + ')').removeClass('clicked');
             $('.upvote-' + answer_id).removeAttr('disabled');
             $.toast('You un-downvoted this answer', {'duration': 1000, 'align': 'top'});
         }
@@ -320,7 +350,7 @@ function bookmarkAnswer(answer_id) {
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function (data) {
             if (data == true) {
-                $('.bookmark').removeAttr('onclick').attr('onclick', 'unBookmarkAnswer('+answer_id+')').html('Archived').addClass('clicked')
+                $('.bookmark').removeAttr('onclick').attr('onclick', 'unBookmarkAnswer('+answer_id+')').html('Archived').addClass('clicked');
                 $('.archive-'+answer_id).removeAttr('onclick').attr('onclick', 'unBookmarkAnswer('+answer_id+')').html('Archived').addClass('clicked')
             }
             $.toast('Answer has been added to your archive', {'duration': 1000, 'align': 'top'});
@@ -358,8 +388,8 @@ function thank(answer_id){
         data: {'csrfmiddlewaretoken':csrftoken},
         success: function (data) {
             if(data) {
-                $('.thank-'+answer_id).addClass('clicked').removeClass('comment-link').removeAttr('onclick').html('Acknowledgement Sent');
-                $.toast('Acknowledgement Sent', {'duration': 1000, 'align': 'top'})
+                $('.thank-'+answer_id).addClass('clicked').removeClass('comment-link').removeAttr('onclick').html('Gratified');
+                $.toast('Gratification Sent', {'duration': 1000, 'align': 'top'})
             }
         },
         error: function(data){
@@ -376,7 +406,7 @@ function suggest_edit(answer_id){
         success: function (data) {
             if(data) {
                 $('.editsug-'+answer_id).addClass('clicked').removeClass('comment-link').removeAttr('onclick').html('Edit Suggested');
-                $.toast('Acknowledgement Sent', {'duration': 1000, 'align': 'top'})
+                $.toast('Gratification Sent', {'duration': 1000, 'align': 'top'})
             }
         },
         error: function(data){
@@ -427,16 +457,7 @@ function loadQuestionAnswers() {
     $.ajax({
         url: '/questions/' + question_id + '/answers/',
         success: function (data) {
-            console.log(data);
-            if (data.length > 1 ) {
-                $('.no-of-answers').html(data.length + ' Answers Written');
-            }
-            else if(data.length = 1){
-                $('.no-of-answers').html(data.length + ' Answer Written');
-            }
-            $.each(data, function (key, value) {
-                $('.answers').append(QuestionAnswer(value))
-            });
+            $('.answers').append(data);
             $('img').addClass('img-responsive').css('position', 'relative').css('overflow', 'hidden').css('max-width', '100%').css('margin-left', '0px');
             $('.answer-content > ol').css('margin-left', '16px');
             $('.answer_content > ul').css('margin-left', '16px');
@@ -449,11 +470,11 @@ function loadQuestionAnswers() {
 
 $('.tile').mouseenter(function () {
     $(this).css('margin-left', '2px').css('margin-top', '2px');
-})
+});
 
 $('.tile').mouseleave(function () {
     $(this).css('margin-left', '0px').css('margin-top', '0px');
-})
+});
 
 function is_user_logged_in(){
     if(is_loggedin.includes('False'))return false;
@@ -481,37 +502,14 @@ function delete_answer(answer_id) {
 }
 
 
-function QuestionAnswer(value) {
-    return "<div class='card answer-box answer-"+value.id+"' style='width: 100%; padding: 15px; background-color: white;'> \
-                "+answerWriterAndHeader(value)+"\
-                <p class='answer-stats'>\
-                    <span class='total-views fa fa-eye'> " + value.no_of_views + "</span>\
-                    <span class='total-views fa fa-thumbs-o-up'> " + value.no_of_upvotes + "</span>\
-                    <span class='total-views fa fa-comments-o'> " + value.no_of_comments + "</span>\
-                <p>\
-                <div class='answer-content'>\
-                " + value.body + "\
-                </div>\
-                <br>\
-                <p>\
-                <a onclick='showComments("+value.id+")' class='comment-link small'>See Comments</a>\
-                </p>\
-                <p class='answer-toolbar-desktop'>\
-                "+check_logged_perm(value)+"\
-                </p>\
-                <span class='answer-toolbar-mobile'>\
-                "+check_logged_perm2(value)+"\
-                </span>\
-            </div>";
-}
 
 function agree_with_this_answer(uv) {
-    if (uv != 0) return uv + " people agree with this answer"
+    if (uv != 0) return uv + " people agree with this answer";
     else return ""
 }
 
 function getBio(value) {
-    if (value.bio != null) return value.bio
+    if (value.bio != null) return value.bio;
     else return ''
 }
 
@@ -523,7 +521,7 @@ function openAnswerCommentBox(answer_id){
         $('.comment-div-'+answer_id).css('display', 'block');
     }
     else{
-        $('.answer-'+answer_id).append("<br><div class='comment-div-"+answer_id+"'>\
+        $('.answer-'+answer_id).prepend("<br><div class='comment-div-"+answer_id+"'>\
             <label for='comment'>Your Comment:</label><a onclick='close_comment_box("+answer_id+")' class='comment-link comment-box-close-btn'>[X]</a>\
             <textarea name='comment' id='answer-comment-"+answer_id+"' cols='30' rows='4' class='form-control answer-comment comment-"+answer_id+"'></textarea>\
             <br>\
@@ -606,7 +604,7 @@ function loadComments(answer_id){
         url: '/comments/?answer='+answer_id,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function(data){
-            console.log(data)
+            console.log(data);
             if(data.results.length == 0){
                 $('.comment-modal-body').html('<h4>No Comment Under This Answer This Yet!!</h4>');
                 $('.answer-comments').html('<h4>No Comment Under This Answer This Yet!!</h4>');
@@ -624,7 +622,7 @@ function loadComments(answer_id){
                         <span class='comment-writer'><a href='#'>"+value.writer.user.first_name+" "+value.writer.user.last_name+"</a>, "+value.writer.bio+"</span>\
                         <div class='quoted-answer small'>"+value.body+"</div>\
                         "+if_replies_dom(value)+"\
-                    </blockquote>")
+                    </blockquote>");
 
                     $('.answer-comments').append("<blockquote class='custom-bq comment-"+value.id+"'>\
                         <span class='comment-writer'><a href='#'>"+value.writer.user.first_name+" "+value.writer.user.last_name+"</a>, "+value.writer.bio+"</span>\
@@ -736,8 +734,8 @@ function load_following(user){
 }
 
 function follow_unfollow_button(is_following_bool, follows){
-    if(is_user_logged_in() && !is_following_bool) return "<a onclick='follow_item("+follows.id+")' class='ff-list-btn follow-item-"+follows.id+"'> <span class='ion-android-person-add'></span> </a>"
-    else if(is_user_logged_in() && is_following_bool) return "<a onclick='unfollow_item("+follows.id+")' class='icon-follow-clicked ff-list-btn follow-item-"+follows.id+"'><span class='ion-android-people'></span></a>"
+    if(is_user_logged_in() && !is_following_bool) return "<a onclick='follow_item("+follows.id+")' class='ff-list-btn follow-item-"+follows.id+"'> <span class='ion-android-person-add'></span> </a>";
+    else if(is_user_logged_in() && is_following_bool) return "<a onclick='unfollow_item("+follows.id+")' class='icon-follow-clicked ff-list-btn follow-item-"+follows.id+"'><span class='ion-android-people'></span></a>";
     else return ""
 }
 
@@ -856,7 +854,7 @@ function load_questions(user){
         url: nextQuestionPage,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function(data){
-            if(!data.results) $('.questions-window').append('<h3>No Question Asked Yet</h3>')
+            if(!data.results) $('.questions-window').append('<h3>No Question Asked Yet</h3>');
             else{
                 $.each(data.results, function(key, value){
                     $('.questions-window').append(question_item_dom(value))
@@ -894,7 +892,7 @@ function loadTopicsThatUserFollows(){
         url: '/profile/topics_followed/?req_user='+req_user+'&user='+user,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function(data){
-            if(!data) $('.topic-explore-list').append('<h3>No Topic Followed</h3>')
+            if(!data) $('.topic-explore-list').append('<h3>No Topic Followed</h3>');
             else{
                 $.each(data, function(key, value){
                     $('.topic-explore-list').append(explore_topic_dom(value));
@@ -977,31 +975,33 @@ function check_if_following_topic(topic_id){
 
 function loadTopicAnswers() {
     $.ajax({
-        url: topic_load_url,
-        dataType: 'json',
+        url: topic_load_url+'&page='+next_topic_answers_page,
+        dataType: 'html',
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function (data) {
-            if (!data.results) $('.post').append('<h3>No Answers written yet</h3>');
-            else {
-                $.each(data.results, function (key, value) {
-                    $('.post').append(answer(value));
-                    $('img').addClass('img-responsive');
-                });
-            }
-            if (data.next != null) {
-                $('.btn-load').show();
-                topic_load_url = data.next;
-                $('.loading-1').hide();
-            }
-            else {
-                $('.loading-1').hide();
-                $('.load-btn').hide();
-            }
-
+            //if (!data.results) $('.post').append('<h3>No Answers written yet</h3>');
+            //else {
+            //    $.each(data.results, function (key, value) {
+            //        $('.post').append(answer(value));
+            //        $('img').addClass('img-responsive');
+            //    });
+            //}
+            //if (data.next != null) {
+            //    $('.btn-load').show();
+            //    topic_load_url = data.next;
+            //    $('.loading-1').hide();
+            //}
+            //else {
+            //    $('.loading-1').hide();
+            //    $('.load-btn').hide();
+            //}'
+            $('.post').append(data);
         },
         error: function () {
             $.toast('Sorry, an error has occured', {'duration': 2000, 'align': 'top'});
-
+        },
+        complete: function(){
+            next_topic_answers_page += 1;
         }
     });
 }
@@ -1136,7 +1136,7 @@ function loadExplorePeople(){
 
             if(data.next!=null){
                 $('.loading-1').hide();
-                $('.btn-load').css('display', 'block').show();;
+                $('.btn-load').css('display', 'block').show();
             }
             else{
                 $('.loading-1').hide();
@@ -1195,7 +1195,7 @@ function loadExploreQuestions(){
         },
         error: function(data){
             console.log(data);
-            $('.question-explore-list').append('<h3>Heyo, Please Register or Login<br></h3>')
+            $('.question-explore-list').append('<h3>Heyo, Please Register or Login<br></h3>');
             $('.loading-1').hide();
             $('.btn-load').hide();
         }
@@ -1226,7 +1226,7 @@ function people_following_question(no_of_followers){
 
 
 function question_follow_btn_dom(question){
-    if (is_following_question(question)) return "<a class='question-follow following-q question-follow-"+question+"' onclick='unfollow_question("+question+")'><span class='ion-reply'></span> Unfollow</a>"
+    if (is_following_question(question)) return "<a class='question-follow following-q question-follow-"+question+"' onclick='unfollow_question("+question+")'><span class='ion-reply'></span> Unfollow</a>";
     else return "<a class='question-follow question-follow-"+question+"' onclick='follow_question("+question+")'><span class='ion-reply'></span> Follow</a>"
 }
 
@@ -1236,11 +1236,11 @@ function is_following_question(question){
         url: '/questions/is_following/?question='+question,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function (data) {
-            console.log(data)
+            console.log(data);
             bool_ = data
         },
         error: function(data) {
-            bool_ = data
+            bool_ = data;
             $.toast('Sorry, an error has occured, please reload the page', {'duration': 30000, 'align': 'top'});
         },
         async:false
@@ -1283,7 +1283,8 @@ function loadTrending(){
         success: function(data){
             if(data.results){
                 $.each(data.results, function (key, value) {
-                    $('.trending-list').append(trending_dom(value))
+                    $('.trending-list').append(trending_dom(value));
+                    //$('.trending-list').append("<hr class='divider'>")
                 });
                 next_trending_url = data.next;
             }
@@ -1302,7 +1303,7 @@ function loadTrending(){
             }
         },
         error: function(data){
-            $('.question-explore-list').append('<h3>Heyo, Please Register or Login<br></h3>')
+            $('.question-explore-list').append('<h3>Heyo, Please Register or Login<br></h3>');
             $('.loading-1').hide();
             $('.btn-load').hide();
         }
@@ -1344,7 +1345,7 @@ function open_upvoters_modal(answer_id){
 function show_upvoters(answer_id){
 
 
-    $('.loading-1-upvoters').css('display','block')
+    $('.loading-1-upvoters').css('display','block');
     $('.btn-load-upvoters').css('display', 'none');
 
     $.ajax({

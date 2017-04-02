@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.http import Http404
-from account.models import UserOtherDetails
+from django.utils.datetime_safe import datetime
+from account.models import UserOtherDetails, AlreadyReadAnswers
 from comments.models import Comment
 from questions.models import Question
 from topics.models import Topic
@@ -20,15 +21,29 @@ class Answer(models.Model):
     no_of_comments = models.IntegerField(null=True, default=0)
     edited = models.IntegerField(null=True, default=0)
     anonymous = models.BooleanField(default=False)
+    total_activities = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.question.title
+
+    def upvotesCount(self):
+        try:
+            return UpVotes.objects.filter(answer=self).count()
+        except Exception as e:
+            print(e)
+
+    def answerViews(self):
+        try:
+            return AlreadyReadAnswers.objects.filter(answer=self).count()
+        except:
+            return 0
+
 
     def getComments(self):
         try:
             return Comment.objects.filter(parent_answer=self).count()
         except Exception as e:
-            print(e)
+            return 0
 
     def isUpvoted(self, user):
         try:
@@ -60,10 +75,15 @@ class Answer(models.Model):
         except:
             return False
 
+    def save(self, *args, **kwargs):
+        self.total_activities = int(self.no_of_upvotes) + int(self.no_of_comments)
+        return super(Answer, self).save(*args, **kwargs)
+
 
 class UpVotes(models.Model):
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now=True)
 
     def get_user_details(self):
         try:
@@ -76,6 +96,7 @@ class UpVotes(models.Model):
 class DownVotes(models.Model):
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now=True)
 
 
 class Bookmark(models.Model):

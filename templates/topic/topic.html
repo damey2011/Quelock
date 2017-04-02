@@ -111,7 +111,8 @@
         var csrftoken = '{{ csrf_token }}';
         var user = '{{ user }}';
         var req_user = '';
-        var topic_load_url = '/topics/recent_answers/?topic={{ topic.id }}';
+        var topic_load_url = '/topics/ajax/answers/?topic={{ topic.id }}';
+        var next_topic_answers_page = 1;
         var related_users_load_url = '/topics/common_interest_users/?topic={{ topic.id }}'
     </script>
     <script src="{% static 'scripts/custom.js' %}"></script>

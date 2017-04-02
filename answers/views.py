@@ -34,7 +34,6 @@ class AnswerAPIView(View):
             b = None
             already_upvoted = None
             already_downvoted = None
-
         try:
             user1 = UserOtherDetails.objects.get(user=request.user)
             user2 = UserOtherDetails.objects.get(user=answer.writer.user)
