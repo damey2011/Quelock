@@ -1,0 +1,32 @@
+<div class="conv-container">
+    {% for message in messages %}
+
+        {% if message.user == request.user %}
+            <span class="small">You:</span>
+            <div class="home-message">
+                {{ message.reply }}
+            </div>
+            <span class="message-time">
+                {{ message.period_sent }}
+            </span>
+        {% else %}
+            <span class="small">{{ message.user.first_name }}:</span>
+            <div class="away-message">
+                {{ message.reply }}
+            </div>
+            <span class="message-time">
+                {{ message.period_sent }}
+            </span>
+        {% endif %}
+    {% endfor %}
+</div>
+<div class="text-section">
+    <textarea class="message-text-input" id="message-input" placeholder="Type Message" rows="5"></textarea>
+    <button class="btn btn-default send-reply">Send</button>
+</div>
+<script>
+    function scrollbtm(){
+        $('.conv-container').scrollTop($('.conv-container')[0].scrollHeight);
+    }
+    scrollbtm();
+</script>

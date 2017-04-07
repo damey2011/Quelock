@@ -9,9 +9,9 @@ class MyTestPagination(PageNumberPagination):
 
 class UserQuestionPagination(CursorPagination):
     page_size = 2
-    ordering = ['-date_asked', '-time_asked']
+    ordering = ['-date_asked']
 
 
 class ExploreQuestionPagination(CursorPagination):
     page_size = 2
-    ordering = ['-date_asked', '-time_asked']
+    ordering = ['-date_asked']

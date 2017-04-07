@@ -1,0 +1,22 @@
+{% for thread in threads %}
+    <a onclick="load_thread({{ thread.conv.id }})" href="#" class="list-group-item message-thread-item">
+        <div class="list-group-item-heading message-thread-user">
+            {% if thread.user == request.user %}
+                {% if thread.conv.user_1 == request.user %}
+                    {{ thread.conv.user_2.first_name }} {{ thread.conv.user_2.last_name }}
+                {% else %}
+                    {{ thread.conv.user_1.first_name }} {{ thread.conv.user_1.last_name }}
+                {% endif %}
+            {% else %}
+                {{ thread.user.first_name }} {{ thread.user.last_name }}
+            {% endif %}
+
+        </div>
+        <div class="list-group-item-text message-thread-text">
+            {{ thread.reply | truncatechars:25 }}
+        </div>
+        <span class="last-message-time">
+            {{ thread.period_sent }}
+        </span>
+    </a>
+{% endfor %}

@@ -40,8 +40,6 @@ class QuestionListView(View):
 class QuestionDetailView(View):
     def get(self, request, slug):
         question = Question.objects.get(slug=slug)
-        question.no_of_views += 1
-        question.save(force_update=True)
         try:
             writer = UserOtherDetails.objects.get(user=request.user)
             user_has_answered_question_already = Answer.objects.filter(
@@ -50,7 +48,7 @@ class QuestionDetailView(View):
             writer = None
             user_has_answered_question_already = None
 
-        if QuestionFollowing.objects.filter(user=writer, question=question).exists():
+        if QuestionFollowing.objects.filter(user=request.user, question=question).exists():
             user_follows = True
         else:
             user_follows = False
@@ -93,10 +91,7 @@ class QuestionCreateView(View):
         details = request.POST['details'].replace("'", '&apos;')
         author = request.user
 
-        date_asked = date.today()
-        time_asked = timezone.now().time().strftime('%H:%M')
-
-        question = Question(title=title, date_asked=date_asked, time_asked=time_asked, question_details=details)
+        question = Question(title=title, question_details=details)
 
         if request.POST['anonymous']:
             question.anonymous = True
@@ -155,17 +150,27 @@ class QuestionEditView(View):
         return redirect('/questions/' + str(question.slug))
 
 
-class UserQuestions(ListAPIView):
-    pagination_class = UserQuestionPagination
-    serializer_class = QuestionSerializer
+# class UserQuestions(ListAPIView):
+#     pagination_class = UserQuestionPagination
+#     serializer_class = QuestionSerializer
+#
+#     def get_queryset(self, *args, **kwargs):
+#         user = self.kwargs['username']
+#         try:
+#             q = Question.objects.filter(author=User.objects.get(username=user))
+#         except Question.DoesNotExist:
+#             q = None
+#         return q
 
-    def get_queryset(self, *args, **kwargs):
+
+class UserQuestionsR2R(View):
+    def get(self, request, username):
         user = self.kwargs['username']
         try:
             q = Question.objects.filter(author=User.objects.get(username=user))
         except Question.DoesNotExist:
             q = None
-        return q
+        return render_to_response('question/fragments/question_item.html', {'questions': q, 'request': request})
 
 
 class QuestionExploreAPI(ListAPIView):
@@ -186,15 +191,13 @@ class QuestionExploreView(View):
 
 class FollowQuestion(View):
     def get(self, request):
+        q = request.GET.get('question')
+        q = int(q)
         try:
-            q = Question.objects.get(pk=request.GET.get('question'))
-            q.no_following_quest += 1
-            q.save()
-            user = UserOtherDetails.objects.get(user=request.user)
-            if QuestionFollowing.objects.filter(user=user, question=q).exists():
+            if QuestionFollowing.objects.filter(user=request.user, question_id=q).exists():
                 pass
             else:
-                qf = QuestionFollowing(user=user, question=q)
+                qf = QuestionFollowing(user=request.user, question_id=q)
                 qf.save()
             return JsonResponse(True, safe=False)
         except ObjectDoesNotExist:
@@ -203,12 +206,10 @@ class FollowQuestion(View):
 
 class UnFollowQuestion(View):
     def get(self, request):
+        q = request.GET.get('question')
+        q = int(q)
         try:
-            q = Question.objects.get(pk=request.GET.get('question'))
-            q.no_following_quest -= 1
-            q.save()
-            user = UserOtherDetails.objects.get(user=request.user)
-            qf = QuestionFollowing.objects.filter(user=user, question=q)
+            qf = QuestionFollowing.objects.filter(user=request.user, question_id=q)
             qf.delete()
             return JsonResponse(True, safe=False)
         except ObjectDoesNotExist:

@@ -113,37 +113,45 @@ function new_answer(value){
 function read_more(answer){
     $('.feed-answer-text-'+answer).addClass('feed-answer-content-full');
     $('.read-more-container-'+answer).fadeOut();
+    addAnswerView(answer);
 }
 
-var original_getanswers_page = '/answers/'+req_user+'/';
-var nextAnswersPage = original_getanswers_page;
+function addAnswerView(answer_id){
+    $.ajax({
+        url: '/answers/add_view/?answer='+answer_id,
+        data: {'csrfmiddlewaretoken': csrftoken},
+        success: function(){
+            console.log('Answer view added')
+        }
+    })
+}
+
+var answer_page = 1;
 
 function loadAnswers(){
+    $('.load-more-inner').html('<span class="ion-android-alarm-clock"></span> a sec');
     $.ajax({
-        url: nextAnswersPage,
-        dataType: 'json',
+        url: '/answers/'+req_user+'/?page='+answer_page,
+        dataType: 'html',
         data: {'data': req_user, 'csrfmiddlewaretoken': csrftoken},
         success: function(data){
-            if(data.results.length == 0) $('.post').append('<h3>No Answers written yet</h3>');
+            if(data.length == 0) $('.post').append('<h3>No Answers written yet</h3>');
             else{
-                $.each(data.results, function(key, value){
-                    $('.post').append(answer(value));
-                    $('img').addClass('img-responsive');
-                });
+                $('.post').append(data);
             }
-            if(data.next!=null){
-                $('.btn-load').css('display', 'block').show();
-                nextAnswersPage = data.next;
-                $('.loading-1').hide();
-            }
-            else{
-                $('.loading-1').hide();
-                $('.load-btn').hide();
-            }
-
         },
         error: function(){
             console.log('Failed')
+        },
+        complete: function(){
+            answer_page += 1;
+            if($('#next_page').length != 0){
+                $('.feed-load-more-btn').hide();
+            }
+            else{
+
+            }
+            $('.load-more-inner').html('<span class="ion-android-arrow-down"></span> Load More');
         }
     });
 }
@@ -458,9 +466,6 @@ function loadQuestionAnswers() {
         url: '/questions/' + question_id + '/answers/',
         success: function (data) {
             $('.answers').append(data);
-            $('img').addClass('img-responsive').css('position', 'relative').css('overflow', 'hidden').css('max-width', '100%').css('margin-left', '0px');
-            $('.answer-content > ol').css('margin-left', '16px');
-            $('.answer_content > ul').css('margin-left', '16px');
         },
         error: function () {
             $.toast('An error has occured, please reload the page', {'duration': 30000, 'align': 'top'});
@@ -521,7 +526,7 @@ function openAnswerCommentBox(answer_id){
         $('.comment-div-'+answer_id).css('display', 'block');
     }
     else{
-        $('.answer-'+answer_id).prepend("<br><div class='comment-div-"+answer_id+"'>\
+        $('.answer-'+answer_id).append("<br><div class='comment-div-"+answer_id+"'>\
             <label for='comment'>Your Comment:</label><a onclick='close_comment_box("+answer_id+")' class='comment-link comment-box-close-btn'>[X]</a>\
             <textarea name='comment' id='answer-comment-"+answer_id+"' cols='30' rows='4' class='form-control answer-comment comment-"+answer_id+"'></textarea>\
             <br>\
@@ -726,7 +731,7 @@ function load_following(user){
 
         },
         error: function (data) {
-             $('.loading-1').hide();
+            $('.loading-1').hide();
             $('.load-btn').hide();
             $('.following-window').append('<h3>Please Register or Login</h3>');
         }
@@ -854,21 +859,22 @@ function load_questions(user){
         url: nextQuestionPage,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function(data){
-            if(!data.results) $('.questions-window').append('<h3>No Question Asked Yet</h3>');
-            else{
-                $.each(data.results, function(key, value){
-                    $('.questions-window').append(question_item_dom(value))
-                });
-            }
-            if(data.next!=null){
-                nextQuestionPage = data.next;
-                $('.loading-1').hide();
-                $('.btn-load').show();
-            }
-            else{
-                $('.loading-1').hide();
-                $('.btn-load').hide();
-            }
+            //if(!data.results) $('.questions-window').append('<h3>No Question Asked Yet</h3>');
+            //else{
+            //    $.each(data.results, function(key, value){
+            //        $('.questions-window').append(question_item_dom(value))
+            //    });
+            //}
+            //if(data.next!=null){
+            //    nextQuestionPage = data.next;
+            //    $('.loading-1').hide();
+            //    $('.btn-load').show();
+            //}
+            //else{
+            //    $('.loading-1').hide();
+            //    $('.btn-load').hide();
+            //}
+            $('.questions-window').append(data);
 
         },
         error: function (data) {
@@ -1173,6 +1179,7 @@ function loadExploreQuestions(){
         url: next_explore_questions_url,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function(data){
+
             if(data.results){
                 $.each(data.results, function (key, value) {
                     $('.question-explore-list').append(explore_questions_dom(value))
@@ -1381,9 +1388,9 @@ function openMessageModal(user){
 function sendMessage(receipient){
     var message = $('.message-textfield').val();
     $.ajax({
-        url: '/profile/message/?user_id='+receipient,
+        url: '/messages/send/?user_id='+receipient,
         type: 'POST',
-        data: {'csrfmiddlewaretoken': csrftoken,'message':message},
+        data: {'csrfmiddlewaretoken': csrftoken,'message':message, 'receiver':receipient},
         success: function(data){
             if(data==true){
                 $.toast('Message Sent', {'duration': 1000, 'align': 'top'});
@@ -1397,7 +1404,6 @@ function sendMessage(receipient){
         }
     })
 }
-
 
 function sendFile(file, editor, welEditable) {
     data = new FormData();

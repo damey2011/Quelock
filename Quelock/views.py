@@ -1,9 +1,7 @@
-from itertools import chain
-import random
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse, Http404
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
 from django.views import View
@@ -12,9 +10,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from Quelock.pagination import FeedsPagination
-from Quelock.serializers import FeedItemSerializer, UpvotedAnswersSerializer
 from account.models import UserFollowings, UserOtherDetails, Reports, AlreadyReadAnswers
-from account.pagination import UserOtherDetailsPagination
 from account.serializers import UserOtherDetailsSerializer
 from answers.models import Answer, UpVotes
 from answers.serializers import AnswerSerializer
@@ -193,6 +189,16 @@ class SearchAPI(APIView):
         return Response(None)
 
 
+class AskSearchR2R(View):
+    def get(self, request):
+        search_term = request.GET.get('search_term')
+        q = Question.objects.filter(
+            Q(title__icontains=search_term) |
+            Q(question_details__icontains=search_term)
+        ).distinct().order_by('-no_of_answers')
+        return render_to_response('ask-search.html', {'questions': q})
+
+
 class FeedsAnswersAPI(ListAPIView):
     serializer_class = AnswerSerializer
     pagination_class = FeedsPagination
@@ -241,24 +247,32 @@ class FeedAnswerR2R(View):
         upvotes = UpVotes.objects.filter(user_id__in=user_following).select_related().values('answer')
         answers3 = Answer.objects.filter(id__in=upvotes).select_related()
 
+        # Answers in questions followed by those you follow
+        qf = QuestionFollowing.objects.filter(user_id=request.user).values('question')
+        answers4 = Answer.objects.filter(question_id__in=qf)
+
         # Combining the result sets
-        all_answers = answers | answers2 | answers3
+        all_answers = answers | answers2 | answers3 | answers4
 
         already_read = AlreadyReadAnswers.objects.filter(user_id=request.user.id).values('answer')
 
-        try:
-            already_loaded = self.request.GET['loaded']
-        except MultiValueDictKeyError:
-            already_loaded = []
-
-        all_answers = all_answers.exclude(id__in=already_read).exclude(id__in=already_loaded).exclude(
-            writer_id=request.user.id)
+        if int(request.GET['page']) == 1:
+            all_answers = all_answers.exclude(id__in=already_read).exclude(writer_id=request.user.id)
+        else:
+            all_answers = all_answers.exclude(writer_id=request.user.id)
+            
         all_answers = all_answers.distinct().order_by('-total_activities')[:300]
 
         p = Paginator(all_answers, 5)
         p = p.page(request.GET['page'])
 
-        return render_to_response('answers/answer_item.html', {'answers': p, 'request': request})
+        if p.has_next():
+            next_page = None
+        else:
+            next_page = 1
+
+        return render_to_response('answers/answer_item.html',
+                                  {'answers': p, 'request': request, 'next_page': next_page})
 
 
 class FeedQuestionsAPI(ListAPIView):
@@ -290,6 +304,20 @@ class FeedQuestionsAPI(ListAPIView):
 class FeedAnswersView(View):
     def get(self, request):
         return render(request, 'home/index.html')
+
+    def post(self, request):
+        question = request.POST['question']
+        try:
+            anonymous = request.POST['anonymous']
+        except:
+            anonymous = 0
+
+        author = request.user
+
+        q = Question(title=question, anonymous=anonymous, question_details='', author=author)
+        q.save()
+        print(q.slug)
+        return redirect('/questions/' + q.slug)
 
 
 class FeedQuestionsView(View):

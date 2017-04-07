@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}
+    Your Messages
+{% endblock %}
+{% load static %}
+{% block body %}
+    <div class="container">
+        <div class="row" style="margin-top: 70px;">
+            <div class="col-lg-3">
+
+            </div>
+            <div class="col-lg-6 message-middle-col">
+                <span class="ion-android-arrow-back back-btn"></span>
+                <div class="messages-header">Your Direct Messages</div>
+                <ul class="list-group message-list">
+
+                </ul>
+            </div>
+            <div class="col-lg-3">
+
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    <script>
+        var csrftoken = '{{ csrf_token }}';
+        var current_conv_id ;
+
+        $(document).ready(function(){
+            load_threads();
+        });
+
+
+        $(document).on('click', '.send-reply',function(){
+            $.ajax({
+                url: '/messages/reply/',
+                method: 'post',
+                data: {'csrfmiddlewaretoken': csrftoken, 'message': $('.message-text-input').val(), 'conv_id': current_conv_id},
+                success: function (data) {
+
+                }
+            });
+            $('.conv-container').append("<span class='small'>You:</span><div class='home-message'>"+
+                    $('#message-input').val()+"</div>");
+            $('#message-input').val("");
+            scrollbtm();
+        });
+
+        function load_threads(){
+            $.ajax({
+                url: '/messages/ajax/messages/threads',
+                data: {'csrfmiddlewaretoken': csrftoken},
+                success: function(data){
+                    $('.message-list').html(data);
+                },
+                error: function(data){
+
+                }
+            })
+        }
+
+        function load_thread(conv_id){
+            current_conv_id = conv_id;
+            $.ajax({
+                url: '/messages/ajax/messages/threads/'+conv_id,
+                data: {'csrfmiddlewaretoken': csrftoken},
+                success: function (data) {
+                    $('.message-list').html(data);
+                },
+                complete: function () {
+                    $('.back-btn').slideDown();
+                }
+            });
+        }
+
+        $('.back-btn').click(function (event) {
+            load_threads();
+            $('.back-btn').slideUp();
+        });
+
+        function reply() {
+
+        }
+
+
+
+
+    </script>
+
+{% endblock %}

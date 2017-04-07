@@ -6,22 +6,58 @@
 {% block body %}
     <div class="container">
         <div class="row" style="margin-top: 70px;">
-            <div class="col-lg-3">
+            <div class="col-lg-2">
 
             </div>
-            <div class="col-lg-6">
-
+            <div class="col-lg-8">
+                {#                <h4 class="feeds-header">your feeds</h4>#}
+                <div class="ask-header">
+                    <span class="q-mark">?</span>
+                    <div class="ask-head">Ask Your Question</div>
+                    <div class="ask-body">
+                        Let the community give you an answer
+                    </div>
+                </div>
                 <ul class="feeds">
 
                 </ul>
-
+                <div class="feed-load-more-btn">
+                    <a onclick="loadAnswerFeeds()" class="comment-link"><div class="load-more-inner"><span class="ion-android-arrow-down"></span> Load More</div></a>
+                </div>
             </div>
-            <div class="col-lg-3">
-                <button id="note">Click me</button>
+            <div class="col-lg-2">
+
             </div>
         </div>
     </div>
 
+    {#  MODAL WINDOW  #}
+    <div class="modal fade" id="askModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header ask-modal-header">
+                    <div class="ask-head" style="font-size: 19pt;">Ask Your Question</div>
+                    <a href="#" class="ion-close-circled ask-close" data-dismiss="modal"></a>
+                </div>
+                <div class="modal-body ask-modal-body">
+                    <form action="" method="post" name="question-form" id="question-form">
+                        {% csrf_token %}
+                        <input name="question" type="text" class="custom-form-control ask-input" placeholder="What is your question ?">
+                        <ul class="search-suggestion"></ul>
+                        <div class="cannot-find-question">
+                            <span>Cannot find what you are looking for ?</span>
+                            <input type="submit" value="Ask" class="btn btn-sm btn-default">
+                            <span>Ask Anonymously ? </span>
+                            <input type="checkbox" value="1" name="anonymous">
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
 
     <script src="{% static 'scripts/jquery.min.js' %}"></script>
     <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
@@ -30,24 +66,70 @@
     <script>
 
         var csrftoken = '{{ csrf_token }}';
+        var feed_ajax_page_counter = 1;
+
         $('#note').click(function(){
             $.toast('Answer was upvoted', {'duration': 5000, 'align': 'top'});
         });
 
+        $('.ask-head').click(function(){
+            $('#askModal').modal();
+            setTimeout(function (){
+                $('.ask-input').focus();
+            }, 500);
+        });
+
+
+
+        $('#askModal').on('hidden.bs.modal', function () {
+            $('.search-suggestion').html('');
+            $('.ask-input').val('');
+        });
+
+        $('.ask-input').keyup(function(event){
+           if($(this).val().length >= 3){
+               $.ajax({
+                   url: '/ajax/question/search/?search_term='+$(this).val(),
+                   data: {'csrfmiddlewaretoken': csrftoken},
+                   success: function(data){
+                        $('.search-suggestion').html(data);
+                   }
+               })
+           }
+        });
+
         $(document).ready(function () {
-           loadAnswerFeeds()
+            loadAnswerFeeds();
         });
 
 
         function loadAnswerFeeds(){
+            $('.load-more-inner').html('<span class="ion-android-alarm-clock"></span> a sec');
             $.ajax({
-                url: '/ajax/feeds/a/?page=3',
+                url: '/ajax/feeds/a/?page='+feed_ajax_page_counter,
                 data: {'csrfmiddlewaretoken': csrftoken},
                 success: function (data) {
-                    console.log(data)
                     $('.feeds').append(data);
+                },
+                complete: function () {
+                    $('.load-more-inner').html('<span class="ion-android-arrow-down"></span> Load More');
+                    feed_ajax_page_counter += 1;
+                    if($('#next_page').length != 0){
+                        $('.feed-load-more-btn').html("<div class='end-of-feeds'>That's all we have for you for now, you can refresh " +
+                                "or check out new stuffs from the explore tab</div>");
+                    }
+                    else{
+
+                    }
                 }
             })
         }
+
+    $('#question-form').submit(function () {
+        $('.ask-input').val($('.ask-input').val()+' ?');
+        return true;
+    })
+
     </script>
+
 {% endblock %}

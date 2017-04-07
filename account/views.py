@@ -6,7 +6,7 @@ from django.db.models import Q
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from account.forms import AccountUpdateForm
-from account.models import UserOtherDetails, UserFollowings, PrivateMessages
+from account.models import UserOtherDetails, UserFollowings
 from account.pagination import FollowPagination, UserOtherDetailsPagination
 from account.serializers import UserOtherDetailsSerializer, FollowingSerializer, FollowersSerializer
 from answers.models import Answer
@@ -155,38 +155,3 @@ class ExplorePeopleAPI(ListAPIView):
 class ExplorePeopleView(View):
     def get(self, request):
         return render(request, 'profile/explore.html', {'people_active': 'active', 'explore_active': 'active'})
-
-
-class MessageUser(View):
-    def post(self, request):
-        sender = request.user
-        receipient = request.GET.get('user_id')
-        message = request.POST['message']
-
-        try:
-            receipient = User.objects.get(pk=receipient)
-            m = PrivateMessages(sender=sender, receiver=receipient, message=message, owner=sender)
-            m.save()
-            m.owner = receipient
-            m = PrivateMessages(sender=sender, receiver=receipient, message=message, owner=receipient)
-            m.save()
-            return JsonResponse(True, safe=False, status=200)
-        except:
-            return JsonResponse(False, safe=False)
-
-
-class RetrieveMessageThreads(View):
-    def get(self, request):
-        try:
-            owner = request.user
-            p = PrivateMessages.objects.filter(
-                Q(owner=owner)
-            )
-        except:
-            p = None
-        return render(request, 'profile/messages.html', {'messages': p})
-
-
-class RetrieveMessage(View):
-    def get(self, request):
-        pass

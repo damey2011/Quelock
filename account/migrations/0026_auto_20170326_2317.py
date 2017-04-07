@@ -16,18 +16,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='PrivateMessages',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', models.TextField()),
-                ('read', models.BooleanField(default=False)),
-                ('created', models.DateTimeField(auto_now=True)),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='account_privatemessages_owner_related', to=settings.AUTH_USER_MODEL)),
-                ('receiver', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='account_privatemessages_receiver_related', to=settings.AUTH_USER_MODEL)),
-                ('sender', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='account_privatemessages_sender_related', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Reports',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

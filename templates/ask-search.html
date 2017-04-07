@@ -1,0 +1,10 @@
+{% for question in questions %}
+
+    <a href="/questions/{{ question.slug }}" class="result-search-link" style="text-decoration: none;">
+        <li class="list-group-item ajax-search-result">
+            <div class="list-group-item-heading ajax-search-result-heading">{{ question.title }}</div>
+    {#        <div class="list-group-item-text">{{ question.question_details|safe|truncatechars:10 }}</div>#}
+        </li>
+     </a>
+
+{% endfor %}

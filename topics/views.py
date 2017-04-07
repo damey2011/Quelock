@@ -10,7 +10,6 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from account.models import UserFollowings, UserOtherDetails
 from account.serializers import UserOtherDetailsSerializer
 from answers.models import Answer
-from answers.serializers import AnswerSerializer
 from questions.models import QuestionTopic
 from topics.forms import TopicCreateUpdateForm
 
@@ -91,19 +90,17 @@ def topic_create_success(request):
 
 
 def follow_topic(request):
-    t = Topic.objects.get(pk=request.GET.get('topic'))
     try:
-        tf = TopicFollowing.objects.get(user=UserOtherDetails.objects.get(user=request.user), follows=t)
+        tf = TopicFollowing.objects.get(user=request.user, follows_id=request.GET.get('topic'))
     except ObjectDoesNotExist:
-        tf = TopicFollowing(user=UserOtherDetails.objects.get(user=request.user), follows=t)
+        tf = TopicFollowing(user=request.user, follows_id=request.GET.get('topic'))
         tf.save()
-        return JsonResponse(True, safe=False)
+    return JsonResponse(True, safe=False)
 
 
 def unfollow_topic(request):
     try:
-        t = Topic.objects.get(pk=request.GET.get('topic'))
-        tf = TopicFollowing.objects.filter(user=UserOtherDetails.objects.get(user=request.user), follows=t)
+        tf = TopicFollowing.objects.filter(user=request.user, follows_id=request.GET.get('topic'))
         if tf.exists():
             tf.delete()
         return JsonResponse(True, safe=False)
@@ -113,8 +110,7 @@ def unfollow_topic(request):
 
 def iffollow_topic_ajax(request):
     try:
-        t = Topic.objects.get(pk=request.GET.get('topic'))
-        tf = TopicFollowing.objects.get(user=UserOtherDetails.objects.get(user=request.user), follows=t)
+        tf = TopicFollowing.objects.get(user=request.user, follows_id=request.GET.get('topic'))
     except ObjectDoesNotExist:
         tf = None
     if tf is not None:
@@ -152,7 +148,7 @@ class RecentTopicAnswers(View):
         except PageNotAnInteger:
             page = 1
         q = QuestionTopic.objects.filter(under_id=topic_id).values('question')
-        a = Answer.objects.filter(question__in=q).select_related().order_by('-date_written', '-time_written')
+        a = Answer.objects.filter(question__in=q).select_related().order_by('-time_written')
         p = Paginator(a, 1)
         try:
             p = p.page(page)

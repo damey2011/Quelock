@@ -1,10 +1,9 @@
 from django.conf.urls import url
 from account.views import ProfileView, ProfileUpdateView, AllProfilesView, RetrieveFollowers, RetrieveFollowing, \
-    ExplorePeopleView, ExplorePeopleAPI, RetrieveFollowedTopics, UserFollowers, MessageUser
+    ExplorePeopleView, ExplorePeopleAPI, RetrieveFollowedTopics, UserFollowers
 
 urlpatterns = [
     url(r'^$', AllProfilesView.as_view(), name='all_profiles'),
-    url(r'^message/', MessageUser.as_view(), name='message_user'),
     url(r'^api/explore/', ExplorePeopleAPI.as_view(), name='explore_people_api'),
     url(r'^explore/', ExplorePeopleView.as_view(), name='explore_people'),
     url(r'^topics_followed/', RetrieveFollowedTopics.as_view(), name='followed_topics'),

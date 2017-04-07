@@ -1,8 +1,8 @@
+import datetime
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.http import Http404
-from django.utils.datetime_safe import datetime
+import math
+from django.utils.timezone import utc
 from account.models import UserOtherDetails, AlreadyReadAnswers
 from comments.models import Comment
 from questions.models import Question
@@ -12,8 +12,7 @@ from topics.models import Topic
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True)
     writer = models.ForeignKey(UserOtherDetails, on_delete=models.SET('Anonymous'), null=True)
-    date_written = models.DateField()
-    time_written = models.TimeField()
+    time_written = models.DateTimeField(auto_now_add=True)
     body = models.TextField()
     no_of_upvotes = models.IntegerField(null=True, default=0)
     no_of_downvotes = models.IntegerField(null=True, default=0)
@@ -74,6 +73,23 @@ class Answer(models.Model):
             return SuggestEdits.objects.filter(suggester=user, answer=self).exists()
         except:
             return False
+
+    @property
+    def time_answered(self):
+        time_diff = datetime.datetime.now(utc) - self.time_written
+        if time_diff.days < 1:
+            if time_diff.seconds < 60:
+                return str(math.floor(time_diff.seconds)) + 's'
+            elif 60 <= time_diff.seconds < 3600:
+                return str(math.floor(time_diff.seconds/60)) + 'm'
+            elif 3600 <= time_diff.seconds < 5184000:
+                return str(math.floor(time_diff.seconds/3600)) + 'h'
+        elif 1 < time_diff.days < 30:
+            return str(math.floor(time_diff.days)) + 'd'
+        elif time_diff.days == 1:
+            return 'Yesterday'
+        else:
+            return self.time_written.date()
 
     def save(self, *args, **kwargs):
         self.total_activities = int(self.no_of_upvotes) + int(self.no_of_comments)

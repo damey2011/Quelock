@@ -4,8 +4,6 @@ from django.contrib import admin
 from Quelock import views
 from Quelock import settings
 from Quelock.views import Report, Search, SearchAPI
-from account.views import RetrieveMessage
-from account.views import RetrieveMessageThreads
 from answers.views import TrendingAnswersView
 
 urlpatterns = [
@@ -21,6 +19,7 @@ urlpatterns = [
     url(r'^profile/', include('account.urls')),
     url(r'^topics/', include('topics.urls')),
     url(r'^comments/', include('comments.urls'), name='comments'),
+    url(r'^messages/', include('messages.urls'), name='messages'),
     url(r'^upload/', views.upload, name='upload'),
     url(r'^api/', include('Quelock.api.urls')),
     url(r'^follow/', views.Follow.as_view()),
@@ -31,7 +30,6 @@ urlpatterns = [
     url(r'^search/', Search.as_view(), name='search'),
     url(r'^ajax/feeds/a/$', views.FeedAnswerR2R.as_view(), name='feed_ans_api'),
     url(r'^ajax/feeds/q$', views.FeedQuestionsAPI.as_view(), name='feed_ques_api'),
+    url(r'^ajax/question/search/$', views.AskSearchR2R.as_view(), name='feed_search_api'),
     url(r'^ajax/search/$', SearchAPI.as_view(), name='search_api'),
-    url(r'^messages$', RetrieveMessageThreads.as_view(), name='message_threads'),
-    url(r'^messages/user/(?P<pk>\d+)/$', RetrieveMessage.as_view(), name='message_thread'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

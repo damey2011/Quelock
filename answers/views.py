@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from django.db.models import F
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.utils import timezone
 from django.utils.datetime_safe import date
 from django.views import View
@@ -59,16 +60,12 @@ class WriteAnswerView(View):
 
         writer = UserOtherDetails.objects.get(user=request.user)
 
-        date_written = date.today()
-        time_written = timezone.now().time().strftime('%H:%M')
         question = answer_question
 
         answer = Answer()
         answer.question_string = answer_question.title
         answer.body = body.replace("'", "&apos;")
         answer.writer = writer
-        answer.date_written = date_written
-        answer.time_written = time_written
         answer.question = question
         answer.author = writer
 
@@ -109,8 +106,6 @@ class UserAnswerAPIView(ListAPIView):
 
     def get_queryset(self):
         req_user = User.objects.get(username=self.kwargs['username'])
-        print(self.request.user)
-        print(req_user)
         try:
             a = Answer.objects.filter(writer=req_user.userotherdetails)
             if self.request.user != req_user:
@@ -118,6 +113,29 @@ class UserAnswerAPIView(ListAPIView):
         except Answer.DoesNotExist:
             a = None
         return a
+
+
+class UserAnswersR2R(View):
+    def get(self, request, username):
+        req_user = User.objects.get(username=username)
+        try:
+            a = Answer.objects.filter(writer_id=req_user.id).order_by('time_written')
+            if self.request.user != req_user:
+                a = a.exclude(anonymous=True)
+        except Answer.DoesNotExist:
+            a = None
+        p = Paginator(a, 3)
+        p = p.page(request.GET.get('page'))
+
+        print('page=' + str(p))
+
+        if p.has_next():
+            next_page = None
+        else:
+            next_page = 1
+
+        return render_to_response('answers/answer_item.html',
+                                  {'answers': p, 'request': request, 'next_page': next_page})
 
 
 class DeleteAnswerView(View):
@@ -295,4 +313,11 @@ class SuggestEdit(View):
         else:
             s = SuggestEdits(suggester=request.user, original_writer=answer.writer.user, answer=answer)
             s.save()
+        return JsonResponse(True, safe=False)
+
+
+class AddNewView(View):
+    def get(self, request):
+        answer_id = request.GET.get('answer')
+        AlreadyReadAnswers(user=request.user, answer_id=answer_id).save()
         return JsonResponse(True, safe=False)

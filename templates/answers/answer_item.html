@@ -2,7 +2,7 @@
 {% load static %}
 {% if answers  %}
     {% if total_answers %}
-        {% if total_answers > 1%}
+        {% if total_answers > 1 %}
             <b class="profile-tab-header"> {{ total_answers }} Answers Written </b>
         {% else %}
             <b class="profile-tab-header"> {{ total_answers }} Answer Written </b>
@@ -21,22 +21,39 @@
                     <a href="/topics/{{ tag.under.slug }}"><li class="badge badge-follow-btn topic-tag">{{ tag.under.title }}</li></a>
                 {% endfor %}
             </ul>
+
             <h5 class='answer-question'><a href='/questions/{{ answer.question.slug }}' target='_blank'>{{ answer.question.title }}</a></h5>
+            <hr class="answer-divider">
             <div class='writer-div'>
-                {% if answer.anonymous %}
-                    <img class='related-user-thumbnail' src='{% static 'images/user.png' %}' alt='{{ answer.writer.user.username }}'>
-                     <span class='list-group-item-heading'>Anonymous Writer</span>
-                {% else %}
-                     <img class='related-user-thumbnail' src='{{ answer.writer.display_picture.url }}' alt='{{ answer.writer.user.username }}'>
-                     <a class='list-group-item-heading' target='_blank' href='/profile/{{ answer.writer.user.username }}'>{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }},</a>
+                    {% if answer.anonymous %}
+                            <img class='answer-writer-thumbnail' src='{% static 'images/user.png' %}' alt='{{ answer.writer.user.username }}'>
+                            <div class="answer-writer-info">
+                                <span class='list-group-item-heading'>Anonymous Writer</span>
+                                {% if answer.time_written %}
+                                    <p class='small time-written'><span class="ion-ios-clock"></span> {{ answer.time_answered }}</p>
+                                {% endif %}
+                            </div>
+                    {% else %}
+                            <img class='answer-writer-thumbnail' src='{{ answer.writer.display_picture.url }}' alt='{{ answer.writer.user.username }}'>
+                            <div class="answer-writer-info">
+                                <a class='list-group-item-heading' target='_blank' href='/profile/{{ answer.writer.user.username }}'>{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }},</a>
+                                <span class='small'>{{ answer.writer.bio }}</span>
+                                <span class="writer-username">@{{ answer.writer.user.username }}</span>
+                                {% if answer.time_written %}
+                                    <p class='small time-written'><span class="ion-ios-clock"></span> {{ answer.time_answered }}</p>
+                                {% endif %}
+                            </div>
+                    {% endif %}
 
-                    <span class='small'>{{ answer.writer.bio }}</span>
-                    <span class="writer-username">@{{ answer.writer.user.username }}</span>
-                {% endif %}
-
-                <p class='small time-written'>Answer written {{ answer.date_written }}, {{ answer.time_written }}</p>
-                <p class="answer-stats"><span class="ion-ios-eye-outline">  {{ answer.answerViews }}</span><span class="ion-ios-chatboxes-outline">  {{ answer.getComments }}</span><span class="ion-ios-arrow-up">  {{ answer.upvotesCount }}</span></p>
+                <p class="answer-stats"><span class="ion-eye stat-icon"></span>
+                    {% if answer.answerViews == 1 %}
+                        {{ answer.answerViews }} View
+                    {% else %}
+                        {{ answer.answerViews }} Views
+                    {% endif %}
+                </p>
             </div>
+{#            <span class="ion-ios-chatboxes-outline stat-icon"></span>{{ answer.getComments }}#}
             <div class='list-group-item-text feed-answer-text feed-answer-text-{{ answer.id }}'>
                 {{ answer.body | safe }}
                 <br>
@@ -75,16 +92,16 @@
                             {% endif %}
 
                                 <a class='comment-link comment' onclick='openAnswerCommentBox({{ answer.id }})'> add comment <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>&middot;
-                                <a href='/report/?type=A&type_id={{ answer.id }}&next=http://127.0.0.1:8000/trending/'> report</a>&middot;
+                                <a href='/report/?type=A&type_id={{ answer.id }}&next={{ request.url }}'> report</a>&middot;
 
                             {% if t %}
-                                <a class='thnk clicked thank-{{ answer.id }}' href='#'> Gratified </a>&middot;
+                                <a class='thnk clicked thank-{{ answer.id }}'> Gratified </a>&middot;
                             {% else %}
-                                <a class='thnk thank-{{ answer.id }}' href='#'> Gratify </a>&middot;
+                                <a class='thnk comment-link thank-{{ answer.id }}' onclick="thank({{ answer.id }})"> Gratify </a>&middot;
                             {% endif %}
 
                             {% if e %}
-                                <a class='editsug clicked comment-link editsug-{{ answer.id }}' onclick='suggest_edit({{ answer.id }})' href='#'> Edit Suggested </a>
+                                <a class='editsug clicked comment-link editsug-{{ answer.id }}' onclick='suggest_edit({{ answer.id }})'> Edit Suggested </a>
                             {% else %}
                                 <a class='editsug comment-link editsug-{{ answer.id }}' onclick='suggest_edit({{ answer.id }})' href='#'> Suggest Edits </a>
                             {% endif %}
@@ -110,9 +127,9 @@
                                 <ul class='dropdown-menu answer-dropdown-options' role='menu' aria-labelledby='dropdownMenu1'>
                                     <li role='presentation' class='dropdown-header'>User Actions</li>
                                     {% if d %}
-                                        <li role='presentation'><a role='menuitem' onclick='r_downvote({{ answer.id }})' href='#' tabindex='-1' class='comment-link downvote-{{ answer.id }}'>Downvoted</a></li>
+                                        <li role='presentation'><a role='menuitem' onclick='r_downvote({{ answer.id }})' tabindex='-1' class='comment-link downvote-{{ answer.id }}'>Downvoted</a></li>
                                     {% else %}
-                                        <li role='presentation'><a role='menuitem' onclick='downvote({{ answer.id }})' href='#' tabindex='-1' class='comment-link downvote-{{ answer.id }}'>Downvote</a></li>
+                                        <li role='presentation'><a role='menuitem' onclick='downvote({{ answer.id }})' tabindex='-1' class='comment-link downvote-{{ answer.id }}'>Downvote</a></li>
                                     {% endif %}
                                     {% if b %}
                                         <li role='presentation'><a role='menuitem' onclick='unBookmarkAnswer({{ answer.id }})' tabindex='-1' class='comment-link archive-{{ answer.id }}'>Archived</a></li>
@@ -122,15 +139,15 @@
                                     {% if t %}
                                         <li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link thank-{{ answer.id }}'>Gratified</a></li>
                                     {% else %}
-                                        <li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link thank-{{ answer.id }}'>Gratify</a></li>
+                                        <li role='presentation'><a role='menuitem' onclick="thank({{ answer.id }})" tabindex='-1' class='comment-link thank-{{ answer.id }}'>Gratify</a></li>
                                     {% endif %}
 
                                     {% if e %}
-                                        <li role='presentation'><a role='menuitem' href='#' tabindex='-1' class='comment-link editsug-{{ answer.id }}'>Edits Suggested</a></li>
+                                        <li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link editsug-{{ answer.id }}'>Edits Suggested</a></li>
                                     {% else %}
-                                        <li role='presentation'><a role='menuitem' onclick='suggest_edit({{ answer.id }})' href='#' tabindex='-1' class='comment-link editsug-{{ answer.id }}'>Suggest Edits</a></li>
+                                        <li role='presentation'><a role='menuitem' onclick='suggest_edit({{ answer.id }})' tabindex='-1' class='comment-link editsug-{{ answer.id }}'>Suggest Edits</a></li>
                                     {% endif %}
-                                    <li role='presentation'><a role='menuitem' tabindex='-1' href='/report/?type=Q&type_id={{ answer.id }}&next=http://127.0.0.1:8000/trending/'>Report</a></li>
+                                    <li role='presentation'><a role='menuitem' tabindex='-1' href='/report/?type=Q&type_id={{ answer.id }}&next={{ request.url }}'>Report</a></li>
                                 </ul>
                             </div>
                         </span>

@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'login.apps.LoginConfig',
     'questions.apps.QuestionsConfig',
     'topics.apps.TopicsConfig',
-    'comments.apps.CommentsConfig'
+    'comments.apps.CommentsConfig',
+    'messages.apps.MessagesConfig'
 ]
 
 MIDDLEWARE_CLASSES = [

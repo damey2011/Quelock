@@ -39,16 +39,15 @@
             <ul class="navbar-right nav navbar-nav">
                 <li class="bar-search-btn-li"><a onclick="show_hide_search_bar()" href="#" class="bar-search-btn"><span class="ion-android-search"></span></a></li>
                 <li class="{{ feeds_active }}"><a href="{% url 'index_home' %}"><span class="fa fa-feed"></span> Feeds</a></li>
-                <li class="{{ trending_active }}"><a href="{% url 'trending_by_interactions' %}"><span class="ion-android-notifications"> </span>  Notifications</a></li>
+{#                <li class="{{ trending_active }}"><a href="{% url 'trending_by_interactions' %}"><span class="ion-android-notifications"> </span>  Notifications</a></li>#}
                 <li class="{{ explore_active }}"><a href="{% url 'explore_questions' %}"><span class="fa fa-globe"></span> Explore</a></li>
                 <li class="{{ archive_active }}"><a href="{% url 'archived' %}"><span class="fa fa-thumb-tack"></span> Archives</a></li>
-                <li class="{{ trending_active }}"><a href="{% url 'trending_by_interactions' %}"><span class="fa fa-area-chart"> </span>  Trending</a></li>
                 <li class="{{ account_active }}"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-user-md"> </span>  Account</a>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                         {% if user.is_authenticated %}
                             <li><a href="/profile/{{ user.username }}"><span class="fa fa-sign-out"> </span>View Profile</a></li>
                             <li class="divider"></li>
-                            <li><a href="/profile/{{ user.username }}/messages"><span class="fa fa-sign-out"> </span>Messages</a></li>
+                            <li><a href="/messages"><span class="fa fa-sign-out"> </span>Messages</a></li>
                             <li class="divider"></li>
                             <li><a href="/logout"><span class="fa fa-sign-out"> </span>Logout</a></li>
                         {% else %}

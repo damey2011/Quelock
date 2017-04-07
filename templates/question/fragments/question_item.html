@@ -1,0 +1,25 @@
+{% for question in questions %}
+    <li class="list-group-item">
+        <p class='small'>
+            {% if answer.no_of_answers == 1 %}
+                {{ answer.no_of_answers }} Answer Written
+            {% else %}
+                {{ answer.no_of_answers }} Answers Written
+            {% endif %}
+
+            &middot; {{ question.time_asked }}<p>
+        <span class="list-group-item-header">
+            <a href="/questions/{{ question.slug }}">
+                {{ question.title }}
+            </a></span>
+        <hr class="divider">
+
+        <p class="list-group-item-text small">
+            {% if question.no_following_quest == 1 %}
+                {{ question.no_following_quest }} person
+            {% else %}
+                {{ question.no_following_quest }} people
+            {% endif %}
+            are following this question</p>
+    </li>
+{% endfor %}

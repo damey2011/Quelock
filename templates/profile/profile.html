@@ -45,7 +45,6 @@
                                 </ul>
                             {% endif %}
                         {% endif %}
-
                     </div>
                 </div>
 
@@ -57,9 +56,8 @@
                                 <a onclick="load_questions_tab()" href="#questions" data-toggle="tab"><li class="profile-overflow-menu-item">questions</li></a>
                                 <a onclick="load_followers_tab()" href="#followers" data-toggle="tab"><li class="profile-overflow-menu-item">followers</li></a>
                                 <a onclick="load_following_tab()" href="#followings" data-toggle="tab"><li class="profile-overflow-menu-item">following</li></a>
-                                <a href=""><li class="profile-overflow-menu-item">topics</li></a>
-                                <a href=""><li class="profile-overflow-menu-item">activity</li></a>
                             </ul>
+                            <hr class="divider">
                         </div>
                         <div class="profile-desktop-menu">
                             <ul class="list-group profile-menu-options">
@@ -75,6 +73,7 @@
                             <div class="tab-pane fade in active" id="answers">
                                 <div class="answers">
                                     <!--Post here-->
+
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="followings">
@@ -245,9 +244,8 @@
         );
 
         function load_answers_tab(){
-            $('.loading-image').show();
-            $('.answers').load('{% static 'html/answer.html' %}')
-            $('.loading-image').hide();
+            $('.answers').load('{% static 'html/answer.html' %}');
+            answer_page = 1;
         }
 
 
@@ -264,9 +262,7 @@
         }
 
         function load_questions_tab(){
-            $('.loading-image').show();
             $('.questions').load('{% static 'html/questions.html' %}')
-            $('.loading-image').hide();
         }
 
         //Load the profile photo if it exists

@@ -100,10 +100,10 @@ class UserFollowings(models.Model):
 
 
 class AlreadyReadAnswers(models.Model):
-    user = models.ForeignKey(UserOtherDetails, related_name='%(app_label)s_%(class)s_related', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='%(app_label)s_%(class)s_related', on_delete=models.CASCADE)
     answer = models.ForeignKey("answers.Answer", related_name='%(app_label)s_%(class)s_related',
                                on_delete=models.CASCADE)
-    created = models.DateTimeField
+    created = models.DateTimeField(auto_now_add=True)
 
 
 TYPES = (
@@ -116,19 +116,8 @@ TYPES = (
 class Reports(models.Model):
     type = models.CharField(max_length=1, choices=TYPES)
     type_id = models.PositiveIntegerField()
-    created = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True,null=True)
     message = models.TextField(blank=True, null=True)
-
-
-class PrivateMessages(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name="%(app_label)s_%(class)s_sender_related")
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE,
-                                 related_name="%(app_label)s_%(class)s_receiver_related")
-    message = models.TextField()
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_owner_related")
-    read = models.BooleanField(default=False)
-    created = models.DateTimeField(auto_now=True)
 
 
 class UserNotifications(models.Model):
