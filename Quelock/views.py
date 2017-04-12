@@ -207,15 +207,15 @@ class FeedsAnswersAPI(ListAPIView):
         # Answers under topics user is following
         topics_followed = TopicFollowing.objects.filter(user_id=self.request.user.id).values('follows')
         questions = QuestionTopic.objects.filter(under_id__in=topics_followed).values('question')
-        answers = Answer.objects.filter(question_id__in=questions)
+        answers = Answer.objects.filter(question_id__in=questions).order_by('-time-written')
 
         # Answers written by people you follow
         user_following = UserFollowings.objects.filter(user_id=self.request.user.id).values('is_following')
-        answers2 = Answer.objects.filter(writer_id__in=user_following)
+        answers2 = Answer.objects.filter(writer_id__in=user_following).order_by('-time_written').order_by('time-written')
 
         # Answers upvoted by people you follow
-        upvotes = UpVotes.objects.filter(user_id__in=user_following).select_related().values('answer')
-        answers3 = Answer.objects.filter(id__in=upvotes)
+        upvotes = UpVotes.objects.filter(user_id__in=user_following).select_related().values('answer').order_by('-date')
+        answers3 = Answer.objects.filter(id__in=upvotes).order_by('time-written')
 
         # Combining the result sets
         all_answers = answers | answers2 | answers3
@@ -228,7 +228,7 @@ class FeedsAnswersAPI(ListAPIView):
             already_loaded = []
 
         all_answers = all_answers.exclude(id__in=already_read).exclude(id__in=already_loaded)
-        all_answers = all_answers.distinct().order_by('-total_activities')[:300]
+        all_answers = all_answers.distinct().order_by('-time-written')[:300]
 
         return all_answers
 
@@ -260,8 +260,8 @@ class FeedAnswerR2R(View):
             all_answers = all_answers.exclude(id__in=already_read).exclude(writer_id=request.user.id)
         else:
             all_answers = all_answers.exclude(writer_id=request.user.id)
-            
-        all_answers = all_answers.distinct().order_by('-total_activities')[:300]
+
+        all_answers = all_answers.distinct().order_by('-time_written')[:300]
 
         p = Paginator(all_answers, 5)
         p = p.page(request.GET['page'])

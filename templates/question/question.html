@@ -141,7 +141,7 @@
                 <div class="stats-content">
                     <ul>
                         <li><span class="ion-person-stalker"></span> {{ question.no_following_quest }} Followers</li>
-                        <li><span class="ion-ios-clock-outline"></span> {{ question.date_asked }}, {{ question.time_asked }}</li>
+                        <li><span class="ion-ios-clock-outline"></span> {{ question.time_asked }} ago</li>
                         <li><span class="ion-ios-eye"></span> {{ question.no_of_views }} Views</li>
                     </ul>
                 </div>
@@ -311,8 +311,8 @@
                     <h3 style="color: #444444">Answer Question</h3>
                 </div>
                 <div class="modal-body">
-                    <b style="font-weight: bolder"><h1>{{ question.title }}</h1></b>
-                    <small>{{ question.question_details|safe }} </small>
+                    <b style="font-weight: bolder"><h4>{{ question.title }}</h4></b>
+                    <small>{{ question.question_details|safe|striptags }} </small>
                     <a class="show_" onclick="show_or_hide()">show details</a>
                     <form action="/questions/{{ question.slug }}/answerit/" method="post" name="question-form"
                           id="question-form">

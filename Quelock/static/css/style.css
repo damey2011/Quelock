@@ -213,9 +213,15 @@ body{
     background-image: linear-gradient(-180deg, #fafbfc 0%, #eff3f6 90%);
 }
 
+.btn-primary:hover{
+    color: #333;
+    border:none;
+}
+
 .btn-sm{
     padding: 5px;
     font-weight: 300;
+    line-height: 2.0;
 }
 
 .clicked{
@@ -300,10 +306,15 @@ body{
 }
 
 .profile-overflow-menu li{
-    margin-right: 10px;
+/*     margin-right: 10px; */
     color: rgba(36, 41, 46, 0.8);
     font-size: 11pt;
     font-weight: 300;
+    display: inline;
+}
+
+.profile-overflow-menu a{
+    padding-right: 12px;
 }
 
 .profile-overflow-menu::-webkit-scrollbar{
@@ -506,38 +517,74 @@ img.image {
     text-align: center;
 }
 
-.main-reg-body{
-    margin: 30px 0 0 30px;
+.reg-body{
+    background-color: #24292e;
+    padding: 40px 20px;
 }
 
-.reg-form-container{
-    background-color: rgba(255, 255, 255, 0.35);
+.reg-body input[type=text], .reg-body input[type=email], .reg-body input[type=password]{
+    max-width: 100%;
+    box-shadow:none;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255, 0.5);
+    color: rgba(255,255,255,0.7);
+    background-color: transparent;
+    padding: 0 30px;
+    margin: -10px 0;
 }
+
+.reg-body input[type=text]:before{
+    content: "\f3a0";
+}
+
+.reg-body input::-webkit-input-placeholder{
+    color: rgba(255,255,255,0.3);
+}
+
 
 .reg-form-container label{
-    color: #000;
-    opacity: 1;
-    font-weight: 300;
+    display: block;
+    padding: 1px;
 }
 
-.reg-form-container .tac{
-    color: #000;
-    font-weight: 300;
+.reg-form-container label .placeholder-icon{
+    font-size: 20px;
+    position: relative;
+    bottom: -22px;
+    padding: 5px;
+    color: rgba(255,255,255,0.3);
+}
+
+.reg-bottom-div{
+    width: 100%;
+    margin-top: 20px;
+    color: white;
+}
+
+.reg-bottom-div div{
     text-align: center;
+    font-weight: 100;
 }
 
-.reg-form-container .btn{
-    margin-left: 45%;
-}
-
-.reg-form-container input{
-    border-radius: 2px;
+.reg-bottom-div input{
+    display: block;
+    position: relative;
+    margin: 0 auto;
+    width: 70px;
+    line-height: 1.5;
+    font-weight: 600;
 }
 
 .aoa{
-    color: #000;
-    font-weight: 500;
+    color: white;
+    font-weight: 200;
     text-align: center;
+}
+
+.aoa a{
+    color: #8db2d6;
+    font-weight: 400;
 }
 
 /*Registratio Success*/
@@ -717,10 +764,14 @@ a.tile {
 }
 
 .question_desc_div p img {
-    margin: 20px;
+    /* margin: 20px; */
     max-width: 100%;
     overflow: hidden;
     display: block;
+}
+
+.question_desc_div a ul{
+    margin-left: 25px;
 }
 
 .question-container, .topic-card{
@@ -878,6 +929,8 @@ a.tile {
 .btn-load{
     cursor: pointer;
     text-align: center;
+    display:none;
+    margin: 0 auto;
 }
 
 .load-btn{
@@ -937,6 +990,10 @@ a.tile {
     cursor: pointer;
 }
 
+.badge{
+    background-color: #148b8b;
+}
+
 .badge-follow-btn{
     cursor: pointer;
     border-radius: 1px;
@@ -984,6 +1041,7 @@ a.tile {
 .question-follow{
     cursor: pointer;
 }
+
 
 .trending-answer-text{
     line-height: 20px;
@@ -1033,8 +1091,14 @@ a.tile {
     vertical-align: middle;
 }
 
+.can-you-answer-div a{
+    line-height: 2.5;
+}
+
 .can-you-answer-div p{
     color: rgba(83, 89, 93, 0.75);
+    text-transform: uppercase;
+    font-size: 13px;
 }
 
 .can-you-answer-div a{
@@ -1720,6 +1784,20 @@ a.tile {
     overflow: auto;
 }
 
+.new-load-more-btn{
+    display: none;
+}
+
+.update-profile{
+    background-color: #fff;
+}
+
+.update-profile input{
+    border: none;
+    /*border-bottom: 1px solid #24292e;*/
+    border-radius: 0;
+    box-shadow: 0 0 2px 0 #333333;
+}
 
 @media screen and (min-width: 768px){
     .profile-desktop-menu{
@@ -1791,6 +1869,10 @@ a.tile {
 
     .feed-answer-item{
         padding-bottom: 10px
+    }
+
+    .edit-right-col{
+        margin-top: -70px;
     }
 }
 

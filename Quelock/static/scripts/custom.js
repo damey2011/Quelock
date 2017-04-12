@@ -135,7 +135,7 @@ function loadAnswers(){
         dataType: 'html',
         data: {'data': req_user, 'csrfmiddlewaretoken': csrftoken},
         success: function(data){
-            if(data.length == 0) $('.post').append('<h3>No Answers written yet</h3>');
+            if(data.length < 5) $('.post').append('<h4>No Answers written yet</h4>');
             else{
                 $('.post').append(data);
             }
@@ -859,26 +859,18 @@ function load_questions(user){
         url: nextQuestionPage,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function(data){
-            //if(!data.results) $('.questions-window').append('<h3>No Question Asked Yet</h3>');
-            //else{
-            //    $.each(data.results, function(key, value){
-            //        $('.questions-window').append(question_item_dom(value))
-            //    });
-            //}
-            //if(data.next!=null){
-            //    nextQuestionPage = data.next;
-            //    $('.loading-1').hide();
-            //    $('.btn-load').show();
-            //}
-            //else{
-            //    $('.loading-1').hide();
-            //    $('.btn-load').hide();
-            //}
-            $('.questions-window').append(data);
-
+            if(data.length == 0){
+                $('.questions-window').append("<h3>No Question Asked By User</h3>");
+                $('.loading-1').hide();
+            }
+            else{
+                $('.questions-window').append(data);
+            }
+            $('.loading-1').hide();
         },
         error: function (data) {
             console.log(data)
+            $('.loading-1').hide();
         }
     })
 }
@@ -898,7 +890,7 @@ function loadTopicsThatUserFollows(){
         url: '/profile/topics_followed/?req_user='+req_user+'&user='+user,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function(data){
-            if(!data) $('.topic-explore-list').append('<h3>No Topic Followed</h3>');
+            if(data.length==0) $('.topic-explore-list').append('<h4>No Topic Followed</h4>');
             else{
                 $.each(data, function(key, value){
                     $('.topic-explore-list').append(explore_topic_dom(value));
@@ -1108,7 +1100,6 @@ function loadExploreTopics(){
             }
         },
         error: function(data){
-            console.log(data);
             $('.loading-1').hide();
             $('.btn-load').hide();
         }

@@ -11,7 +11,11 @@
                 <hr>
                 <div class="profile-card">
                     <div class="picture-div">
-                        <img src="{% static 'images/user.png' %}" alt="{{ req_user.display_picture }}" class="profile-picture" style="margin-bottom: 15px;">
+                        {% if req_user.display_picture.url %}
+                            <img src="{{ req_user.display_picture.url }}" alt="{{ req_user.user.username }}" class="profile-picture" style="margin-bottom: 15px;">
+                        {% else %}
+                            <img src="{% static 'images/user.png' %}" alt="User" class="profile-picture" style="margin-bottom: 15px;">
+                        {% endif %}
                         {% if user == req_user.user %}
                             <div class="upld-btn"><a href="{{ req_user.user.username }}/update" class="ion-android-settings btn btn-sm">  Edit Profile</a></div>
                         {% endif %}
@@ -25,7 +29,7 @@
                                 {% endif %}
                             {% endif %}
                         </h4>
-                        {% if req_user.bio != None or req_user.bio != "" %}
+                        {% if req_user.bio != 'NA' %}
                             <div class="bio-div">
                                 <span class="ion-ios-albums-outline"> </span>
                                 <span class="bio"> |  {{ req_user.bio }}</span>
@@ -52,17 +56,17 @@
                     <div class="col-lg-3 col-md-3 col-sm-12">
                         <div class="overflow-menu-container">
                             <ul class="profile-overflow-menu">
-                                <a onclick="load_answers_tab()" href="#answers" data-toggle="tab"><li class="profile-overflow-menu-item">answers</li></a>
-                                <a onclick="load_questions_tab()" href="#questions" data-toggle="tab"><li class="profile-overflow-menu-item">questions</li></a>
-                                <a onclick="load_followers_tab()" href="#followers" data-toggle="tab"><li class="profile-overflow-menu-item">followers</li></a>
-                                <a onclick="load_following_tab()" href="#followings" data-toggle="tab"><li class="profile-overflow-menu-item">following</li></a>
+                                <a onclick="load_answers_tab()" href="#answers" data-toggle="tab"><li class="profile-overflow-menu-item">answers </li><span class="badge badge-follow-btn item-no-badge"> {{ no_of_answers }}</span></a>
+                                <a onclick="load_questions_tab()" href="#questions" data-toggle="tab"><li class="profile-overflow-menu-item">questions </li><span class="badge badge-follow-btn item-no-badge"> {{ req_user.get_no_of_questions }}</span></a>
+                                <a onclick="load_followers_tab()" href="#followers" data-toggle="tab"><li class="profile-overflow-menu-item">followers </li><span class="badge badge-follow-btn item-no-badge"> {{ req_user.get_no_of_followers }}</span></a>
+                                <a onclick="load_following_tab()" href="#followings" data-toggle="tab"><li class="profile-overflow-menu-item">following </li><span class="badge badge-follow-btn item-no-badge"> {{ req_user.get_no_of_following }}</span></a>
                             </ul>
                             <hr class="divider">
                         </div>
                         <div class="profile-desktop-menu">
                             <ul class="list-group profile-menu-options">
                                 <a onclick="load_answers_tab()" href="#answers" data-toggle="tab"><li class="list-group-item ans" aria-hidden="true"><span class="fa fa-pencil fa-fw"></span>Answers <span class="badge"> {{ no_of_answers }}</span></li></a>
-                                <a onclick="load_questions_tab()" href="#questions" data-toggle="tab"><li class="list-group-item que"> <span class="fa fa-book fa-fw" aria-hidden="true"></span> Questions <span class="badge"> {{ no_of_questions }}</span></li></a>
+                                <a onclick="load_questions_tab()" href="#questions" data-toggle="tab"><li class="list-group-item que"> <span class="fa fa-book fa-fw" aria-hidden="true"></span> Questions <span class="badge"> {{ req_user.get_no_of_questions }}</span></li></a>
                                 <a onclick="load_followers_tab()" href="#followers" data-toggle="tab"><li class="list-group-item folr"> <span class="ion-person-stalker" aria-hidden="true"></span> Followers <span class="badge"> {{ req_user.get_no_of_followers }}</span></li></a>
                                 <a onclick="load_following_tab()" href="#followings" data-toggle="tab"><li class="list-group-item foln"> <span class="ion-person-stalker" aria-hidden="true"></span> Followings <span class="badge"> {{ req_user.get_no_of_following }}</span></li></a>
                             </ul>
@@ -77,9 +81,9 @@
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="followings">
-                                <div class="loading-image">
-                                    <img src="{% static 'images/loading.gif' %}" class='loading-icon' alt="" style="margin: 0px auto;">
-                                </div>
+{#                                <div class="loading-image">#}
+{#                                    <img src="{% static 'images/loading.gif' %}" class='loading-icon' alt="" style="margin: 0px auto;">#}
+{#                                </div>#}
                                 <div class="following">
 
                                 </div>
@@ -87,18 +91,15 @@
                             </div>
 
                             <div class="tab-pane fade" id="followers">
-                                <div class="loading-image">
-                                    <img src="{% static 'images/loading.gif' %}" class='loading-icon' alt="">
-                                </div>
+{#                                <div class="loading-image">#}
+{#                                    <img src="{% static 'images/loading.gif' %}" class='loading-icon' alt="">#}
+{#                                </div>#}
                                 <div class="followers">
 
                                 </div>
                             </div>
 
                             <div class="tab-pane fade" id="questions">
-                                <div class="loading-image">
-                                    <img src="{% static 'images/loading.gif' %}" class='loading-icon' alt="">
-                                </div>
                                 <div class="questions">
 
                                 </div>
@@ -120,13 +121,21 @@
                         <h5>Worked At</h5>
                         <div class="working-place">{{ req_user.works }}</div>
                         <br>
+                    {% else %}
+                        {% if req_user == user %}
+                            <h4>You haven't <a href="{{ req_user.user.username }}/update">updated your profile</a></h4>
+                        {% else %}
+                            <h4>No info available at the moment</h4>
+                        {% endif %}
                     {% endif %}
                     {% if req_user.answer_views != 'NA' %}
                         <br>
                     {% endif %}
                     {% if user == req_user.user %}
-                        <h5>Topics you follow</h5>
-                        <hr>
+                        <hr class="divider"/>
+                        <h5 class="profile-tab-header">Topics you follow</h5>
+                        <hr class="divider"/>
+
                         <ul class="list-group common-user-group topic-explore-list">
 
                         </ul>
@@ -188,7 +197,7 @@
                     <button class="btn btn-sm btn-danger comments-modal-close" data-dismiss="modal">Close</button>
                 </div>
             </div>
-            <!-- /.modal-content -->
+            <!-- modal-content -->
         </div>
     </div>
     <!-- end of comments modal -->

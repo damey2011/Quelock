@@ -39,8 +39,8 @@ def shorten_number(n):
 class UserOtherDetails(models.Model):
     user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     profile_no_of_views = models.IntegerField(null=True, default=0)
-    display_picture = models.ImageField(null=True, blank=True, upload_to='dps')
-    bio = models.TextField(null=True, blank=True)
+    display_picture = models.ImageField(null=True, blank=True, upload_to='dps', default='/default/user.png')
+    bio = models.TextField(null=True, blank=True, default='NA')
     college = models.CharField(max_length=50, blank=True, default='NA')
     works = models.CharField(max_length=100, blank=True, default='NA')
     lives = models.CharField(max_length=50, blank=True, default='NA')
@@ -52,6 +52,8 @@ class UserOtherDetails(models.Model):
     linked_in_profile = models.URLField(max_length=100, blank=True, default='http://linkedin.com')
     no_of_questions = models.IntegerField(default=0)
     no_of_answers = models.IntegerField(default=0)
+
+    User.profile = property(lambda u: UserOtherDetails.objects.get_or_create(user=u)[0])
 
     def __str__(self):
         return self.user.username
@@ -70,6 +72,9 @@ class UserOtherDetails(models.Model):
         user = UserOtherDetails.objects.get(user=self.user)
         u = UserFollowings.objects.filter(user=user).count()
         return shorten_number(u)
+
+    def get_no_of_questions(self):
+        return Question.objects.filter(author=self.user).count()
 
     def increase_no_of_answers(self):
         self.no_of_answers += 1

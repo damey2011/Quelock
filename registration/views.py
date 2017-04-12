@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views import View
 from account.models import UserOtherDetails
@@ -14,27 +15,24 @@ class UserFormView(View):
 
     # handle the form posting
     def post(self, request):
-        form = self.form_class(request.POST)
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        username = request.POST['username']
+        email_address = request.POST['email_address']
+        password = request.POST['password']
 
-        if form.is_valid():
-            user = form.save(commit=False)
+        u = User()
+        u.first_name = first_name
+        u.last_name = last_name
+        u.username = username
+        u.email = email_address
+        u.set_password(password)
+        u.save()
 
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user.set_password(password)
-            user.save()
-            # Create a user other details
-            other_details = UserOtherDetails()
-            other_details.user = user
-            other_details.save()
-            # return user object if the details are then valid
-            user = authenticate(username=username, password=password)
+        u = authenticate(username=username, password=password)
 
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return redirect('/')
-        return render(request, self.template_name, {'form': form})
-
-
-
+        if u is not None:
+            login(request, u)
+            return redirect('/')
+        else:
+            return render(request, 'registration/register.html', {'error': 'An error has occured'})

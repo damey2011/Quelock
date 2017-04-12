@@ -20,12 +20,11 @@
         var next_explore_questions_url;
         var user = '{{ user }}';
     </script>
-    <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
     <script src="{% static 'scripts/custom.js' %}"></script>
     <script>
 
         $(document).ready(function () {
-            next_explore_questions_url = original_explore_questions_url
+            next_explore_questions_url = original_explore_questions_url;
             loadExploreQuestions();
         });
     </script>

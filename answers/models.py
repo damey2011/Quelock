@@ -37,7 +37,6 @@ class Answer(models.Model):
         except:
             return 0
 
-
     def getComments(self):
         try:
             return Comment.objects.filter(parent_answer=self).count()

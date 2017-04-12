@@ -35,18 +35,20 @@ class Question(models.Model):
 
     @property
     def time_asked(self):
-        print(self.date_asked)
         time_diff = datetime.datetime.now(utc) - self.date_asked
-        if time_diff.seconds < 60:
-            return str(math.floor(time_diff.seconds)) + 's'
-        elif 60 <= time_diff.seconds < 3600:
-            return str(math.floor(time_diff.seconds/60)) + 'm'
-        elif 3600 <= time_diff.seconds < 86400:
-            return str(math.floor(time_diff.seconds/3600)) + 'h'
-        elif 1 <= time_diff.days < 30:
+        if time_diff.days < 1:
+            if time_diff.seconds < 60:
+                return str(math.floor(time_diff.seconds)) + 's'
+            elif 60 <= time_diff.seconds < 3600:
+                return str(math.floor(time_diff.seconds/60)) + 'm'
+            elif 3600 <= time_diff.seconds < 5184000:
+                return str(math.floor(time_diff.seconds/3600)) + 'h'
+        elif 1 < time_diff.days < 30:
             return str(math.floor(time_diff.days)) + 'd'
+        elif time_diff.days == 1:
+            return 'Yesterday'
         else:
-            return self.time_written.date()
+            return self.date_asked.date()
 
 
 class QuestionTopic(models.Model):

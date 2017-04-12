@@ -90,12 +90,16 @@ def topic_create_success(request):
 
 
 def follow_topic(request):
-    try:
-        tf = TopicFollowing.objects.get(user=request.user, follows_id=request.GET.get('topic'))
-    except ObjectDoesNotExist:
-        tf = TopicFollowing(user=request.user, follows_id=request.GET.get('topic'))
-        tf.save()
-    return JsonResponse(True, safe=False)
+    if TopicFollowing.objects.get_or_create(user=request.user.profile, follows_id=request.GET.get('topic')):
+        return JsonResponse(True, safe=False)
+    else:
+        return JsonResponse(True, safe=False, status=500)
+    # try:
+    #     tf = TopicFollowing.objects.get(user=request.user, follows_id=request.GET.get('topic'))
+    # except ObjectDoesNotExist:
+    #     tf = TopicFollowing(user=request.user, follows_id=request.GET.get('topic'))
+    #     tf.save()
+    # return JsonResponse(True, safe=False)
 
 
 def unfollow_topic(request):

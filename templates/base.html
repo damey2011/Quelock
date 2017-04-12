@@ -37,9 +37,10 @@
 {#            </form>#}
 
             <ul class="navbar-right nav navbar-nav">
-                <li class="bar-search-btn-li"><a onclick="show_hide_search_bar()" href="#" class="bar-search-btn"><span class="ion-android-search"></span></a></li>
+            <li class="bar-search-btn-li"><a onclick="show_hide_search_bar()" href="#" class="bar-search-btn"><span class="ion-android-search"></span></a></li>
                 <li class="{{ feeds_active }}"><a href="{% url 'index_home' %}"><span class="fa fa-feed"></span> Feeds</a></li>
 {#                <li class="{{ trending_active }}"><a href="{% url 'trending_by_interactions' %}"><span class="ion-android-notifications"> </span>  Notifications</a></li>#}
+                <li><a href="{% url 'question_create' %}"><span class="ion-ios-help-empty"></span> Create Question</a></li>
                 <li class="{{ explore_active }}"><a href="{% url 'explore_questions' %}"><span class="fa fa-globe"></span> Explore</a></li>
                 <li class="{{ archive_active }}"><a href="{% url 'archived' %}"><span class="fa fa-thumb-tack"></span> Archives</a></li>
                 <li class="{{ account_active }}"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-user-md"> </span>  Account</a>
@@ -86,7 +87,7 @@
                 <li><a href=""><span class="ion-ios-home-outline"></span><br><p>Feed</p></a></li>
                 <li><a href="{% url 'explore_questions' %}"><span class="ion-ios-compose-outline"></span><br><p>Answer</p></a></li>
                 <li><a href="{% url 'archived' %}"><span class="ion-ios-pricetag-outline"></span><br><p>Archive</p></a></li>
-                <li><a href="/profile/{{ user.username }}"><span class="ion-ios-person-outline"></span><br><p>Profile</p></a></li>
+                <li><a href="/profile/{{ user.username }}"><span class="ion-ios-contact-outline"></span><br><p>Profile</p></a></li>
             </ul>
         </div>
     </div>

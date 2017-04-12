@@ -109,7 +109,14 @@
                 url: '/ajax/feeds/a/?page='+feed_ajax_page_counter,
                 data: {'csrfmiddlewaretoken': csrftoken},
                 success: function (data) {
-                    $('.feeds').append(data);
+                    if(data.length < 5){
+                        $('.feeds').append('<br><h4 style="text-align: center;">No new content, please follow new topics and users to populate your feeds</h4>');
+                        $('.feed-load-more-btn').hide();
+                    }
+                    else{
+                        $('.feeds').append(data);
+                    }
+
                 },
                 complete: function () {
                     $('.load-more-inner').html('<span class="ion-android-arrow-down"></span> Load More');

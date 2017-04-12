@@ -8,10 +8,10 @@ class MyTestPagination(PageNumberPagination):
 
 
 class UserQuestionPagination(CursorPagination):
-    page_size = 2
+    page_size = 15
     ordering = ['-date_asked']
 
 
 class ExploreQuestionPagination(CursorPagination):
-    page_size = 2
+    page_size = 15
     ordering = ['-date_asked']

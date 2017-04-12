@@ -13,7 +13,7 @@ from account.models import UserOtherDetails
 from answers.models import Answer, UpVotes
 from answers.serializers import AnswerSerializer
 
-from questions.models import Question, QuestionTopic, QuestionFollowing, AnonymousQuestionsWriters
+from questions.models import Question, QuestionTopic, QuestionFollowing, AnonymousQuestionsWriters, ReadQuestions
 from questions.pagination import MyTestPagination, UserQuestionPagination, ExploreQuestionPagination
 from .serializers import QuestionSerializer
 
@@ -41,7 +41,7 @@ class QuestionDetailView(View):
     def get(self, request, slug):
         question = Question.objects.get(slug=slug)
         try:
-            writer = UserOtherDetails.objects.get(user=request.user)
+            writer = request.user.profile
             user_has_answered_question_already = Answer.objects.filter(
                 writer=writer, question=question)
         except:
@@ -54,6 +54,11 @@ class QuestionDetailView(View):
             user_follows = False
 
         question_tags = QuestionTopic.objects.filter(question=question).select_related('under')
+
+        if ReadQuestions.objects.filter(user=request.user, question=question).exists():
+            pass
+        else:
+            ReadQuestions(user=request.user, question=question).save()
 
         context = {'question': question,
                    'user_has_answered_question_already': user_has_answered_question_already, 'explore_active': 'active',
@@ -93,8 +98,13 @@ class QuestionCreateView(View):
 
         question = Question(title=title, question_details=details)
 
-        if request.POST['anonymous']:
-            question.anonymous = True
+        try:
+            question.anonymous = request.POST['anonymous']
+        except:
+            pass
+
+        # if request.POST['anonymous']:
+        #     question.anonymous = True
 
         question.author = author
         question.save()
@@ -232,9 +242,7 @@ class GetQuestionFollowers(ListAPIView):
 class IsFollowingQuestion(View):
     def get(self, request):
         try:
-            user = UserOtherDetails.objects.get(user=request.user)
-            q = Question.objects.get(pk=request.GET.get('question'))
-            qf = QuestionFollowing.objects.filter(user=user, question=q).exists()
+            qf = QuestionFollowing.objects.filter(user=request.user, question_id=request.GET.get('question')).exists()
             return JsonResponse(qf, safe=False)
         except ObjectDoesNotExist:
             return JsonResponse(False, safe=False)

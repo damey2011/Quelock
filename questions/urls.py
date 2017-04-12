@@ -7,7 +7,7 @@ from questions.views import QuestionListAPIView, QuestionDetailView, QuestionCre
 
 urlpatterns = [
     url(r'^$', QuestionListAPIView.as_view()),
-    url(r'^create/', QuestionCreateView.as_view(), name='create'),
+    url(r'^create/', QuestionCreateView.as_view(), name='question_create'),
     url(r'^api/explore/', QuestionExploreAPI.as_view(), name='explore_questions_api'),
     url(r'^explore/', QuestionExploreView.as_view(), name='explore_questions'),
     url(r'^follow/', FollowQuestion.as_view(), name='follow_question'),

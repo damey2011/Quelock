@@ -17,12 +17,14 @@ from topics.serializers import TopicSerializer
 
 class ProfileView(View):
     def get(self, request, username):
-        requested_user = UserOtherDetails.objects.get(user__username=username)
+        requested_user = User.objects.get(username=username).profile
         requested_user.profile_no_of_views += 1
         requested_user.save()
         try:
-            user1 = UserOtherDetails.objects.get(user=User.objects.get(username=request.user))
-            user2 = UserOtherDetails.objects.get(user=User.objects.get(username=username))
+            # user1 = UserOtherDetails.objects.get(user=User.objects.get(username=request.user))
+            user1 = request.user.profile
+            # user2 = UserOtherDetails.objects.get(user=User.objects.get(username=username))
+            user2 = User.objects.get(username=username).profile
             i = UserFollowings.objects.filter(user=user2, is_following=user1).exists()
             u = UserFollowings.objects.get(user=user1, is_following=user2)
         except:

@@ -1,10 +1,11 @@
+import datetime
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import F
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, render_to_response
-from django.utils import timezone
 from django.utils.datetime_safe import date
+from django.utils.timezone import utc
 from django.views import View
 from rest_framework.generics import ListAPIView
 from account.models import UserOtherDetails, UserFollowings, AlreadyReadAnswers
@@ -319,5 +320,14 @@ class SuggestEdit(View):
 class AddNewView(View):
     def get(self, request):
         answer_id = request.GET.get('answer')
-        AlreadyReadAnswers(user=request.user, answer_id=answer_id).save()
+        try:
+            ara = AlreadyReadAnswers.objects.filter(user=request.user, answer_id=answer_id)
+            if ara.count() > 0:
+                last_viewd = ara.count() - 1
+                time_diff = datetime.datetime.now(utc) - ara[last_viewd].created
+
+                if time_diff.days >= 1:
+                    AlreadyReadAnswers(user=request.user, answer_id=answer_id).save()
+        except AlreadyReadAnswers.DoesNotExist:
+            AlreadyReadAnswers(user=request.user, answer_id=answer_id).save()
         return JsonResponse(True, safe=False)

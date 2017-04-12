@@ -9,7 +9,11 @@
         <div class="row" style="margin-top: 60px;">
             <div class="col-lg-3"></div>
             <div class="col-lg-6 archived">
-                <h3>Answers you archived</h3>
+                {% if answers %}
+                    <h4>Answers you archived</h4>
+                {% else %}
+                    <h4>You have no archived answers</h4>
+                {% endif %}
                 <ul class="list-group common-user-group">
                     {% for answer in answers %}
                         <a href="/answers/{{ answer.answer.id }}">
