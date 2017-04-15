@@ -1,0 +1,22 @@
+{% for comment in comments %}
+    <blockquote class='custom-bq comment-{{ comment.id }}'>
+        <span class='answer-comment-writer'><a href='/profile/{{ comment.writer.username }}'>{{ comment.writer.first_name }} {{ comment.writer.last_name }}</a></span>
+        <div class='quoted-answer small'>{{ comment.body }}</div>
+        <p class="comment-p-links">
+            {% if comment.children_count > 0 %}
+                <a href="#" class="replies-count-{{ comment.id }}" onclick="loadCommentReplies({{ comment.id }})">
+                    {% if comment.children.count == 1 %}
+                        {{ comment.children.count }} reply
+                    {% else %}
+                        {{ comment.children.count }} replies
+                    {% endif %}
+                </a> &middot;
+            {% endif %}
+            <a href="#" onclick="openCommentCommentBox({{ comment.id }})" class="comment-rep-btn-{{ comment.id }}">reply</a>
+            {% if comment.writer == request.user %}
+                &middot;
+                <a href="#" onclick="deleteComment({{ comment.id }})" class="comment-rep-btn-{{ comment.id }}">delete</a>
+            {% endif %}
+        </p>
+    </blockquote>
+{% endfor %}

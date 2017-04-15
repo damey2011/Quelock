@@ -331,3 +331,4 @@ class AddNewView(View):
         except AlreadyReadAnswers.DoesNotExist:
             AlreadyReadAnswers(user=request.user, answer_id=answer_id).save()
         return JsonResponse(True, safe=False)
+

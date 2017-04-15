@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.views import View
 from rest_framework.generics import ListAPIView, CreateAPIView
 from account.models import UserOtherDetails
@@ -13,6 +13,33 @@ from comments.serializers import CommentDetailsSerializer, CommentChildSerialize
 class CreateComment(CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentDetailsSerializer
+
+
+class RetrieveCommentsR2R(View):
+    def get(self, request):
+        if request.GET.get('answer'):
+            try:
+                comments = Comment.objects.filter(parent_answer_id=request.GET.get('answer'))
+            except:
+                raise ObjectDoesNotExist
+        else:
+            comments = Comment.objects.all()
+        return render_to_response('comments/comments_frag.html',
+                                  {'comments': comments, 'answer': request.GET.get('answer'), 'request': request})
+
+
+class RetrieveCommentCommentsR2R(View):
+    def get(self, request):
+        print('comment id is ' + request.GET.get('comment'))
+        if request.GET.get('comment'):
+            try:
+                comments = Comment.objects.filter(parent_id=request.GET.get('comment'))
+            except:
+                raise ObjectDoesNotExist
+        else:
+            comments = Comment.objects.all()
+        print(comments)
+        return render_to_response('comments/comment_comments_frag.html', {'comments': comments, 'request': request})
 
 
 class RetrieveComments(ListAPIView):
@@ -39,16 +66,14 @@ class PostComment(View):
         comment_content = (request.POST['comment_content']).replace('"', '&quot')
         parent_id = request.POST['parent_id']
         parent_type = request.POST['parent_type']
-        writer = UserOtherDetails.objects.get(user=request.user)
+        writer = request.user
 
         if int(parent_type) == 1:
-            answer = Answer.objects.get(pk=parent_id)
-            c = Comment(writer=writer, body=comment_content, parent_answer=answer)
+            c = Comment(writer=writer, body=comment_content, parent_answer_id=parent_id)
             c.save()
             return JsonResponse(True, safe=False)
         if int(parent_type) == 2:
-            c_ = Comment.objects.get(pk=parent_id)
-            c = Comment(writer=writer, body=comment_content, parent=c_)
+            c = Comment(writer=writer, body=comment_content, parent_id=parent_id)
             c.save()
             return JsonResponse(True, safe=False)
         return Http404()
@@ -69,3 +94,12 @@ class RetrieveChildrenComment(ListAPIView):
 class Test(View):
     def get(self, request):
         return render(request, 'comments/comments.html');
+
+
+class DeleteComment(View):
+    def get(self, request):
+        try:
+            Comment.objects.get(pk=request.GET.get('comment')).delete()
+        except Comment.DoesNotExist:
+            pass
+        return JsonResponse(True, safe=False)

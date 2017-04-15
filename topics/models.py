@@ -17,6 +17,9 @@ class Topic(models.Model):
     def __str__(self):
         return self.title
 
+    def image_url(self):
+        return self.image_name.url
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)

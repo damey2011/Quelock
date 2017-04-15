@@ -1,5 +1,9 @@
-function notify(text){
-    $('.notification').slideDown(1000).append("<span>"+text+"</span><a id='close' onclick='close_notify()'>[close]</a>");
+var notify = function(string_, display_duration){
+    $('.notification-box-text').html(string_);
+    $('.notification-box').slideDown(300).show();
+    setTimeout(function(){
+        $('.notification-box').slideUp(300);
+    }, display_duration)
 }
 
 function close_notify(){
@@ -313,7 +317,8 @@ function upvote(answer_id) {
         if (data == true) {
             $('.upvote-' + answer_id).html("<span class='fa fa-thumbs-o-up'></span> Upvoted").attr('onclick', 'r_upvote(' + answer_id + ')').addClass('clicked');
             $('.downvote-' + answer_id).attr('disabled', 'true');
-            $.toast('Answer was upvoted', {'duration': 1000, 'align': 'top'});
+            //$.toast('Answer was upvoted', {'duration': 1000, 'align': 'top'});
+            notify('Answer was Upvoted', 3500);
         }
     });
 }
@@ -326,7 +331,7 @@ function r_upvote(answer_id) {
         if (data == true) {
             $('.upvote-' + answer_id).html("<span class='fa fa-thumbs-o-up'></span> Upvote").attr('onclick', 'upvote(' + answer_id + ')').removeClass('clicked');
             $('.downvote-' + answer_id).removeAttr('disabled');
-            $.toast('You un-upvoted this answer', {'duration': 1000, 'align': 'top'});
+            notify('You un-upvoted this answer', 3500);
         }
     });
 }
@@ -336,17 +341,18 @@ function downvote(answer_id) {
         if (data == true) {
             $('.downvote-' + answer_id).html('Downvoted').attr('onclick', 'r_downvote(' + answer_id + ')').addClass('clicked');
             $('.upvote-' + answer_id).attr('disabled', 'true');
-            $.toast('Answer was downvoted<br><i>Note: downvotes bring down writer and answer reputation</i>', {'duration': 1000, 'align': 'top'});
+            notify('Answer was downvoted <i>Note: downvotes bring down writer and answer reputation</i>', 3500);
         }
     });
 }
 
 function r_downvote(answer_id) {
+    event.preventDefault();
     $.post('/answers/downvote/?answer=' + answer_id + '&action=r_downvote', {'csrfmiddlewaretoken': csrftoken}, function (data) {
         if (data == true) {
             $('.downvote-' + answer_id).html('Downvote').attr('onclick', 'downvote(' + answer_id + ')').removeClass('clicked');
             $('.upvote-' + answer_id).removeAttr('disabled');
-            $.toast('You un-downvoted this answer', {'duration': 1000, 'align': 'top'});
+            notify('You undownvoted this answer', 3500);
         }
     });
 }
@@ -361,7 +367,7 @@ function bookmarkAnswer(answer_id) {
                 $('.bookmark').removeAttr('onclick').attr('onclick', 'unBookmarkAnswer('+answer_id+')').html('Archived').addClass('clicked');
                 $('.archive-'+answer_id).removeAttr('onclick').attr('onclick', 'unBookmarkAnswer('+answer_id+')').html('Archived').addClass('clicked')
             }
-            $.toast('Answer has been added to your archive', {'duration': 1000, 'align': 'top'});
+            notify('Answer has been added to your archive', 3500);
 
         },
         error: function () {
@@ -379,7 +385,7 @@ function unBookmarkAnswer(answer_id) {
             if (data == true){
                 $('.bookmark').removeAttr('onclick').attr('onclick', 'bookmarkAnswer('+answer_id+')').html('Archive').removeClass('clicked');
                 $('.archive-'+answer_id).removeAttr('onclick').attr('onclick', 'bookmarkAnswer('+answer_id+')').html('Archive').removeClass('clicked');
-                $.toast('Answer has been removed from your archive', {'duration': 1000, 'align': 'top'});
+                notify('Answer has been removed from your archive', 3500)
             }
 
         },
@@ -397,7 +403,7 @@ function thank(answer_id){
         success: function (data) {
             if(data) {
                 $('.thank-'+answer_id).addClass('clicked').removeClass('comment-link').removeAttr('onclick').html('Gratified');
-                $.toast('Gratification Sent', {'duration': 1000, 'align': 'top'})
+                notify('Gratification sent', 3500);
             }
         },
         error: function(data){
@@ -414,7 +420,6 @@ function suggest_edit(answer_id){
         success: function (data) {
             if(data) {
                 $('.editsug-'+answer_id).addClass('clicked').removeClass('comment-link').removeAttr('onclick').html('Edit Suggested');
-                $.toast('Gratification Sent', {'duration': 1000, 'align': 'top'})
             }
         },
         error: function(data){
@@ -432,12 +437,12 @@ function follow(follows){
             if(data == true){
                 $('.follow').html('- unfollow').attr('onclick', 'unfollow('+follows+')').addClass('clicked');
                 $('.related-user-'+follows).hide();
-                $.toast('User has been followed', {'duration': 500, 'align': 'top'});
+                notify('Follow Success', 3500);
             }
         },
         error: function(){
             //notify('An error occurred');
-            $.toast('An error has occured', {'duration': 1000, 'align': 'top'});
+            notify('Error Occured: <i>you might want to check your connection or reload the page</i>', 10000);
         }
     })
 }
@@ -450,11 +455,11 @@ function unfollow(follows){
         success: function(data){
             if(data == true){
                 $('.follow').html(' + follow').attr('onclick', 'follow('+follows+')').removeClass('clicked');
-                $.toast('User has been unfollowed', {'duration': 500, 'align': 'top'});
+                notify('User has been unfollowed', 3500);
             }
         },
         error: function(){
-            $.toast('An error has occured', {'duration': 1000, 'align': 'top'});
+            notify('Error Occured: <i>you might want to check your connection or reload the page</i>', 10000);
         }
     })
 }
@@ -468,8 +473,7 @@ function loadQuestionAnswers() {
             $('.answers').append(data);
         },
         error: function () {
-            $.toast('An error has occured, please reload the page', {'duration': 30000, 'align': 'top'});
-        }
+            notify('Error Occured: <i>you might want to check your connection or reload the page</i>',10000);        }
     })
 }
 
@@ -497,11 +501,11 @@ function delete_answer(answer_id) {
         type: 'post',
         data: {'csrfmiddlewaretoken': csrftoken, 'answer': answer_id},
         success: function (data) {
-            $.toast('Answer has been deleted', {'duration': 1000, 'align': 'top'});
+            notify('Answer deleted');
             if (data == true) window.location.reload(true);
         },
         error: function () {
-            $.toast('Answer couldnt be deleted', {'duration': 2000, 'align': 'top'});
+            notify('Error Occured: <i>you might want to check your connection or reload the page</i>', 10000);
         }
     })
 }
@@ -520,21 +524,16 @@ function getBio(value) {
 
 
 function openAnswerCommentBox(answer_id){
-    $('.comment-div-'+answer_id).css('display', 'none');
+    $('.add-parent-rep').css('display', 'none');
 
-    if ($('.comment-div-'+answer_id).length){
-        $('.comment-div-'+answer_id).css('display', 'block');
-    }
-    else{
-        $('.answer-'+answer_id).append("<br><div class='comment-div-"+answer_id+"'>\
+    $('.comment-modal-'+answer_id).append("<br><div class='comment-div-"+answer_id+"'>\
             <label for='comment'>Your Comment:</label><a onclick='close_comment_box("+answer_id+")' class='comment-link comment-box-close-btn'>[X]</a>\
-            <textarea name='comment' id='answer-comment-"+answer_id+"' cols='30' rows='4' class='form-control answer-comment comment-"+answer_id+"'></textarea>\
+            <textarea name='comment' id='answer-comment-"+answer_id+"' cols='30' rows='4' class='form-control comment-comment comment-"+answer_id+"'></textarea>\
             <br>\
             <button class='btn btn-default' onclick='SubmitComment(1, "+answer_id+")'>Comment</button>\
         </div>");
-    }
 
-    $('#answer-comment-'+answer_id).focus();
+    $('#comment-comment-'+answer_id).focus();
 }
 
 function openCommentCommentBox(comment_id){
@@ -558,40 +557,46 @@ function openCommentCommentBox(comment_id){
 function close_comment_box(parent_id){
     $('.comment-div-'+parent_id).css('display', 'none');
     $('.reply-link-'+parent_id).css('display', 'block');
+    $('.add-parent-rep').css('display', 'inline');
 }
 
 function SubmitComment(commentType, parent_id){
+    event.preventDefault();
     var answer_comment_content = $('#answer-comment-'+parent_id).val();
     switch(commentType){
         case 1:
+            console.log(answer_comment_content);
             $.ajax({
                 url: '/comments/post/',
                 method: 'POST',
                 data: {'csrfmiddlewaretoken': csrftoken, 'comment_content': answer_comment_content, 'parent_id': parent_id,
                     'parent_type': 1},
                 success: function(data){
-                    $.toast('Comment was Added', {'duration': 2000, 'align': 'top'});
-                    window.location.reload(true);
+                    notify('Comment Added: <i>your comment will appear shortly</i>', 5000);
+                    $('#answer-comment-'+parent_id).val("")
+                    close_comment_box(parent_id);
                 },
                 error:function(data){
-                    $.toast('Sorry, an error has occured', {'duration': 2000, 'align': 'top'});
+                    notify('Error Occured: <i>you might want to check your connection or reload the page</i>',10000);
                 }
 
             });
             break;
         case 2:
             var comment_comment_content = $('#comment-comment-'+parent_id).val();
+            console.log(comment_comment_content);
             $.ajax({
                 url: '/comments/post/',
                 method: 'POST',
                 data: {'csrfmiddlewaretoken': csrftoken, 'comment_content': comment_comment_content, 'parent_id': parent_id,
                     'parent_type': 2},
                 success: function(data){
-                    $.toast('Comment was Added', {'duration': 2000, 'align': 'top'});
-                    window.location.reload(true);
+                    notify('Comment Added: <i>your comment will appear shortly</i>', 4000);
+                    $('#comment-comment-'+parent_id).val("");
+                    close_comment_box(parent_id);
                 },
                 error:function(data){
-                    $.toast('Sorry, an error has occured, please reload page', {'duration': 30000, 'align': 'top'});
+                    notify('Error Occured: <i>you might want to check your connection or reload the page</i>', 10000);
                 }
             })
     }
@@ -638,7 +643,7 @@ function loadComments(answer_id){
             }
         },
         error: function(data){
-            $.toast('Sorry, an error has occured', {'duration': 2000, 'align': 'top'});
+            notify('Error Occured: <i>You might want to check your connection or reload the page</i>', 10000);
         }
     })
 }
@@ -673,7 +678,7 @@ function loadReplies(parent_id, replies_url){
             }
         },
         error: function(data){
-
+             notify('Error Occured: <i>You might want to check your connection or reload the page</i>', 10000);
         }
     })
 }
@@ -754,6 +759,8 @@ function follow_item(follows){
             if(data == true){
                 $('.follow-item-'+follows).attr('onclick', 'unfollow_item('+follows+')').html("<span class='ion-android-people'></span>").addClass('icon-follow-clicked')
             }
+            notify('Follow Success');
+
         },
         error: function(){
             //notify('An error occurred');
@@ -770,6 +777,7 @@ function unfollow_item(follows){
             if(data == true){
                 $('.follow-item-'+follows).html("<span class='ion-android-person-add'></span>").attr('onclick', 'follow_item('+follows+')').removeClass('icon-follow-clicked');
                 //notify("Unfollowed");
+                notify('Unfollowed');
             }
         },
         error: function(){
@@ -809,7 +817,7 @@ function load_followers(user){
         error: function (data) {
             $('.loading-1').hide();
             $('.btn-load').hide();
-            $('.follower-window').html('<h3>Please Register or Login</h3>')
+            $('.follower-window').html('<h3>Please Register or Login</h3>');
         }
     })
 }
@@ -869,8 +877,8 @@ function load_questions(user){
             $('.loading-1').hide();
         },
         error: function (data) {
-            console.log(data)
             $('.loading-1').hide();
+            notify('Error Occurred', 3500);
         }
     })
 }
@@ -924,7 +932,7 @@ function follow_topic(topic_id){
                 //do nothing
                 alert(data)
             }
-            $.toast('Topic was followed', {'duration': 500, 'align': 'top'});
+            notify('Topic was followed', 3500);
         },
         error: function(data){
 
@@ -943,12 +951,11 @@ function unfollow_topic(topic_id){
                 $('.t-'+topic_id).attr('onclick', 'follow_topic('+topic_id+')').html('+ follow');
             }
             else{
-                alert(data)
             }
-            $.toast('Topic was unfollowed', {'duration': 2000, 'align': 'top'});
+            notify('Topic was Unfollowed', 3500);
         },
         error: function(data){
-            $.toast('Sorry, an error has occured', {'duration': 2000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
         }
     })
 }
@@ -964,7 +971,7 @@ function check_if_following_topic(topic_id){
         },
         error: function(data){
             //alert(data)
-            $.toast('Sorry, an error has occured, please reload the page', {'duration': 2000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
 
         },
         async: false
@@ -996,7 +1003,7 @@ function loadTopicAnswers() {
             $('.post').append(data);
         },
         error: function () {
-            $.toast('Sorry, an error has occured', {'duration': 2000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
         },
         complete: function(){
             next_topic_answers_page += 1;
@@ -1018,7 +1025,7 @@ function loadRelatedTopics(){
         },
         error: function(data){
             //alert(data);
-            $.toast('Sorry, an error has occured, please reload the page', {'duration': 30000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
 
         }
     })
@@ -1053,7 +1060,7 @@ function loadUsersWithCommonInterest(){
         },
         error: function(data){
             //alert(data);
-            $.toast('Sorry, an error has occured, please reload the page', {'duration': 30000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
         }
     })
 }
@@ -1102,6 +1109,8 @@ function loadExploreTopics(){
         error: function(data){
             $('.loading-1').hide();
             $('.btn-load').hide();
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
+
         }
     })
 }
@@ -1143,7 +1152,7 @@ function loadExplorePeople(){
         error: function(data){
             $('.loading-1').hide();
             $('.btn-load').hide();
-            $.toast('Sorry, an error has occured, please reload the page', {'duration': 30000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
         }
     })
 }
@@ -1192,8 +1201,7 @@ function loadExploreQuestions(){
             }
         },
         error: function(data){
-            console.log(data);
-            $('.question-explore-list').append('<h3>Heyo, Please Register or Login<br></h3>');
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
             $('.loading-1').hide();
             $('.btn-load').hide();
         }
@@ -1239,7 +1247,7 @@ function is_following_question(question){
         },
         error: function(data) {
             bool_ = data;
-            $.toast('Sorry, an error has occured, please reload the page', {'duration': 30000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>')
         },
         async:false
     });
@@ -1255,7 +1263,7 @@ function follow_question(question){
             $.toast('Question was followed', {'duration': 800, 'align': 'top'});
         },
         error: function(data) {
-            $.toast('Sorry, an error has occured, please reload the page', {'duration': 5000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>')
         }
     });
 }
@@ -1269,7 +1277,7 @@ function unfollow_question(question){
             $.toast('Question was unfollowed', {'duration': 800, 'align': 'top'});
         },
         error: function(data) {
-            $.toast('Sorry, an error has occured, please reload the page', {'duration': 30000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>')
         }
     });
 }
@@ -1301,7 +1309,7 @@ function loadTrending(){
             }
         },
         error: function(data){
-            $('.question-explore-list').append('<h3>Heyo, Please Register or Login<br></h3>');
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>')
             $('.loading-1').hide();
             $('.btn-load').hide();
         }
@@ -1342,7 +1350,6 @@ function open_upvoters_modal(answer_id){
 
 function show_upvoters(answer_id){
 
-
     $('.loading-1-upvoters').css('display','block');
     $('.btn-load-upvoters').css('display', 'none');
 
@@ -1366,7 +1373,7 @@ function show_upvoters(answer_id){
             }
         },
         error:function(data){
-            $.toast('Sorry, an error has occured, please reload the page', {'duration': 4000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
         }
     })
 }
@@ -1377,6 +1384,7 @@ function openMessageModal(user){
 }
 
 function sendMessage(receipient){
+    event.preventDefault();
     var message = $('.message-textfield').val();
     $.ajax({
         url: '/messages/send/?user_id='+receipient,
@@ -1391,7 +1399,7 @@ function sendMessage(receipient){
             else $.toast('Message Sending Failed, Please refresh', {'duration': 2000, 'align': 'top'});
         },
         error:function(data){
-            $.toast('An error has occured', {'duration': 2000, 'align': 'top'});
+            notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
         }
     })
 }
@@ -1410,4 +1418,93 @@ function sendFile(file, editor, welEditable) {
             editor.insertImage(welEditable, url);
         }
     });
+}
+
+function request_answers(question, topics){
+    event.preventDefault();
+    $.ajax({
+        url: '/questions/request_answers/',
+        method: 'POST',
+        dataType: 'html',
+        data: {'csrfmiddlewaretoken': csrftoken, 'topics': topics, 'question': question_id },
+        success: function(data){
+            $('.request-answers-div').html(data);
+        }
+    })
+}
+
+function send_single_answer_request(requester, receipient){
+    event.preventDefault();
+    var no_requested_before_now = ($('.ans-req-counter').html());
+    if((parseInt(no_requested_before_now) + parseInt(answer_request_counter)) < 10){
+        $.ajax({
+            url: '/questions/send_answer_request/',
+            method: 'POST',
+            data: {'csrfmiddlewaretoken': csrftoken, 'requester': requester, 'receipient': receipient , 'question': question_id },
+            success: function(data){
+                //    change request icon to ticked
+                $('.req-ans-icon-'+receipient).removeClass('ion-android-add').addClass('ion-checkmark-round')
+                    .attr('onclick', 'remove_single_answer_request('+requester+', '+receipient+')');
+                var newVal = parseInt(no_requested_before_now) + 1;
+                $('.ans-req-counter').html(newVal);
+                notify('Request has been sent <i>We\'ll notify you when they answer</i>', 3000)
+
+            },
+            error: function () {
+                notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
+
+            }
+        })
+    }
+    else{
+        $('.max-reached-overlay').css('display', 'block');
+    }
+}
+
+function remove_single_answer_request(requester, receipient) {
+    event.preventDefault();
+    var no_requested_before_now = ($('.ans-req-counter').html());
+    $.ajax({
+        url: '/questions/remove_answer_request/',
+        method: 'POST',
+        data: {
+            'csrfmiddlewaretoken': csrftoken,
+            'requester': requester,
+            'receipient': receipient,
+            'question': question_id
+        },
+        success: function (data) {
+            //    change ticked icon to request
+            $('.req-ans-icon-' + receipient).removeClass('ion-checkmark-round').addClass('ion-android-add')
+                .attr('onclick', 'send_single_answer_request(' + requester + ', ' + receipient + ')');
+            var newVal = parseInt(no_requested_before_now) - 1;
+            $('.ans-req-counter').html(newVal);
+        }
+    })
+}
+
+function loadCommentReplies(comment){
+    event.preventDefault();
+    $.ajax({
+        url: 'comments/retrieve_comment_comments/?comment='+comment,
+        data: {'csrfmiddlewaretoken': csrftoken},
+        dataType: 'html',
+        success: function (data) {
+            $('.comment-'+comment).append(data);
+            $('.replies-count-'+comment).css('display', 'none');
+        }
+    })
+}
+
+function deleteComment(comment){
+    event.preventDefault();
+    $.ajax({
+        url: 'comments/delete/?comment='+comment,
+        data: {'csrfmiddlewaretoken': csrftoken},
+        success: function (data) {
+            $('.comment-'+comment).css('display', 'none');
+            notify('Your comment has been deleted', 3000);
+
+        }
+    })
 }

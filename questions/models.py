@@ -40,9 +40,9 @@ class Question(models.Model):
             if time_diff.seconds < 60:
                 return str(math.floor(time_diff.seconds)) + 's'
             elif 60 <= time_diff.seconds < 3600:
-                return str(math.floor(time_diff.seconds/60)) + 'm'
+                return str(math.floor(time_diff.seconds / 60)) + 'm'
             elif 3600 <= time_diff.seconds < 5184000:
-                return str(math.floor(time_diff.seconds/3600)) + 'h'
+                return str(math.floor(time_diff.seconds / 3600)) + 'h'
         elif 1 < time_diff.days < 30:
             return str(math.floor(time_diff.days)) + 'd'
         elif time_diff.days == 1:
@@ -82,3 +82,9 @@ class ReadQuestions(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now=True)
+
+
+class AnswerRequest(models.Model):
+    requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='requester')
+    receipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receipient')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)

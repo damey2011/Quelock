@@ -1,0 +1,33 @@
+{% if not users %}
+    <div class="request-answers-header">
+        <h4> No Suggestions at the moment</h4>
+    </div>
+{% else %}
+    <div class="request-answers-header">
+        <h5>We suggest you request answers from these people:</h5>
+    </div>
+{% endif %}
+
+<div class="request-users-container">
+    <div class="max-reached-overlay">
+        You have reached the maximum number
+    </div>
+
+    {% for user in users %}
+        <div class="request-user-item">
+            <div class="request-user-img-div"><img class="request-user-img" src="{{ user.profile.display_picture.url }}" alt="{{ user.first_name }}"></div>
+            <div class="request-user">
+                <a href="" class="request-user-name">{{ user.first_name }} {{ user.last_name }}</a>
+                <div class="request-user-no-answers">{{ user.profile.bio }}</div>
+            </div>
+            <div class="request-action">
+                <a onclick="send_single_answer_request({{ request.user.id }}, {{ user.id }})" href="#" class="ion-android-add req-ans-icon-{{ user.id }}"></a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% if users %}
+    <span class="more-answerers">
+        <span class="ans-req-counter">{{ sent_already }}</span>/10
+    </span>
+{% endif %}

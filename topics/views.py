@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import connection
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, render_to_response
@@ -14,8 +15,8 @@ from questions.models import QuestionTopic
 from topics.forms import TopicCreateUpdateForm
 
 from topics.models import Topic, TopicFollowing
-from topics.pagination import TopicAnswersPagination, TopicPagination
-from topics.serializers import TopicSerializer, TopicFollowingSerializer
+from topics.pagination import TopicPagination
+from topics.serializers import TopicSerializer
 
 
 class TopicsListAPIView(ListAPIView):
@@ -44,7 +45,7 @@ class TopicDetailView(View):
         total_answers = 0
         for question in questions_under:
             total_answers += Answer.objects.filter(question=question.question).count()
-        user = UserOtherDetails.objects.get(user=request.user)
+        user = request.user.profile
         follows = topic
         tf = TopicFollowing.objects.filter(user=user, follows=follows).exists()
         context = {'topic': topic,
@@ -66,7 +67,7 @@ class TopicCreateView(View):
         form = TopicCreateUpdateForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             form.save()
-            return redirect('/topics')
+            return redirect('/topics/')
         return HttpResponse("An error occurred")
 
 
@@ -94,12 +95,12 @@ def follow_topic(request):
         return JsonResponse(True, safe=False)
     else:
         return JsonResponse(True, safe=False, status=500)
-    # try:
-    #     tf = TopicFollowing.objects.get(user=request.user, follows_id=request.GET.get('topic'))
-    # except ObjectDoesNotExist:
-    #     tf = TopicFollowing(user=request.user, follows_id=request.GET.get('topic'))
-    #     tf.save()
-    # return JsonResponse(True, safe=False)
+        # try:
+        #     tf = TopicFollowing.objects.get(user=request.user, follows_id=request.GET.get('topic'))
+        # except ObjectDoesNotExist:
+        #     tf = TopicFollowing(user=request.user, follows_id=request.GET.get('topic'))
+        #     tf.save()
+        # return JsonResponse(True, safe=False)
 
 
 def unfollow_topic(request):
@@ -212,3 +213,31 @@ class SearchTopic(ListAPIView):
         return matches
 
     serializer_class = TopicSerializer
+
+
+class GettingStartedRecommendedTopics(View):
+    def get(self, request):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT COUNT(question_id) AS question_count, under_id FROM "
+                           "questions_questiontopic GROUP BY under_id ORDER BY question_count DESC LIMIT 25")
+
+            row = cursor.fetchall()
+        t = Topic.objects.none()
+        for item in row:
+            t = t | Topic.objects.filter(pk=item[1])
+
+        tf = TopicFollowing.objects.filter(user_id=request.user.id).values('follows')
+
+        t = t.exclude(pk__in=tf)
+
+        return render_to_response('topic/new_user_topic_suggest.html', {'topics': t})
+
+
+class CheckUserNoOfTopicsFollowed(View):
+    def get(self, request):
+        no = TopicFollowing.objects.filter(user_id=request.user.id).count()
+
+        if no < 15:
+            return JsonResponse(False, safe=False)
+        else:
+            return JsonResponse(True, safe=False)

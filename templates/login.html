@@ -1,12 +1,62 @@
-    <h3>Login</h3>
+<html>
+<head>
+    <title>Sign Up</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min_lumen.css'%}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'Font Awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'ionic/css/ionicons.min.css' %}">
+    <meta name="viewport" content="width=device-width">
+</head>
+<body class="reg-body">
+    <div class="main-reg-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6 reg-mid-col">
+                    <div class="logo-reg">Log in to your Account</div>
+                    <div class="container-fluid reg-form-container">
+                        <form action="" method="post">
+                            {% csrf_token %}
 
-    <form action="" class="form-horizontal" method="post">
-        {% csrf_token %}
-        {% include 'form_template.html' %}
-        <button class="btn btn-primary" type="submit">Login</button>
-    </form>
+                            <label for="">
+                                <i class="ion-android-person placeholder-icon"></i>
+                                <input type="text" class="form-control" name="username" placeholder="Username">
+                            </label>
+                            <label for="">
+                                <i class="ion-android-lock placeholder-icon"></i>
+                                <input type="password" class="form-control" name="password" id="p1" placeholder="Password">
+                            </label>
+                            <div class="reg-bottom-div">
+                                <input type="submit" id="submit" class="btn btn-primary btn-sm" value="Login">
+                                <hr/>
+                            </div>
+                        </form>
+                        <div class="aoa">Don't own an account? <a href="#">Sign Up</a></div>
+                    </div>
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+        </div>
+    </div>
+</body>
 
 
+
+
+    <script src="{% static 'scripts/jquery.min.js' %}"></script>
+    {#        <script src="{% static 'scripts/bootstrap.min.js' %}"></script>#}
     <script>
-        $(input).addClass('form-control');
+        $(document).ready(function(){
+           $('#submit').click(function(){
+               event.preventDefault();
+               if($('#p1').val != $('#p2').val){
+                   alert('Passwords dont match');
+                   $('#p1', '#p2').css('border', '2px solid red');
+               }
+           });
+        });
     </script>
+
+</html>
+

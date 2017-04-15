@@ -71,39 +71,7 @@
                 </div>
 
                 <span class="request-answers-div">
-                    <div class="request-answers-header">
-                        <h4>Request Answers:</h4>
-                    </div>
-                    <div class="request-user-item">
-                        <div class="request-user-img-div"><img class="request-user-img" src="{% static 'images/user.png' %}" alt=""></div>
-                        <div class="request-user">
-                            <a href="" class="request-user-name">Damilola Adeyemi</a>
-                            <div class="request-user-no-answers">40 Answers Written</div>
-                        </div>
-                        <div class="request-action">
-                            <a href="" class="ion-ios-plus-outline"></a>
-                        </div>
-                    </div>
-                    <div class="request-user-item">
-                        <div class="request-user-img-div"><img class="request-user-img" src="{% static 'images/user.png' %}" alt=""></div>
-                        <div class="request-user">
-                            <a href="" class="request-user-name">Damilola Adeyemi</a>
-                            <div class="request-user-no-answers">40 Answers Written</div>
-                        </div>
-                        <div class="request-action">
-                            <a href="" class="ion-ios-plus-outline"></a>
-                        </div>
-                    </div>
-                    <div class="request-user-item">
-                        <div class="request-user-img-div"><img class="request-user-img" src="{% static 'images/user.png' %}" alt=""></div>
-                        <div class="request-user">
-                            <a href="" class="request-user-name">Damilola Adeyemi</a>
-                            <div class="request-user-no-answers">40 Answers Written</div>
-                        </div>
-                        <div class="request-action">
-                            <a href="" class="ion-ios-plus-outline"></a>
-                        </div>
-                    </div>
+{#                    Request answers div dynamically loaded#}
 
                 </span>
 
@@ -217,6 +185,8 @@
             var user = '{{ user }}';
             var req_user = '';
             var default_profile_picture = '{% static 'images/user.png' %}';
+            var tagged_topics = [];
+            var answer_request_counter = 0;
         </script>
         <script async src="{% static 'scripts/bootstrap.min.js' %}"></script>
         <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
@@ -225,10 +195,19 @@
         <script>
             $(document).ready(function () {
                 loadQuestionAnswers();
+                 {% for tag in tags %}
+                    tagged_topics.push({{ tag.id }});
+                {% endfor %}
             });
 
             function toggleAsk(){
                 $('.request-answers-div').toggleClass('answer-ask');
+                if($('.request-answers-div').children().length < 1){
+                    {% for tag in tags %}
+                        tagged_topics.push({{ tag.id }});
+                    {% endfor %}
+                    request_answers(question_id, tagged_topics);
+                }
             }
 
             $('.add-tag-btn').click(function(){

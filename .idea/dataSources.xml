@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="2836611769">
+  <component name="DataSourceManagerImpl" format="xml" hash="165476150">
     <data-source source="LOCAL" name="Quelock" uuid="5efb4846-bbbc-413d-9b78-3b672d66fc2c">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>

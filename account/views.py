@@ -50,12 +50,12 @@ class AllProfilesView(ListAPIView):
 
 class ProfileUpdateView(View):
     def get(self, request, username):
-        req_user = UserOtherDetails.objects.get(user=User.objects.get(username=username))
+        req_user = User.objects.get(username=username).profile
         form = AccountUpdateForm(instance=req_user)
         return render(request, 'profile/update_profile.html', {'form': form, 'account_active': 'active'})
 
     def post(self, request, username):
-        req_user = UserOtherDetails.objects.get(user=User.objects.get(username=username))
+        req_user = User.objects.get(username=username).profile
         form = AccountUpdateForm(request.POST or None, request.FILES or None, instance=req_user)
         if form.is_valid():
             form.save()
@@ -145,9 +145,9 @@ class RetrieveFollowedTopics(ListAPIView):
 
 class ExplorePeopleAPI(ListAPIView):
     def get_queryset(self):
-        profile = UserOtherDetails.objects.filter(user=self.request.user)
+        profile = self.request.user.profile
         uf1 = UserFollowings.objects.filter(user=profile).values('is_following')
-        uf = UserOtherDetails.objects.all().exclude(pk__in=uf1).exclude(pk__in=profile).order_by('?')
+        uf = UserOtherDetails.objects.all().exclude(pk__in=uf1).exclude(pk=profile.user.id).order_by('?')
         return uf
 
     serializer_class = UserOtherDetailsSerializer

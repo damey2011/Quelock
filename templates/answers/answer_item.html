@@ -1,4 +1,5 @@
 {% load answer_extras %}
+{% load answer_extras %}
 {% load static %}
 {% if answers  %}
     {% if total_answers %}
@@ -54,7 +55,7 @@
                 </p>
             </div>
 {#            <span class="ion-ios-chatboxes-outline stat-icon"></span>{{ answer.getComments }}#}
-            <div class='list-group-item-text feed-answer-text feed-answer-text-{{ answer.id }}'>
+            <div class='list-group-item-text feed-answer-text feed-answer-text-{{ answer.id }}' onclick='read_more({{ answer.id }})'>
                 {{ answer.body | safe }}
                 <br>
                 {% isupvoted as u %}
@@ -66,15 +67,15 @@
 {#                {% if isupvoted answer=answer user=request.user %}#}
 {#                {% endif %}#}
                 <div class='read-more-container read-more-container-{{ answer.id }}'>
-                    <a class='feed-read-more-btn feed-read-more-btn-{{ answer.id }}' onclick='read_more({{ answer.id }})'>Continue Reading</a>
+                    <a class='feed-read-more-btn feed-read-more-btn-{{ answer.id }}' onclick='read_more({{ answer.id }})'>Continue Reading...</a>
                 </div>
             </div>
             {% if request.user.is_authenticated %}
                 {% if request.user == answer.writer.user %}
                     <div class="answer-toolbar writer-answer-toolbar">
                        <button disabled class='btn disabled btn-primary btn-xs'><span class='fa fa-thumbs-o-up'></span> upvotes | {{ answer.upvotesCount }}</button>
-                        <a href="/answers/edit/?answer={{ answer.id }}">EDIT</a> &middot;
-                        <a href="#" onclick="delete_answer({{ answer.id }})">DELETE</a>
+                        <a href="/answers/edit/?answer={{ answer.id }}"> EDIT</a> &middot;
+                        <a href="#" onclick="delete_answer({{ answer.id }})"> DELETE</a>
                     </div>
                 {% else %}
                     <div class='answer-toolbar'>
@@ -91,7 +92,7 @@
                                 <a class='dwnv downvote-{{ answer.id }}' onclick='downvote({{ answer.id }})' href='#'> Downvote </a>&middot;
                             {% endif %}
 
-                                <a class='comment-link comment' onclick='openAnswerCommentBox({{ answer.id }})'> add comment <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>&middot;
+                                <a class='comment-link comment' onclick='showAnswerComments({{ answer.id }})'> comments <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>&middot;
                                 <a href='/report/?type=A&type_id={{ answer.id }}&next={{ request.url }}'> report</a>&middot;
 
                             {% if t %}
@@ -120,7 +121,7 @@
                                 <button class='btn btn-default clicked btn-xs upvote-{{ answer.id }}' onclick='upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvote | {{ answer.upvotesCount }}</button>
                             {% endif %}
 
-                                <a class='comment-link comment' onclick='openAnswerCommentBox({{ answer.id }})'> + add comment <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>
+                                <a class='comment-link comment' onclick='showAnswerComments({{ answer.id }})'> comments <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>
 
                             <div class='dropup more-options-dropdown pull-right'>
                                 <span class='ion-ios-more-outline answer-more-options-btn' type='button' id='dropdownMenu1' data-toggle='dropdown'></span>

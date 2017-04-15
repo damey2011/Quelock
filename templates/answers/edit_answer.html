@@ -6,16 +6,14 @@
         <div class="row edit-page">
 
         <div class="col-lg-3 edit-left-col">
-            <hr class="divider"/>
-            <h5 style="color: #777777">Community Rules</h5>
-            <hr class="divider"/>
+
         </div>
 
         <div class="col-lg-6">
            <div class="center-pane">
                 <h3 style="color: #444444">{{ page_title }}</h3>
                <hr>
-                <b style="font-weight: bolder"><h1>{{ answer.question.title }}</h1></b>
+                <b style="font-weight: bolder"><h4>{{ answer.question.title }}</h4></b>
                <div class="post-content">
                    {{ answer.question.question_details|safe }}
                </div>
@@ -25,15 +23,12 @@
                  <div id="details"></div>
                  <br>
 
-                <p><input type="submit" value="Update Answer" class="btn btn-default"></p>
+                <p><input type="submit" value="Update Answer" class="btn btn-default btn-lg"></p>
                 </form>
            </div>
         </div>
 
         <div class="col-lg-3 edit-right-col">
-            <hr class="divider"/>
-            <h5 style="color: #777777">Guidelines to asking Questions</h5>
-            <hr class="divider"/>
 
         </div>
 

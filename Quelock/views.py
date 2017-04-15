@@ -137,7 +137,10 @@ class Report(View):
 
         r = Reports(type=report_type, type_id=type_id, message=reason)
         r.save()
-        return redirect(next_url)
+        if next_url:
+            return redirect(next_url)
+        else:
+            return redirect('/')
 
 
 class Search(View):

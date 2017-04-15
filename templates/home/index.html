@@ -4,7 +4,21 @@
 {% endblock %}
 {% load static %}
 {% block body %}
+    <div class="getting-started-overlay">
+        <div class="lay-header">
+            <span class="overlay-header-text"></span>
+            <span class="ion-android-close close-overlay" onclick="close_overlay()"></span>
+        </div>
+        <div class="lay-content">
+            <ul class="lay-content-items">
+
+            </ul>
+        </div>
+    </div>
     <div class="container">
+
+
+
         <div class="row" style="margin-top: 70px;">
             <div class="col-lg-2">
 
@@ -64,7 +78,6 @@
     <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
     <script src="{% static 'scripts/custom.js' %}"></script>
     <script>
-
         var csrftoken = '{{ csrf_token }}';
         var feed_ajax_page_counter = 1;
 
@@ -80,26 +93,26 @@
         });
 
 
-
         $('#askModal').on('hidden.bs.modal', function () {
             $('.search-suggestion').html('');
             $('.ask-input').val('');
         });
 
         $('.ask-input').keyup(function(event){
-           if($(this).val().length >= 3){
-               $.ajax({
-                   url: '/ajax/question/search/?search_term='+$(this).val(),
-                   data: {'csrfmiddlewaretoken': csrftoken},
-                   success: function(data){
+            if($(this).val().length >= 3){
+                $.ajax({
+                    url: '/ajax/question/search/?search_term='+$(this).val(),
+                    data: {'csrfmiddlewaretoken': csrftoken},
+                    success: function(data){
                         $('.search-suggestion').html(data);
-                   }
-               })
-           }
+                    }
+                })
+            }
         });
 
         $(document).ready(function () {
             loadAnswerFeeds();
+            setTimeout(check_no_topics_followed(), 1000);
         });
 
 
@@ -132,10 +145,59 @@
             })
         }
 
-    $('#question-form').submit(function () {
-        $('.ask-input').val($('.ask-input').val()+' ?');
-        return true;
-    })
+        $('#question-form').submit(function () {
+            $('.ask-input').val($('.ask-input').val()+' ?');
+            return true;
+        })
+
+        function check_no_topics_followed(){
+            $.ajax({
+                url: '/topics/is_user_following_enough',
+                data: {'csrfmiddlewaretoken': csrftoken},
+                success: function (data) {
+                    console.log(data);
+                    if(data===true){
+                        //DO nothing
+                    }
+                    else{
+                        load_feeds_topics_suggestion();
+                    }
+                }
+            })
+        }
+
+        function load_feeds_topics_suggestion(){
+            $('.getting-started-overlay').css('display', 'block');
+            $('.overlay-header-text').html('Suggested Topics to Follow');
+            $.ajax({
+                url: '/topics/getting_started',
+                dataType: 'html',
+                data: {'csrfmiddlewaretoken': csrftoken},
+                success: function (data) {
+                    $('.lay-content-items').append(data);
+                }
+            })
+        }
+
+        function close_overlay(){
+            event.preventDefault();
+            $('.getting-started-overlay').css('display', 'none');
+        }
+
+        function showAnswerComments(answer){
+            $('.getting-started-overlay').css('display', 'block');
+            $('.overlay-header-text').html('Answer Comments');
+
+            //Clear the modal content
+            $('.lay-content-items').html('');
+            $.ajax({
+                url: '/comments/retrieve_answer_comments/?answer='+answer,
+                data: {'csrfmiddlewaretoken':csrftoken},
+                success: function (data) {
+                    $('.lay-content-items').append(data);
+                }
+            })
+        }
 
     </script>
 

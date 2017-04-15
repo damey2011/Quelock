@@ -16,7 +16,7 @@
                 <div class="col-lg-6 reg-mid-col">
                     <div class="logo-reg">Register An Account</div>
                     <div class="container-fluid reg-form-container">
-                        <form action="" method="post">
+                        <form action="" method="post" id="reg-form">
                             {% csrf_token %}
                             <label for="">
                                 <span class="ion-android-person placeholder-icon"></span>
@@ -43,6 +43,7 @@
                                 <input type="password" class="form-control" name="confirm_password" id="p2" placeholder="Confirm Password">
                             </label>
                             <div class="reg-bottom-div">
+                                <span class="error"></span>
                                 <div class="tac">By Clicking Join, you agree to the User Agreement and Privacy Policy</div>
                                 <br>
                                 <input type="submit" id="submit" class="btn btn-primary btn-sm" value="Join">
@@ -62,15 +63,35 @@
 
 
     <script src="{% static 'scripts/jquery.min.js' %}"></script>
-    {#        <script src="{% static 'scripts/bootstrap.min.js' %}"></script>#}
     <script>
         $(document).ready(function(){
-           $('#submit').click(function(){
-               if($('#p1').val != $('#p2').val){
-                   alert('Passwords dont match');
-                   $('#p1', '#p2').css('border', '2px solid red');
+            $('.error').html('');
+           $('#reg-form').submit(function(){
+               if($('#p1').val() !== $('#p2').val()){
+                   event.preventDefault();
+                   $('.error').html('passwords don\'t match');
+                    return false;
                }
+               return true;
            });
+
+            $('#p1').keyup(function(){
+               if($(this).val().length < 5){
+                   $('#p1').css('border-bottom', '1px solid red');
+               }
+                else{
+                   $('#p1').css('border-bottom', '1px solid rgba(255,255,255, 0.5)');
+               }
+            });
+
+            $('#p2').keyup(function () {
+                if($('#p1').val() !== $(this).val()){
+                   $('#p2').css('border-bottom', '1px solid red');
+                }
+                else{
+                    $('#p2').css('border-bottom', '1px solid rgba(255,255,255, 0.5)');
+                }
+            })
         });
     </script>
 

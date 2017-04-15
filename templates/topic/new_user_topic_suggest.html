@@ -1,0 +1,14 @@
+{% load static %}
+
+{% for topic in topics %}
+    <li class='list-group-item'>
+        {% if topic.image_name %}
+            <img class='related-user-thumbnail' src="{{ topic.image_name.url }}" alt='{{ topic.title }}'>
+        {% else %}
+            <img class='related-user-thumbnail' src="{% static 'images/user.png' %}" alt='{{ topic.title }}'>
+        {% endif %}
+        <a class='badge badge-follow-btn t-{{ topic.id }}' onclick='follow_topic({{ topic.id }})' target='_blank'>follow</a>
+        <h5 class='list-group-item-heading'><a href='/topics/{{ topic.id }}'>{{ topic.title }}</a></h5>
+        <p class='list-group-item-text'>{{ topic.desc }}</p>
+    </li>
+{% endfor %}

@@ -15,6 +15,8 @@ urlpatterns = [
     url(r'^api/explore', views.ExploreTopicAPI.as_view()),
     url(r'^explore/', views.ExploreTopicView.as_view(), name='explore_topic'),
     url(r'^search/', views.SearchTopic.as_view(), name='search_topic'),
+    url(r'^is_user_following_enough', views.CheckUserNoOfTopicsFollowed.as_view(), name='check_no'),
+    url(r'^getting_started/', views.GettingStartedRecommendedTopics.as_view(), name='getting_started'),
     url(r'^(?P<slug>[\w-]+)/$', views.TopicDetailView.as_view()),
     url(r'^(?P<pk>[0-9]+)/edit', views.TopicUpdateView.as_view()),
     url(r'^api/$', views.TopicsListAPIView.as_view()),

@@ -8,8 +8,9 @@
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="answer_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="user_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="created" sqlType="DATETIME" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <primary-key columns="id"/>
-      <foreign-key name="#FAKE_account_alreadyreadanswers_1" columns="user_id" ref-table="account_userotherdetails" ref-schema="" ref-catalog="" ref-columns="user_id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_account_alreadyreadanswers_1" columns="user_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <foreign-key name="#FAKE_account_alreadyreadanswers_2" columns="answer_id" ref-table="answers_answer" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <index name="account_alreadyreadanswers_e8701ad4" unique="true" columns="user_id"/>
       <index name="account_alreadyreadanswers_fb12e902" unique="true" columns="answer_id"/>
@@ -18,8 +19,8 @@
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="type" sqlType="VARCHAR(1)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="type_id" sqlType="INTEGER UNSIGNED" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
-      <column name="created" sqlType="DATETIME" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="message" sqlType="TEXT" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="created" sqlType="DATETIME" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
       <primary-key columns="id"/>
     </table>
     <table name="account_userfollowings" schema="" catalog="" type="TABLE">
@@ -49,25 +50,23 @@
       <column name="lives" sqlType="VARCHAR(50)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="followers" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="facebook_link" sqlType="VARCHAR(100)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
+      <column name="twitter_link" sqlType="VARCHAR(100)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="linked_in_profile" sqlType="VARCHAR(100)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="most_active_topic_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
       <column name="user_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="bio" sqlType="TEXT" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
-      <column name="display_picture" sqlType="VARCHAR(100)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
       <column name="following" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="profile_no_of_views" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
       <column name="no_of_answers" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="no_of_questions" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
-      <column name="twitter_link" sqlType="VARCHAR(100)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
+      <column name="display_picture" sqlType="VARCHAR(100)" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
       <primary-key columns="user_id"/>
       <foreign-key name="#FAKE_account_userotherdetails_1" columns="user_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <foreign-key name="#FAKE_account_userotherdetails_2" columns="most_active_topic_id" ref-table="topics_topic" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
-      <exported-key name="#FAKE_account_alreadyreadanswers_1" table="account_alreadyreadanswers" schema="" catalog="" columns="user_id"/>
       <exported-key name="#FAKE_account_userfollowings_1" table="account_userfollowings" schema="" catalog="" columns="user_id"/>
       <exported-key name="#FAKE_account_userfollowings_2" table="account_userfollowings" schema="" catalog="" columns="is_following_id"/>
       <exported-key name="#FAKE_answers_answer_1" table="answers_answer" schema="" catalog="" columns="writer_id"/>
       <exported-key name="#FAKE_comments_comment_3" table="comments_comment" schema="" catalog="" columns="writer_id"/>
-      <exported-key name="#FAKE_questions_questionfollowing_1" table="questions_questionfollowing" schema="" catalog="" columns="user_id"/>
       <exported-key name="#FAKE_topics_topicfollowing_1" table="topics_topicfollowing" schema="" catalog="" columns="user_id"/>
       <index name="account_userotherdetails_01e18227" unique="true" columns="most_active_topic_id"/>
     </table>
@@ -83,8 +82,6 @@
     </table>
     <table name="answers_answer" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
-      <column name="date_written" sqlType="DATE" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
-      <column name="time_written" sqlType="TIME" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="body" sqlType="TEXT" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="no_of_upvotes" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
       <column name="no_of_views" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
@@ -95,6 +92,7 @@
       <column name="no_of_downvotes" sqlType="INTEGER" precision="2000000000" scale="10" nullable="true" jdbcType="4"/>
       <column name="anonymous" sqlType="BOOL" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="total_activities" sqlType="INTEGER UNSIGNED" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="time_written" sqlType="DATETIME" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <primary-key columns="id"/>
       <foreign-key name="#FAKE_answers_answer_1" columns="writer_id" ref-table="account_userotherdetails" ref-schema="" ref-catalog="" ref-columns="user_id" update-rule="3" delete-rule="3" deferrability="1"/>
       <foreign-key name="#FAKE_answers_answer_2" columns="question_id" ref-table="questions_question" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
@@ -212,6 +210,7 @@
       <column name="date_joined" sqlType="DATETIME" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="username" sqlType="VARCHAR(150)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <primary-key columns="id"/>
+      <exported-key name="#FAKE_account_alreadyreadanswers_1" table="account_alreadyreadanswers" schema="" catalog="" columns="user_id"/>
       <exported-key name="#FAKE_account_usernotifications_1" table="account_usernotifications" schema="" catalog="" columns="user_id"/>
       <exported-key name="#FAKE_account_usernotifications_2" table="account_usernotifications" schema="" catalog="" columns="subscriber_id"/>
       <exported-key name="#FAKE_account_userotherdetails_1" table="account_userotherdetails" schema="" catalog="" columns="user_id"/>
@@ -228,9 +227,12 @@
       <exported-key name="#FAKE_django_admin_log_1" table="django_admin_log" schema="" catalog="" columns="user_id"/>
       <exported-key name="#FAKE_privatemessages_conversation_1" table="privatemessages_conversation" schema="" catalog="" columns="user_2_id"/>
       <exported-key name="#FAKE_privatemessages_conversation_2" table="privatemessages_conversation" schema="" catalog="" columns="user_1_id"/>
-      <exported-key name="#FAKE_privatemessages_conversationreplies_1" table="privatemessages_conversationreplies" schema="" catalog="" columns="user_id"/>
+      <exported-key name="#FAKE_privatemessages_conversationreplies_2" table="privatemessages_conversationreplies" schema="" catalog="" columns="user_id"/>
       <exported-key name="#FAKE_questions_anonymousquestionswriters_1" table="questions_anonymousquestionswriters" schema="" catalog="" columns="user_id"/>
+      <exported-key name="#FAKE_questions_answerrequest_1" table="questions_answerrequest" schema="" catalog="" columns="requester_id"/>
+      <exported-key name="#FAKE_questions_answerrequest_2" table="questions_answerrequest" schema="" catalog="" columns="receipient_id"/>
       <exported-key name="#FAKE_questions_question_1" table="questions_question" schema="" catalog="" columns="author_id"/>
+      <exported-key name="#FAKE_questions_questionfollowing_1" table="questions_questionfollowing" schema="" catalog="" columns="user_id"/>
       <exported-key name="#FAKE_questions_readquestions_1" table="questions_readquestions" schema="" catalog="" columns="user_id"/>
       <exported-key name="#FAKE_topics_topic_1" table="topics_topic" schema="" catalog="" columns="created_by_id"/>
     </table>
@@ -320,7 +322,7 @@
       <primary-key columns="id"/>
       <foreign-key name="#FAKE_privatemessages_conversation_1" columns="user_2_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <foreign-key name="#FAKE_privatemessages_conversation_2" columns="user_1_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
-      <exported-key name="#FAKE_privatemessages_conversationreplies_2" table="privatemessages_conversationreplies" schema="" catalog="" columns="conv_id_id"/>
+      <exported-key name="#FAKE_privatemessages_conversationreplies_1" table="privatemessages_conversationreplies" schema="" catalog="" columns="conv_id"/>
       <index name="privatemessages_conversation_a4677e4c" unique="true" columns="user_2_id"/>
       <index name="privatemessages_conversation_71b8069f" unique="true" columns="user_1_id"/>
     </table>
@@ -328,13 +330,14 @@
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="reply" sqlType="TEXT" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="time" sqlType="DATETIME" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
-      <column name="conv_id_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="user_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="read_status" sqlType="BOOL" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="conv_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <primary-key columns="id"/>
-      <foreign-key name="#FAKE_privatemessages_conversationreplies_1" columns="user_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
-      <foreign-key name="#FAKE_privatemessages_conversationreplies_2" columns="conv_id_id" ref-table="privatemessages_conversation" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_privatemessages_conversationreplies_1" columns="conv_id" ref-table="privatemessages_conversation" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_privatemessages_conversationreplies_2" columns="user_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <index name="privatemessages_conversationreplies_6f3b8a1a" unique="true" columns="conv_id"/>
       <index name="privatemessages_conversationreplies_e8701ad4" unique="true" columns="user_id"/>
-      <index name="privatemessages_conversationreplies_707f791e" unique="true" columns="conv_id_id"/>
     </table>
     <table name="questions_anonymousquestionswriters" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
@@ -345,6 +348,19 @@
       <foreign-key name="#FAKE_questions_anonymousquestionswriters_2" columns="question_id" ref-table="questions_question" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <index name="questions_anonymousquestionswriters_e8701ad4" unique="true" columns="user_id"/>
       <index name="questions_anonymousquestionswriters_7aa0f6ee" unique="true" columns="question_id"/>
+    </table>
+    <table name="questions_answerrequest" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="question_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="receipient_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <column name="requester_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
+      <primary-key columns="id"/>
+      <foreign-key name="#FAKE_questions_answerrequest_1" columns="requester_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_questions_answerrequest_2" columns="receipient_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_questions_answerrequest_3" columns="question_id" ref-table="questions_question" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <index name="questions_answerrequest_573f8683" unique="true" columns="requester_id"/>
+      <index name="questions_answerrequest_29f7ae6c" unique="true" columns="receipient_id"/>
+      <index name="questions_answerrequest_7aa0f6ee" unique="true" columns="question_id"/>
     </table>
     <table name="questions_question" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
@@ -361,6 +377,7 @@
       <foreign-key name="#FAKE_questions_question_1" columns="author_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <exported-key name="#FAKE_answers_answer_2" table="answers_answer" schema="" catalog="" columns="question_id"/>
       <exported-key name="#FAKE_questions_anonymousquestionswriters_2" table="questions_anonymousquestionswriters" schema="" catalog="" columns="question_id"/>
+      <exported-key name="#FAKE_questions_answerrequest_3" table="questions_answerrequest" schema="" catalog="" columns="question_id"/>
       <exported-key name="#FAKE_questions_questionfollowing_2" table="questions_questionfollowing" schema="" catalog="" columns="question_id"/>
       <exported-key name="#FAKE_questions_questiontopic_2" table="questions_questiontopic" schema="" catalog="" columns="question_id"/>
       <exported-key name="#FAKE_questions_readquestions_2" table="questions_readquestions" schema="" catalog="" columns="question_id"/>
@@ -368,11 +385,11 @@
     </table>
     <table name="questions_questionfollowing" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
-      <column name="created" sqlType="DATETIME" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="created" sqlType="DATETIME" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="question_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="user_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <primary-key columns="id"/>
-      <foreign-key name="#FAKE_questions_questionfollowing_1" columns="user_id" ref-table="account_userotherdetails" ref-schema="" ref-catalog="" ref-columns="user_id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_questions_questionfollowing_1" columns="user_id" ref-table="auth_user" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <foreign-key name="#FAKE_questions_questionfollowing_2" columns="question_id" ref-table="questions_question" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <index name="questions_questionfollowing_e8701ad4" unique="true" columns="user_id"/>
       <index name="questions_questionfollowing_7aa0f6ee" unique="true" columns="question_id"/>

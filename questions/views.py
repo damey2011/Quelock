@@ -1,20 +1,18 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
-from django.utils import timezone
-from django.utils.datetime_safe import date, time
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views import View
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from account.models import UserOtherDetails
-from answers.models import Answer, UpVotes
-from answers.serializers import AnswerSerializer
+from answers.models import Answer
 
-from questions.models import Question, QuestionTopic, QuestionFollowing, AnonymousQuestionsWriters, ReadQuestions
-from questions.pagination import MyTestPagination, UserQuestionPagination, ExploreQuestionPagination
+from questions.models import Question, QuestionTopic, QuestionFollowing, AnonymousQuestionsWriters, ReadQuestions, \
+    AnswerRequest
+from questions.pagination import MyTestPagination, ExploreQuestionPagination
 from .serializers import QuestionSerializer
 
 
@@ -112,7 +110,7 @@ class QuestionCreateView(View):
         if question.anonymous:
             AnonymousQuestionsWriters(question=question, user=request.user).save()
 
-        write_profile = UserOtherDetails.objects.get(user=author)
+        write_profile = author.profile
         write_profile.no_of_questions += 1
         write_profile.save()
 
@@ -185,7 +183,7 @@ class UserQuestionsR2R(View):
 
 class QuestionExploreAPI(ListAPIView):
     def get_queryset(self):
-        u = UserOtherDetails.objects.get(user=self.request.user)
+        u = self.request.user.profile
         aq = Answer.objects.filter(writer=u).values('question')
         q = Question.objects.all().exclude(pk__in=aq)
         return q
@@ -266,4 +264,51 @@ class UnAssignTopic(View):
         qt = QuestionTopic.objects.filter(question_id=request.GET.get('question'), under_id=request.GET.get('topic'))
         if qt.exists():
             qt.delete()
+        return JsonResponse(True, safe=False)
+
+
+class RequestUserAnswersToQuestions(View):
+    def post(self, request):
+        try:
+            topics_list = request.POST['topics[]']
+        except MultiValueDictKeyError:
+            topics_list = []
+
+        ar = AnswerRequest.objects.filter(requester=request.user, question=request.POST['question']).values(
+                'receipient')
+
+        if len(topics_list) > 0:
+            q = QuestionTopic.objects.filter(under__in=topics_list).distinct().values('question')
+
+            # Dev env
+            aw = Answer.objects.filter(question_id__in=q).select_related().values('writer').distinct()[:25]
+            users = User.objects.filter(id__in=aw).exclude(id__in=ar).exclude(pk=request.user.id).prefetch_related()
+
+            # Production envir, does not work in dev env
+            # aw = Answer.objects.filter(question_id__in=q).select_related().values('writer').distinct('writer')[:25]
+
+        else:
+            users = User.objects.all().exclude(id__in=ar).order_by('?')[:20]
+
+        return render_to_response('question/request_answers.html',
+                                      {'users': users, 'request': request, 'sent_already': ar.count()})
+
+
+class SendAnswerRequest(View):
+    def post(self, request):
+        question = request.POST['question']
+        requester = request.POST['requester']
+        receipient = request.POST['receipient']
+
+        AnswerRequest(requester_id=requester, receipient_id=receipient, question_id=question).save()
+        return JsonResponse(True, safe=False)
+
+
+class RemoveAnswerRequest(View):
+    def post(self, request):
+        question = request.POST['question']
+        requester = request.POST['requester']
+        receipient = request.POST['receipient']
+
+        AnswerRequest.objects.get(requester_id=requester, receipient_id=receipient, question_id=question).delete()
         return JsonResponse(True, safe=False)

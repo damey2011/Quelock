@@ -3,7 +3,7 @@
     /*box-sizing: border-box;*/
     margin: 0;
     padding: 0;
-    font-weight: 300;
+    /*font-weight: 300;*/
 /*     font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif; */
 }
 
@@ -17,7 +17,8 @@ a:hover{
 }
 
 body{
-    background-color: rgba(119, 119, 119, 0.1);
+	/*background: linear-gradient(#0096ff, #005dff);*/
+    background-color: rgba(117, 117, 117, 0.1);
     /*background-color: #24292e;*/
 }
 
@@ -221,6 +222,10 @@ body{
 .btn-sm{
     padding: 5px;
     font-weight: 300;
+    line-height: 2.0;
+}
+
+.btn-lg{
     line-height: 2.0;
 }
 
@@ -776,6 +781,7 @@ a.tile {
 
 .question-container, .topic-card{
     margin-top: 30px;
+    box-shadow: inset 0 0 1px 0px grey;
 }
 
 .question-tool-bar a{
@@ -800,6 +806,7 @@ a.tile {
     width: 100%;
     position: relative;
     display: none;
+/*     max-height: 200px; */
 }
 
 .request-user-item{
@@ -815,6 +822,7 @@ a.tile {
 }
 
 .request-user-img{
+    display: block;
     width: 40px;
     height: 40px;
     border-radius: 50%;    
@@ -826,15 +834,106 @@ a.tile {
     top: -5px;
 }
 
+.request-users-container{
+    max-height: 200px;
+    overflow-y: auto;
+}
+
 .request-action{
     float:right;
     display: block;
     position: relative;
     margin: 0 auto;
+    top: 5px;
+    right: 5px;
+}
+
+.max-reached-overlay{
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    text-align: center;
+    background-color: rgba(51,51,51,0.84);
+    color: white;
+    font-size: 20px;
+    z-index: 100;
+    padding-top: 50px;
+    display: none;
+}
+
+.getting-started-overlay{
+    width:100%;
+    height: 100%;
+    display: none;
+    position: fixed;
+    margin: 50px 0;
+    background-color: transparent;
+    border: 1px solid grey;
+    border-radius: 5px;
+    z-index: 100; 
+    overflow-y: auto;
+}
+
+.getting-started-overlay::-webkit-scrollbar{
+    width: 7px;
+    cursor: pointer;
+}
+
+.getting-started-overlay::-webkit-scrollbar-track{
+    -webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.getting-started-overlay::-webkit-scrollbar-thumb{
+    -webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.2);
+    background-color: rgba(128, 128, 128, 0.15);
+    border-radius: 10px;
+}
+
+.add-parent-rep{
+    color: chocolate;
+}
+
+
+.close-overlay{
+    position: fixed;
+    top: 60px;
+    right: 40px;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.close-overlay:hover{
+    color: grey;
+    font-size: 30px;
+}
+
+.lay-header{
+    height: 50px;
+    font-size: 20px;
+    padding: 10px;
+    background-color: rgba(51,51,51,0.9);
+    color: white;
+    font-weight: 600;
+}
+
+.lay-content{
+/*     padding: 10px; */
+
+}
+
+.more-answerers{
+    font-size: 15px;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    color: #333;
 }
 
 .request-action a{
-    font-size: 25pt;
+    font-size: 20pt;
     color: rgba(0, 0, 0, 0.3);;
 }
 
@@ -876,8 +975,27 @@ a.tile {
 /*Create question*/
 
 .center-pane{
-    padding: 20px;
-    background-color: white;
+    padding: 20px 5px 50px 5px;
+    background-color: transparent;
+}
+
+.center-pane input[type=text]{
+    box-shadow: none;
+    border: 1px solid rgba(51,51,51,0.3);
+}
+
+.center-pane input[type=checkbox]{
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 5px;
+    left: 10px;
+}
+
+.center-pane label, .center-pane div.anonymous {
+    font-size:13px;
+    font-weight: 500;
+    color: grey;
 }
 
 .trumbowyg-editor{
@@ -1111,11 +1229,11 @@ a.tile {
 }
 
 .edit-page{
-    margin-top: 60px;
+    
 }
 
 .edit-right-col, .edit-left-col{
-    padding-top: 50px;
+    padding-top: 30px;
 }
 
 .follower-username{
@@ -1487,9 +1605,10 @@ a.tile {
     max-height: 80px;
     overflow: hidden;
     color: rgba(51,51,51,0.7);
-    font-weight:200;
-    padding-bottom: -10px;
+    font-weight:400;
+    padding-bottom: 10px;
     line-height: 1.5;
+    cursor: pointer;
 }
 
 .answer-toolbar{
@@ -1507,25 +1626,27 @@ a.tile {
 }
 
 .feed-read-more-btn{
-    padding: 5px;
+/*     padding: 5px; */
     background-color: white;
-    border: 1px solid rgba(51,51,51,0.4);
+/*     border: 1px solid rgba(51,51,51,0.4); */
     display:block;
     position: relative;
     max-width: 150px;
     text-align:center;
     top: 20px;
-    left: 50%;
-    transform: translate(-50%, 0);
+    left: 0%;
+/*     transform: translate(-50%, 0); */
     border-radius: 3px;
     cursor: pointer;
     color: #148b8b;
+    font-weight: 600;
 }
 
 .feed-read-more-btn:hover{
-    background-color: #baaf97;
-    color: white;
-    text-decoration: none;
+/*     background-color: #baaf97; */
+    color: grey;
+    font-size: 15px;
+    text-decoration: underline;
     border:none;
 }
 
@@ -1799,6 +1920,68 @@ a.tile {
     box-shadow: 0 0 2px 0 #333333;
 }
 
+.comment-answer-parent{
+    font-size: 15px;
+    padding: 10px;
+    text-transform: uppercase;
+}
+
+.comments-container{
+    height: 100%;
+    background-color: white;
+}
+
+.comments-container h4{
+    text-align: center;
+    display: block;
+    margin: auto 0;
+    font-weight: 700;
+    font-family: cursive;
+    padding: 50px;
+}
+
+.comment-success-span{
+    padding: 5px;
+    background-color: darkred;
+    font-size: 14px;
+}
+
+.comment-p-links a{
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.answer-comment-writer{
+    font-size: 15px;
+    font-weight: 500;
+    color: black;
+    text-decoration:underline;
+}
+
+blockquote{
+    border: none;
+}
+
+.notification-box{
+	display: none;
+    position: fixed;
+    bottom: 50px;
+    right: -4px;
+    padding: 10px 20px;
+    border: 1px solid rgba(51,51,51,0.1);
+    border-radius: 2px;
+/*     background-color:  rgba(51,51,51,0.4); */
+    background-color: rgba(51,51,51,0.9);
+    color: white;
+    box-shadow: 1px 1px rgba(51,51,51,0.3);
+    max-width: 200px;
+    line-height: 1;
+    font-size: 9pt;
+    font-family: cursive;
+    text-align: center;
+    z-index: 1000;
+}
+
 @media screen and (min-width: 768px){
     .profile-desktop-menu{
         display: block;
@@ -1812,7 +1995,16 @@ a.tile {
         min-width: inherit;
         max-width: 40%;
     }
-    
+
+    .getting-started-overlay{
+        height: 100%;
+        padding: 0 10%;
+        background-color: rgba(0,0,0,0.45);
+    }
+
+    .center-pane{
+        margin-top: 40px;
+    }
 
 }
 
@@ -1872,7 +2064,11 @@ a.tile {
     }
 
     .edit-right-col{
-        margin-top: -70px;
+        margin-top: -40px;
+    }
+
+    .getting-started-overlay{
+        max-height: calc(100% - 100px);
     }
 }
 
