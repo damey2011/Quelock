@@ -11,7 +11,7 @@ from topics.models import Topic
 
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True)
-    writer = models.ForeignKey(UserOtherDetails, on_delete=models.SET('Anonymous'), null=True)
+    writer = models.ForeignKey(UserOtherDetails, on_delete=models.SET('Anonymous'))
     time_written = models.DateTimeField(auto_now_add=True)
     body = models.TextField()
     no_of_upvotes = models.IntegerField(null=True, default=0)
@@ -20,7 +20,7 @@ class Answer(models.Model):
     no_of_comments = models.IntegerField(null=True, default=0)
     edited = models.IntegerField(null=True, default=0)
     anonymous = models.BooleanField(default=False)
-    total_activities = models.PositiveIntegerField(default=0)
+    total_activities = models.IntegerField(default=0)
 
     def __str__(self):
         return self.question.title

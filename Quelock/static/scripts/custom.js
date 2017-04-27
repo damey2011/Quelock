@@ -678,7 +678,7 @@ function loadReplies(parent_id, replies_url){
             }
         },
         error: function(data){
-             notify('Error Occured: <i>You might want to check your connection or reload the page</i>', 10000);
+            notify('Error Occured: <i>You might want to check your connection or reload the page</i>', 10000);
         }
     })
 }
@@ -979,34 +979,25 @@ function check_if_following_topic(topic_id){
 }
 
 function loadTopicAnswers() {
+    $('.load-more-inner').html('<span class="ion-android-alarm-clock"></span> a sec');
     $.ajax({
         url: topic_load_url+'&page='+next_topic_answers_page,
         dataType: 'html',
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function (data) {
-            //if (!data.results) $('.post').append('<h3>No Answers written yet</h3>');
-            //else {
-            //    $.each(data.results, function (key, value) {
-            //        $('.post').append(answer(value));
-            //        $('img').addClass('img-responsive');
-            //    });
-            //}
-            //if (data.next != null) {
-            //    $('.btn-load').show();
-            //    topic_load_url = data.next;
-            //    $('.loading-1').hide();
-            //}
-            //else {
-            //    $('.loading-1').hide();
-            //    $('.load-btn').hide();
-            //}'
             $('.post').append(data);
         },
-        error: function () {
+        error: function (data) {
+            $('.answers-load-more-btn').hide();
             notify('Sorry,an error has occured: <i>You might want to check your connections or relooad the page</i>', 10000);
         },
         complete: function(){
+            $('.load-more-inner').html('<span class="ion-android-arrow-down"></span> Load More');
             next_topic_answers_page += 1;
+            if($('#next_page').length != 0){
+                //$('.answers-load-more-btn').html("That's all we have for now");
+                $('.answers-load-more-btn').hide();
+            }
         }
     });
 }
@@ -1486,7 +1477,7 @@ function remove_single_answer_request(requester, receipient) {
 function loadCommentReplies(comment){
     event.preventDefault();
     $.ajax({
-        url: 'comments/retrieve_comment_comments/?comment='+comment,
+        url: '/comments/retrieve_comment_comments/?comment='+comment,
         data: {'csrfmiddlewaretoken': csrftoken},
         dataType: 'html',
         success: function (data) {
@@ -1499,12 +1490,128 @@ function loadCommentReplies(comment){
 function deleteComment(comment){
     event.preventDefault();
     $.ajax({
-        url: 'comments/delete/?comment='+comment,
+        url: '/comments/delete/?comment='+comment,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function (data) {
             $('.comment-'+comment).css('display', 'none');
             notify('Your comment has been deleted', 3000);
 
+        }
+    })
+}
+
+//          //
+//Home page//
+//          //
+function openAskModal() {
+    $('#askModal').modal();
+    setTimeout(function () {
+        $('.ask-input').focus();
+    }, 500);
+}
+
+
+function searchAskSuggestions(){
+    if($('.ask-input').val().length >= 3){
+        $.ajax({
+            url: '/ajax/question/search/?search_term='+$('.ask-input').val(),
+            data: {'csrfmiddlewaretoken': csrftoken},
+            success: function(data){
+                $('.search-suggestion').html(data);
+            }
+        })
+    }
+}
+
+
+function loadAnswerFeeds(){
+    $('.load-more-inner').html('<span class="ion-android-alarm-clock"></span> a sec');
+    $.ajax({
+        url: '/ajax/feeds/a/?page='+feed_ajax_page_counter,
+        data: {'csrfmiddlewaretoken': csrftoken},
+        success: function (data) {
+            if(data.length < 5){
+                $('.feeds').append('<br><h4 style="text-align: center;">No new content, please follow new topics and users to populate your feeds</h4>');
+                $('.feed-load-more-btn').hide();
+            }
+            else{
+                $('.feeds').append(data);
+            }
+        },
+        complete: function () {
+            $('.load-more-inner').html('<span class="ion-android-arrow-down"></span> Load More');
+            feed_ajax_page_counter += 1;
+            if($('#next_page').length != 0){
+                $('.feed-load-more-btn').html("<div class='end-of-feeds'>That's all we have for you for now, you can refresh " +
+                    "or check out new stuffs from the explore tab</div>");
+            }
+            else{
+
+            }
+        }
+    })
+}
+
+$('#question-form').submit(function () {
+    $('.ask-input').val($('.ask-input').val()+' ?');
+    return true;
+})
+
+function check_no_topics_followed(){
+    $.ajax({
+        url: '/topics/is_user_following_enough',
+        data: {'csrfmiddlewaretoken': csrftoken},
+        success: function (data) {
+            console.log(data);
+            if(data===true){
+                //DO nothing
+            }
+            else{
+                load_feeds_topics_suggestion();
+            }
+        }
+    })
+}
+
+function load_feeds_topics_suggestion(){
+    $('.getting-started-overlay').css('display', 'block');
+    $('.overlay-header-text').html('Suggested Topics to Follow');
+    $.ajax({
+        url: '/topics/getting_started',
+        dataType: 'html',
+        data: {'csrfmiddlewaretoken': csrftoken},
+        success: function (data) {
+            $('.lay-content-items').append(data);
+        }
+    })
+}
+
+function close_overlay(){
+    event.preventDefault();
+    $('.getting-started-overlay').css('display', 'none');
+}
+
+function showAnswerComments(answer){
+    $('.getting-started-overlay').css('display', 'block');
+    $('.overlay-header-text').html('Answer Comments');
+
+    //Clear the modal content
+    $('.lay-content-items').html('');
+    $.ajax({
+        url: '/comments/retrieve_answer_comments/?answer='+answer,
+        data: {'csrfmiddlewaretoken':csrftoken},
+        success: function (data) {
+            $('.lay-content-items').append(data);
+        }
+    })
+}
+
+function addQuestionView(question_id){
+    $.ajax({
+        url: '/questions/add_new_view/?question='+question_id,
+        data: {'csrfmiddlewaretoken': csrftoken},
+        success: function(){
+            //Do nothing
         }
     })
 }

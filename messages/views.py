@@ -6,6 +6,7 @@ from django.shortcuts import render, render_to_response
 
 # Create your views here.
 from django.views import View
+from Quelock.tasks import message_notify
 from messages.models import Conversation, ConversationReplies
 
 
@@ -34,8 +35,9 @@ class MessageUser(View):
             c.save()
 
         cr = ConversationReplies(conv=c, reply=message, user=request.user)
-        if cr.save():
-            return JsonResponse(True, safe=False)
+        cr.save()
+
+        message_notify.delay(sender_id=sender, conv_rep_id=cr.id)
         return JsonResponse(True, safe=False)
 
 
@@ -46,9 +48,11 @@ class ReplyMessage(View):
         message = request.POST['message']
 
         cr = ConversationReplies(conv_id=conv_id, reply=message, user=sender)
-        if cr.save():
-            return JsonResponse(True, safe=False)
-        return JsonResponse(False, safe=False)
+        cr.save()
+
+        message_notify.delay(sender_id=sender.id, conv_rep_id=cr.id)
+
+        return JsonResponse(True, safe=False)
 
 
 class RetrieveMessageThreads(View):
@@ -58,12 +62,18 @@ class RetrieveMessageThreads(View):
             Q(user_2_id=request.user.id)
         ).values('id')
 
-        # # For Production (Distinct not applicable on sqlite
-        # cr = ConversationReplies.objects.filter(conv_id__in=c).distinct('conv').order_by('-time').select_related()
+        cr = ConversationReplies.objects.filter(conv_id__in=c).select_related().distinct().order_by('-time')
 
-        cr = ConversationReplies.objects.filter(conv_id__in=c).distinct().order_by('-time').select_related()
+        cf = (cr.order_by('conv').values('conv').distinct())
 
-        return render_to_response('messages/fragments/message-threads.html', {'threads': cr, 'request': request})
+        c_list = []
+
+        for c in cf:
+            c_list.append(ConversationReplies.objects.filter(conv_id=c['conv']).order_by('-time').first())
+
+        c_list.sort(key=lambda x: x.time, reverse=True)
+
+        return render_to_response('messages/fragments/message-threads.html', {'threads': c_list, 'request': request})
 
 
 class RetrieveMessageThread(View):

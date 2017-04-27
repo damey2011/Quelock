@@ -3,12 +3,23 @@
         <div class="list-group-item-heading message-thread-user">
             {% if thread.user == request.user %}
                 {% if thread.conv.user_1 == request.user %}
-                    {{ thread.conv.user_2.first_name }} {{ thread.conv.user_2.last_name }}
+                    <div class="chat-image">
+                        <img src="{{ thread.conv.user_2.profile.display_picture.url }}" alt="{{ thread.conv.user_2.first_name }}">
+                    </div>
+                    <span>{{ thread.conv.user_2.first_name }} {{ thread.conv.user_2.last_name }}</span>
                 {% else %}
-                    {{ thread.conv.user_1.first_name }} {{ thread.conv.user_1.last_name }}
+                    <div class="chat-image">
+                        <img src="{{ thread.conv.user_1.profile.display_picture.url }}" alt="{{ thread.conv.user_1.first_name }}">
+                    </div>
+                    <span>
+                        {{ thread.conv.user_1.first_name }} {{ thread.conv.user_1.last_name }}
+                    </span>
                 {% endif %}
             {% else %}
-                {{ thread.user.first_name }} {{ thread.user.last_name }}
+                <div class="chat-image">
+                    <img src="{{ thread.conv.user_1.profile.display_picture.url }}" alt="{{ thread.conv.user_1.first_name }}">
+                </div>
+                <span>{{ thread.user.first_name }} {{ thread.user.last_name }}</span>
             {% endif %}
 
         </div>

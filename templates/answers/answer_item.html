@@ -1,6 +1,10 @@
 {% load answer_extras %}
-{% load answer_extras %}
 {% load static %}
+
+{% if next_page %}
+    <input type="hidden" value="{{ next_page }}" id="next_page">
+{% endif %}
+
 {% if answers  %}
     {% if total_answers %}
         {% if total_answers > 1 %}
@@ -11,9 +15,7 @@
 
         <hr class="divider">
     {% endif %}
-    {% if next_page %}
-        <input type="hidden" value="{{ next_page }}" id="next_page">
-    {% endif %}
+
     {% for answer in answers %}
         <li class='list-group-item answer-{{ answer.id }} trending-answer-{{ answer.id }} card'>
             {% topic_tags as tt %}
@@ -26,25 +28,25 @@
             <h5 class='answer-question'><a href='/questions/{{ answer.question.slug }}' target='_blank'>{{ answer.question.title }}</a></h5>
             <hr class="answer-divider">
             <div class='writer-div'>
-                    {% if answer.anonymous %}
-                            <img class='answer-writer-thumbnail' src='{% static 'images/user.png' %}' alt='{{ answer.writer.user.username }}'>
-                            <div class="answer-writer-info">
-                                <span class='list-group-item-heading'>Anonymous Writer</span>
-                                {% if answer.time_written %}
-                                    <p class='small time-written'><span class="ion-ios-clock"></span> {{ answer.time_answered }}</p>
-                                {% endif %}
-                            </div>
-                    {% else %}
-                            <img class='answer-writer-thumbnail' src='{{ answer.writer.display_picture.url }}' alt='{{ answer.writer.user.username }}'>
-                            <div class="answer-writer-info">
-                                <a class='list-group-item-heading' target='_blank' href='/profile/{{ answer.writer.user.username }}'>{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }},</a>
-                                <span class='small'>{{ answer.writer.bio }}</span>
-                                <span class="writer-username">@{{ answer.writer.user.username }}</span>
-                                {% if answer.time_written %}
-                                    <p class='small time-written'><span class="ion-ios-clock"></span> {{ answer.time_answered }}</p>
-                                {% endif %}
-                            </div>
-                    {% endif %}
+                {% if answer.anonymous %}
+                    <img class='answer-writer-thumbnail' src='{% static 'images/user.png' %}' alt='{{ answer.writer.user.username }}'>
+                    <div class="answer-writer-info">
+                        <span class='list-group-item-heading'>Anonymous Writer</span>
+                        {% if answer.time_written %}
+                            <p class='small time-written'><span class="ion-ios-clock"></span> {{ answer.time_answered }}</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <img class='answer-writer-thumbnail' src='{{ answer.writer.display_picture.url }}' alt='{{ answer.writer.user.username }}'>
+                    <div class="answer-writer-info">
+                        <a class='list-group-item-heading' target='_blank' href='/profile/{{ answer.writer.user.username }}'>{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }},</a>
+                        <span class='small'>{{ answer.writer.bio }}</span>
+                        <span class="writer-username">@{{ answer.writer.user.username }}</span>
+                        {% if answer.time_written %}
+                            <p class='small time-written'><span class="ion-ios-clock"></span> {{ answer.time_answered }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
 
                 <p class="answer-stats"><span class="ion-eye stat-icon"></span>
                     {% if answer.answerViews == 1 %}
@@ -54,7 +56,7 @@
                     {% endif %}
                 </p>
             </div>
-{#            <span class="ion-ios-chatboxes-outline stat-icon"></span>{{ answer.getComments }}#}
+            {#            <span class="ion-ios-chatboxes-outline stat-icon"></span>{{ answer.getComments }}#}
             <div class='list-group-item-text feed-answer-text feed-answer-text-{{ answer.id }}' onclick='read_more({{ answer.id }})'>
                 {{ answer.body | safe }}
                 <br>
@@ -64,8 +66,8 @@
                 {% bookmarked as b %}
                 {% editsuggested as e %}
 
-{#                {% if isupvoted answer=answer user=request.user %}#}
-{#                {% endif %}#}
+                {#                {% if isupvoted answer=answer user=request.user %}#}
+                {#                {% endif %}#}
                 <div class='read-more-container read-more-container-{{ answer.id }}'>
                     <a class='feed-read-more-btn feed-read-more-btn-{{ answer.id }}' onclick='read_more({{ answer.id }})'>Continue Reading...</a>
                 </div>
@@ -73,7 +75,7 @@
             {% if request.user.is_authenticated %}
                 {% if request.user == answer.writer.user %}
                     <div class="answer-toolbar writer-answer-toolbar">
-                       <button disabled class='btn disabled btn-primary btn-xs'><span class='fa fa-thumbs-o-up'></span> upvotes | {{ answer.upvotesCount }}</button>
+                        <button disabled class='btn disabled btn-primary btn-xs'><span class='fa fa-thumbs-o-up'></span> upvotes | {{ answer.upvotesCount }}</button>
                         <a href="/answers/edit/?answer={{ answer.id }}"> EDIT</a> &middot;
                         <a href="#" onclick="delete_answer({{ answer.id }})"> DELETE</a>
                     </div>
@@ -92,8 +94,8 @@
                                 <a class='dwnv downvote-{{ answer.id }}' onclick='downvote({{ answer.id }})' href='#'> Downvote </a>&middot;
                             {% endif %}
 
-                                <a class='comment-link comment' onclick='showAnswerComments({{ answer.id }})'> comments <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>&middot;
-                                <a href='/report/?type=A&type_id={{ answer.id }}&next={{ request.url }}'> report</a>&middot;
+                            <a class='comment-link comment' onclick='showAnswerComments({{ answer.id }})'> comments <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>&middot;
+                            <a href='/report/?type=A&type_id={{ answer.id }}&next={{ request.url }}'> report</a>&middot;
 
                             {% if t %}
                                 <a class='thnk clicked thank-{{ answer.id }}'> Gratified </a>&middot;
@@ -121,7 +123,7 @@
                                 <button class='btn btn-default clicked btn-xs upvote-{{ answer.id }}' onclick='upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvote | {{ answer.upvotesCount }}</button>
                             {% endif %}
 
-                                <a class='comment-link comment' onclick='showAnswerComments({{ answer.id }})'> comments <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>
+                            <a class='comment-link comment' onclick='showAnswerComments({{ answer.id }})'> comments <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>
 
                             <div class='dropup more-options-dropdown pull-right'>
                                 <span class='ion-ios-more-outline answer-more-options-btn' type='button' id='dropdownMenu1' data-toggle='dropdown'></span>
@@ -158,4 +160,7 @@
         </li>
         <br>
     {% endfor %}
+{% else %}
+    <h3>No Answers Written Yet</h3>
 {% endif %}
+

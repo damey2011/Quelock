@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
             model_name='userotherdetails',
             name='id',
         ),
+
         migrations.AlterField(
             model_name='userotherdetails',
             name='user',

@@ -26,8 +26,8 @@ class UserOtherDetailsSerializer(serializers.ModelSerializer):
 
 
 class FollowingSerializer(serializers.ModelSerializer):
-    user = UserOtherDetailsSerializer(read_only=True)
-    is_following = UserOtherDetailsSerializer(read_only=True)
+    user = serializers.SerializerMethodField(read_only=True)
+    is_following = serializers.SerializerMethodField(read_only=True)
     reverse_follows = SerializerMethodField()
 
     class Meta:
@@ -37,14 +37,20 @@ class FollowingSerializer(serializers.ModelSerializer):
             'is_following',
             'reverse_follows'
         ]
+
+    def get_user(self, obj):
+        return UserOtherDetailsSerializer(obj.user.profile).data
+
+    def get_is_following(self, obj):
+        return UserOtherDetailsSerializer(obj.is_following.profile).data
 
     def get_reverse_follows(self, obj):
         return obj.follows(self.context.get('request').user, 1)
 
 
 class FollowersSerializer(serializers.ModelSerializer):
-    user = UserOtherDetailsSerializer(read_only=True)
-    is_following = UserOtherDetailsSerializer(read_only=True)
+    user = serializers.SerializerMethodField(read_only=True)
+    is_following = serializers.SerializerMethodField(read_only=True)
     reverse_follows = SerializerMethodField()
 
     class Meta:
@@ -54,6 +60,12 @@ class FollowersSerializer(serializers.ModelSerializer):
             'is_following',
             'reverse_follows'
         ]
+
+    def get_user(self, obj):
+        return UserOtherDetailsSerializer(obj.user.profile).data
+
+    def get_is_following(self, obj):
+        return UserOtherDetailsSerializer(obj.is_following.profile).data
 
     def get_reverse_follows(self, obj):
         return obj.follows(self.context.get('request').user, 2)

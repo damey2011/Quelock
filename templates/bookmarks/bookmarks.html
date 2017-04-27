@@ -19,8 +19,7 @@
                         <a href="/answers/{{ answer.answer.id }}">
                             <li class="list-group-item">
                                 <h5 class="list-group-item-heading">{{ answer.answer.question.title }}</h5>
-                                <p class="list-group-item-text">Answer written by <b> {{ answer.answer.writer.user.first_name }} {{ answer.answer.writer.user.last_name }} </b>
-                                    on {{ answer.answer.date_written }}
+                                <p class="list-group-item-text">&middot; <b> {{ answer.answer.writer.user.first_name }} {{ answer.answer.writer.user.last_name }} </b>, {{ answer.answer.time_answered }}
                                 </p>
                             </li>
                         </a>

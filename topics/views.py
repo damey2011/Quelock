@@ -45,7 +45,7 @@ class TopicDetailView(View):
         total_answers = 0
         for question in questions_under:
             total_answers += Answer.objects.filter(question=question.question).count()
-        user = request.user.profile
+        user = request.user
         follows = topic
         tf = TopicFollowing.objects.filter(user=user, follows=follows).exists()
         context = {'topic': topic,
@@ -91,7 +91,7 @@ def topic_create_success(request):
 
 
 def follow_topic(request):
-    if TopicFollowing.objects.get_or_create(user=request.user.profile, follows_id=request.GET.get('topic')):
+    if TopicFollowing.objects.get_or_create(user=request.user, follows_id=request.GET.get('topic')):
         return JsonResponse(True, safe=False)
     else:
         return JsonResponse(True, safe=False, status=500)
@@ -126,7 +126,7 @@ def iffollow_topic_ajax(request):
 
 class RelatedTopics(ListAPIView):
     def get_queryset(self):
-        profile = UserOtherDetails.objects.get(user=self.request.user)
+        profile = self.request.user
         tf = TopicFollowing.objects.filter(user=profile).values('follows')
         t = Topic.objects.exclude(pk__in=tf).order_by('?')[:10]
         return t
@@ -154,17 +154,22 @@ class RecentTopicAnswers(View):
             page = 1
         q = QuestionTopic.objects.filter(under_id=topic_id).values('question')
         a = Answer.objects.filter(question__in=q).select_related().order_by('-time_written')
-        p = Paginator(a, 1)
-        try:
-            p = p.page(page)
-        except PageNotAnInteger:
-            p = p.page(1)
+
+        p = Paginator(a, 5, allow_empty_first_page=False)
+
+        global next_page
 
         try:
-            next_page = p.next_page_number()
+            p = p.page(page)
+            # IF there is a next page it doesnt include an hidden field
+            # But includes the hidden field to signal to the front end that there is no next page
+            if p.has_next():
+                next_page = None
+            else:
+                next_page = 1
         except EmptyPage:
-            next_page = None
-            return HttpResponse(None)
+            next_page = 1
+            p = None
 
         return render_to_response('answers/answer_item.html',
                                   {'answers': p, 'request': request, 'next_page': next_page})
@@ -172,8 +177,8 @@ class RecentTopicAnswers(View):
 
 class ExploreTopicAPI(ListAPIView):
     def get_queryset(self):
-        profile = UserOtherDetails.objects.get(user=self.request.user)
-        tf = TopicFollowing.objects.filter(user=profile).values('follows')
+        # profile = UserOtherDetails.objects.get(user=self.request.user)
+        tf = TopicFollowing.objects.filter(user=self.request.user).values('follows')
         t = Topic.objects.exclude(pk__in=tf).order_by('?')
         return t
 
@@ -189,18 +194,17 @@ class ExploreTopicView(View):
 class CommonInterestUsers(ListAPIView):
     def get_queryset(self):
         try:
-            user = UserOtherDetails.objects.get(user=self.request.user)
+            user = self.request.user
             uf = UserFollowings.objects.filter(user=user).values('is_following')
             t = Topic.objects.get(pk=self.request.GET.get('topic'))
             tf = TopicFollowing.objects.filter(follows=t).exclude(user__in=uf).order_by('?').exclude(user=user).values(
-                'user')[:10]
+                'user')
             users = UserOtherDetails.objects.filter(pk__in=tf)
             return users
         except ObjectDoesNotExist:
             return None
 
     serializer_class = UserOtherDetailsSerializer
-    # pagination_class = CommonUserPagination
 
 
 class SearchTopic(ListAPIView):

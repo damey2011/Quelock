@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import djcelery
+
+djcelery.setup_loader()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djcelery',
+    # 'kombu.transport.django',
     'rest_framework',
     'registration.apps.RegistrationConfig',
     'account.apps.AccountConfig',
@@ -46,7 +51,8 @@ INSTALLED_APPS = [
     'questions.apps.QuestionsConfig',
     'topics.apps.TopicsConfig',
     'comments.apps.CommentsConfig',
-    'messages.apps.MessagesConfig'
+    'messages.apps.MessagesConfig',
+    'notifications.apps.NotificationsConfig'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -87,8 +93,12 @@ WSGI_APPLICATION = 'Quelock.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'quelock',
+        'USER': 'root',
+        'PASSWORD': 'greatness2011',
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
     }
 }
 
@@ -143,3 +153,33 @@ MEDIA_URL = '/media/'
 # SET BY ME
 CURRENT_HOST = 'http://127.0.0.1:8000'
 UPLOADED_IMAGES_DIR = '/static/images/uploads/'
+
+
+# WHEN I HAD ISSUES MIGRATING TO MYSQL, THE ONE OF DELETING A PRIMARY KEY IN USEROTHERDETAILS
+# I ALTERED THE ANSWER.WRITER FIELD TO INTEGER INSTEAD OF FOREIGN KEY FIRST,
+# BY ADDING THIS BELOW TO THE MIGRATION 024
+#    migrations.AlterField(
+#             model_name='answer',
+#             name='writer',
+#             field=models.IntegerField(default=0),
+#         ),
+# THEN RAN MIGRATIONS FOR ANSWER ALONE USING python manage.py migrate answers
+# THEN I RAN THE GENERAL MIGRATIONS, THEN ALTERED THAT OF ANSWERS.WRITER TO FOREIGN KEY AGAIN
+# WITH
+#  migrations.AlterField(
+#             model_name='answer',
+#             name='writer',
+#             field=models.ForeignKey(null=True, on_delete=models.deletion.CASCADE, to='account.UserOtherDetails')
+#         )
+
+
+# Celery
+BROKER_URL = 'redis://localhost:6379/0'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = "redis"
+CELERY_REDIS_HOST = "localhost"
+CELERY_REDIS_PORT = 6379
+CELERY_REDIS_DB = 0
+CELERY_RESULT_SERIALIZER = 'json'

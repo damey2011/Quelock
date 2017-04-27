@@ -21,6 +21,8 @@ class ConversationReplies(models.Model):
     @property
     def period_sent(self):
         time_diff = datetime.datetime.now(utc) - self.time
+        print(time_diff)
+        print(time_diff.days)
         if time_diff.days < 1:
             if time_diff.seconds < 60:
                 return str(math.floor(time_diff.seconds)) + 's'

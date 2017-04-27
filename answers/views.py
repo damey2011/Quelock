@@ -1,13 +1,11 @@
-import datetime
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import F
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, render_to_response
-from django.utils.datetime_safe import date
-from django.utils.timezone import utc
 from django.views import View
 from rest_framework.generics import ListAPIView
+from Quelock.tasks import upvote_notify, decr_no_of_upvotes, addAnswerView, thanks_create_and_notify, follow_question
 from account.models import UserOtherDetails, UserFollowings, AlreadyReadAnswers
 from account.pagination import UserOtherDetailsPagination
 from account.serializers import UserOtherDetailsSerializer
@@ -22,24 +20,21 @@ class AnswersAPIView(ListAPIView):
     serializer_class = AnswerSerializer
 
 
-class AnswerAPIView(View):
+class AnswerView(View):
     def get(self, request, pk):
         answer = Answer.objects.get(pk=pk)
-        answer.no_of_views += 1
-        answer.save()
         try:
-            b = Bookmark.objects.get(user=request.user, answer=answer)
-            already_upvoted = UpVotes.objects.filter(user=request.user, answer=answer)
-            already_downvoted = DownVotes.objects.filter(user=request.user, answer=answer)
+            b = Bookmark.objects.get(user=request.user, answer_id=pk)
+            already_upvoted = UpVotes.objects.filter(user=request.user, answer_id=pk)
+            already_downvoted = DownVotes.objects.filter(user=request.user, answer_id=pk)
         except:
-            print('No such bookmark')
             b = None
             already_upvoted = None
             already_downvoted = None
         try:
-            user1 = UserOtherDetails.objects.get(user=request.user)
-            user2 = UserOtherDetails.objects.get(user=answer.writer.user)
-            i = UserFollowings.objects.filter(user=user1, is_following=user2)
+            user1 = request.user
+            user2 = answer.writer.user.id
+            i = UserFollowings.objects.filter(user_id=user1, is_following_id=user2)
         except:
             i = None
 
@@ -56,7 +51,6 @@ class WriteAnswerView(View):
 
     def post(self, request, slug):
         answer_question = Question.objects.get(slug=slug)
-        print(request.POST)
         body = request.POST['details']
 
         writer = UserOtherDetails.objects.get(user=request.user)
@@ -127,8 +121,6 @@ class UserAnswersR2R(View):
             a = None
         p = Paginator(a, 3)
         p = p.page(request.GET.get('page'))
-
-        print('page=' + str(p))
 
         if p.has_next():
             next_page = None
@@ -208,15 +200,14 @@ class Upvote(View):
         a = Answer.objects.get(pk=request.GET.get('answer'))
         global reply
         if str(request.GET.get('action')) == 'upvote':
-            u = UpVotes(answer=a, user=request.user)
-            a.no_of_upvotes += 1
-            a.save()
-            u.save()
+            UpVotes(answer=a, user=request.user).save()
+            upvote_notify.delay(request.GET.get('answer'), request.user.id)
             reply = True
         if str(request.GET.get('action')) == 'r_upvote':
             u = UpVotes.objects.filter(answer=a, user=request.user)
             a.no_of_upvotes -= 1
             a.save()
+            decr_no_of_upvotes.delay(a.id)
             for i in u:
                 i.delete()
             reply = True
@@ -295,13 +286,9 @@ class TrendingAnswersView(View):
 class Thank(View):
     def post(self, request):
         answer_id = request.GET.get('answer')
-        answer = Answer.objects.get(pk=answer_id)
-        if Thanks.objects.filter(user=request.user, answerer=answer.writer.user, answer=answer).exists():
-            return JsonResponse(False, safe=False)
-        else:
-            t = Thanks(user=request.user, answerer=answer.writer.user, answer=answer)
-            t.save()
-            return JsonResponse(True, safe=False)
+        user_id = request.user.id
+        thanks_create_and_notify.delay(answer_id, user_id)
+        return JsonResponse(True, safe=False)
 
 
 class SuggestEdit(View):
@@ -320,15 +307,5 @@ class SuggestEdit(View):
 class AddNewView(View):
     def get(self, request):
         answer_id = request.GET.get('answer')
-        try:
-            ara = AlreadyReadAnswers.objects.filter(user=request.user, answer_id=answer_id)
-            if ara.count() > 0:
-                last_viewd = ara.count() - 1
-                time_diff = datetime.datetime.now(utc) - ara[last_viewd].created
-
-                if time_diff.days >= 1:
-                    AlreadyReadAnswers(user=request.user, answer_id=answer_id).save()
-        except AlreadyReadAnswers.DoesNotExist:
-            AlreadyReadAnswers(user=request.user, answer_id=answer_id).save()
+        addAnswerView.delay(int(request.user.id), int(answer_id))
         return JsonResponse(True, safe=False)
-

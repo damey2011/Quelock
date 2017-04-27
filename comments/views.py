@@ -3,6 +3,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import render, render_to_response
 from django.views import View
 from rest_framework.generics import ListAPIView, CreateAPIView
+from Quelock.tasks import comment_notify
 from account.models import UserOtherDetails
 from answers.models import Answer
 from comments.models import Comment
@@ -71,12 +72,14 @@ class PostComment(View):
         if int(parent_type) == 1:
             c = Comment(writer=writer, body=comment_content, parent_answer_id=parent_id)
             c.save()
-            return JsonResponse(True, safe=False)
+            comment_notify(c.id, 1, parent_id)
         if int(parent_type) == 2:
             c = Comment(writer=writer, body=comment_content, parent_id=parent_id)
             c.save()
-            return JsonResponse(True, safe=False)
-        return Http404()
+            comment_notify(c.id, 2, parent_id)
+        else:
+            return Http404()
+        return JsonResponse(True, safe=False)
 
 
 class RetrieveChildrenComment(ListAPIView):

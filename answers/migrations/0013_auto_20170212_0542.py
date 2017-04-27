@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('answers', '0012_auto_20170210_1323'),
+        ('account', '__first__')
     ]
 
     operations = [

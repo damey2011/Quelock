@@ -7,6 +7,7 @@ from django.views import View
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from Quelock.tasks import answer_requested_create_and_notify, follow_question, addQuestionView
 from account.models import UserOtherDetails
 from answers.models import Answer
 
@@ -53,11 +54,6 @@ class QuestionDetailView(View):
 
         question_tags = QuestionTopic.objects.filter(question=question).select_related('under')
 
-        if ReadQuestions.objects.filter(user=request.user, question=question).exists():
-            pass
-        else:
-            ReadQuestions(user=request.user, question=question).save()
-
         context = {'question': question,
                    'user_has_answered_question_already': user_has_answered_question_already, 'explore_active': 'active',
                    'user_follows': user_follows, 'tags': question_tags}
@@ -65,6 +61,15 @@ class QuestionDetailView(View):
 
     def post(self, request):
         pass
+
+
+class AddNewQuestionView(View):
+    def get(self, request):
+        question_id = request.GET.get('question')
+        user_id = request.user.id
+
+        addQuestionView.delay(question_id=question_id, user_id=user_id)
+        return JsonResponse(True, safe=False)
 
 
 class QuestionDetailAPIView(APIView):
@@ -114,6 +119,8 @@ class QuestionCreateView(View):
         write_profile.no_of_questions += 1
         write_profile.save()
 
+        follow_question.delay(question.id, request.user.id)
+
         return redirect('/questions/' + str(question.slug))
 
 
@@ -135,6 +142,7 @@ class QuestionAnswers(View):
             total = answers.count()
         except:
             answers = None
+            total = None
         return render_to_response('answers/answer_item.html',
                                   {'answers': answers, 'request': request, 'total_answers': total})
 
@@ -275,7 +283,7 @@ class RequestUserAnswersToQuestions(View):
             topics_list = []
 
         ar = AnswerRequest.objects.filter(requester=request.user, question=request.POST['question']).values(
-                'receipient')
+            'receipient')
 
         if len(topics_list) > 0:
             q = QuestionTopic.objects.filter(under__in=topics_list).distinct().values('question')
@@ -288,10 +296,10 @@ class RequestUserAnswersToQuestions(View):
             # aw = Answer.objects.filter(question_id__in=q).select_related().values('writer').distinct('writer')[:25]
 
         else:
-            users = User.objects.all().exclude(id__in=ar).order_by('?')[:20]
+            users = User.objects.all().exclude(id__in=ar).order_by('?')
 
         return render_to_response('question/request_answers.html',
-                                      {'users': users, 'request': request, 'sent_already': ar.count()})
+                                  {'users': users, 'request': request, 'sent_already': ar.count()})
 
 
 class SendAnswerRequest(View):
@@ -300,7 +308,10 @@ class SendAnswerRequest(View):
         requester = request.POST['requester']
         receipient = request.POST['receipient']
 
-        AnswerRequest(requester_id=requester, receipient_id=receipient, question_id=question).save()
+        # AnswerRequest(requester_id=requester, receipient_id=receipient, question_id=question).save()
+
+        answer_requested_create_and_notify.delay(requester, question, receipient)
+
         return JsonResponse(True, safe=False)
 
 

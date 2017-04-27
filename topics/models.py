@@ -27,7 +27,7 @@ class Topic(models.Model):
 
 
 class TopicFollowing(models.Model):
-    user = models.ForeignKey('account.UserOtherDetails', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     follows = models.ForeignKey(Topic, on_delete=models.CASCADE)
     created = models.DateTimeField(null=True)
 

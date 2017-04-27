@@ -18,7 +18,7 @@ a:hover{
 
 body{
 	/*background: linear-gradient(#0096ff, #005dff);*/
-    background-color: rgba(117, 117, 117, 0.1);
+/*     background-color: rgba(117, 117, 117, 0.1); */
     /*background-color: #24292e;*/
 }
 
@@ -384,12 +384,44 @@ body{
 }
 
 .answer-title{
-    padding: 20px;
+    padding: 0px 10px 0px 10px;
+}
+
+.abt-writer{
+    color: darkgrey;
+    padding: 10px;
+    text-align:center;
+}
+
+.answer-page-tags{
+    margin-left: 10px;
 }
 
 .answer-title h4{
     color: #333333;
 }
+
+.answer-title div{
+    line-height: 1.6;
+    margin-bottom: 10px;
+    color: black;
+    font-weight: 300;
+}
+
+.answer-title div img{
+    max-width: 100%;
+}
+
+.answer-section{
+    background-color: white;
+    padding: 15px;
+}
+
+.answer .col-lg-6{
+    padding: 0;
+}
+
+
 
 .answer-stats span::before{
     padding: 1px;
@@ -406,6 +438,7 @@ body{
     font-size: 14px;
     font-weight: 100;
     color: rgba(51,51,51,0.5);    
+    margin-top: -10px;
 }
 
 .answer-divider{
@@ -1012,6 +1045,8 @@ a.tile {
     padding-left: 10px;
     border-left: 4px solid white;
     width: 100%;
+    text-align:center;
+    padding-bottom: 30px;
 }
 
 .answer_content > ol ul{
@@ -1025,10 +1060,11 @@ a.tile {
 }
 
 .profile-picture-answer{
-    max-width: 100px;
-    max-height: 100px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    margin: auto auto;
+    display: block;
+    margin: 0 auto;
 }
 
 
@@ -1601,6 +1637,16 @@ a.tile {
     color: white;
 }
 
+.feed-answer-page-text{
+    padding-bottom: 0;
+    line-height: 1.6;
+}
+
+.feed-answer-page-text img{
+    max-width: 100%;
+    border-radius: 4px;
+}
+
 .feed-answer-text{
     max-height: 80px;
     overflow: hidden;
@@ -1665,7 +1711,7 @@ a.tile {
 }
 
 .feed-answer-content-full{
-    max-height: 100%;
+    max-height: 150%;
 }
 
 .writer-div{
@@ -1824,6 +1870,16 @@ a.tile {
     cursor: pointer;
 }
 
+.chat-image img{
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    right: 40px;
+    border-radius: 50%;
+}
+
+
+
 .message-middle-col .messages-header{
     font-size: 24px;
     text-align:center;
@@ -1851,6 +1907,7 @@ a.tile {
     font-weight: 900;
     color: rgba(51,51,51,0.8);
 }
+
 
 .message-thread-text{
     font-size: 12px;

@@ -1,15 +1,15 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.db.models import Q
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from account.forms import AccountUpdateForm
-from account.models import UserOtherDetails, UserFollowings
+from account.models import UserOtherDetails, UserFollowings, UserFigures
 from account.pagination import FollowPagination, UserOtherDetailsPagination
 from account.serializers import UserOtherDetailsSerializer, FollowingSerializer, FollowersSerializer
-from answers.models import Answer
+from answers.models import Answer, Thanks
 from questions.models import Question
 from topics.models import TopicFollowing, Topic
 from topics.serializers import TopicSerializer
@@ -18,12 +18,8 @@ from topics.serializers import TopicSerializer
 class ProfileView(View):
     def get(self, request, username):
         requested_user = User.objects.get(username=username).profile
-        requested_user.profile_no_of_views += 1
-        requested_user.save()
         try:
-            # user1 = UserOtherDetails.objects.get(user=User.objects.get(username=request.user))
             user1 = request.user.profile
-            # user2 = UserOtherDetails.objects.get(user=User.objects.get(username=username))
             user2 = User.objects.get(username=username).profile
             i = UserFollowings.objects.filter(user=user2, is_following=user1).exists()
             u = UserFollowings.objects.get(user=user1, is_following=user2)
@@ -40,6 +36,27 @@ class ProfileView(View):
         context = {'req_user': requested_user, 'is_following': is_following, 'no_of_answers': a, 'no_of_questions': b,
                    'follows_back': i, 'account_active': 'active'}
         return render(request, 'profile/profile.html', context)
+
+
+# def updateUserFiguresModels():
+#     users = User.objects.all()
+#
+#     for user in users:
+#         answers_ = Answer.objects.filter(writer=user.profile)
+#         answers = answers_.count()
+#         answer_views = UserOtherDetails.objects.get(user=user).answer_no_of_views
+#         questions = Question.objects.filter(author=user).count()
+#         followers = UserFollowings.objects.filter(is_following=user).count()
+#         followings = UserFollowings.objects.filter(user=user).count()
+#         upvotes = 0
+#         for ans in answers_:
+#             upvotes += ans.upvotesCount()
+#         thanks = Thanks.objects.filter(user=user).count()
+#         comments = 0
+#         for ans in answers_:
+#             comments += ans.getComments()
+#         UserFigures(user=user, answers=answers, answer_views=answer_views, questions=questions, followers=followers,
+#                     followings=followings, upvotes=upvotes, thanks=thanks, comments=comments).save()
 
 
 class AllProfilesView(ListAPIView):
@@ -75,7 +92,7 @@ class RetrieveFollowing(ListAPIView):
         queryset_list = UserFollowings.objects.all()
         if user:
             queryset_list = queryset_list.filter(
-                Q(user__user__username__exact=user)
+                Q(user__username__exact=user)
             ).distinct()
         return queryset_list
 
@@ -92,7 +109,7 @@ class RetrieveFollowers(ListAPIView):
         queryset_list = UserFollowings.objects.all()
         if user:
             queryset_list = queryset_list.filter(
-                Q(is_following__user__username__exact=user)
+                Q(is_following__username__exact=user)
             ).distinct()
         return queryset_list
 
@@ -125,11 +142,9 @@ class RetrieveFollowedTopics(ListAPIView):
     def get_queryset(self, *args, **kwargs):
         req_user = self.request.GET.get('req_user')
         req_user = User.objects.get(username=req_user)
-        req_user = UserOtherDetails.objects.get(user=req_user)
 
         user = self.request.GET.get('user')
         user = User.objects.get(username=user)
-        user = UserOtherDetails.objects.get(user=user)
 
         if req_user == user:
             queryset = TopicFollowing.objects.filter(user=user).values('follows')
@@ -145,9 +160,9 @@ class RetrieveFollowedTopics(ListAPIView):
 
 class ExplorePeopleAPI(ListAPIView):
     def get_queryset(self):
-        profile = self.request.user.profile
+        profile = self.request.user
         uf1 = UserFollowings.objects.filter(user=profile).values('is_following')
-        uf = UserOtherDetails.objects.all().exclude(pk__in=uf1).exclude(pk=profile.user.id).order_by('?')
+        uf = UserOtherDetails.objects.all().exclude(pk__in=uf1).exclude(pk=profile.id)
         return uf
 
     serializer_class = UserOtherDetailsSerializer

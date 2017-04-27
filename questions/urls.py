@@ -4,7 +4,7 @@ from answers.views import WriteAnswerView
 from questions.views import QuestionListAPIView, QuestionDetailView, QuestionCreateView, \
     QuestionAnswers, QuestionEditView, QuestionExploreAPI, QuestionExploreView, FollowQuestion, \
     UnFollowQuestion, GetQuestionFollowers, IsFollowingQuestion, AssignTopic, UnAssignTopic, UserQuestionsR2R, \
-    RequestUserAnswersToQuestions, SendAnswerRequest, RemoveAnswerRequest
+    RequestUserAnswersToQuestions, SendAnswerRequest, RemoveAnswerRequest, AddNewQuestionView
 
 urlpatterns = [
     url(r'^$', QuestionListAPIView.as_view()),
@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^request_answers/', RequestUserAnswersToQuestions.as_view(), name='request_answers'),
     url(r'^remove_answer_request/', RemoveAnswerRequest.as_view(), name='remove_answer_request'),
     url(r'^send_answer_request/', SendAnswerRequest.as_view(), name='send_answer_request'),
+    url(r'^add_new_view/', AddNewQuestionView.as_view(), name='add_new_question_view'),
     url(r'^(?P<slug>[\w-]+)/$', QuestionDetailView.as_view(), name='q_detail'),
     url(r'^(?P<username>[\w-]+)/questions/$', UserQuestionsR2R.as_view(), name='user_questions'),
     url(r'^(?P<slug>[\w-]+)/answerit/$', WriteAnswerView.as_view(), name='answer_it'),

@@ -47,15 +47,7 @@
     <script src="{% static 'scripts/jquery.min.js' %}"></script>
     {#        <script src="{% static 'scripts/bootstrap.min.js' %}"></script>#}
     <script>
-        $(document).ready(function(){
-           $('#submit').click(function(){
-               event.preventDefault();
-               if($('#p1').val != $('#p2').val){
-                   alert('Passwords dont match');
-                   $('#p1', '#p2').css('border', '2px solid red');
-               }
-           });
-        });
+
     </script>
 
 </html>

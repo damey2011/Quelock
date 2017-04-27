@@ -3,119 +3,170 @@
     {{ answer.question.title }}{% endblock %}
 {% block body %}
     {% load staticfiles %}
+    {% load answer_extras %}
+    <div class="getting-started-overlay">
+        <div class="lay-header">
+            <span class="overlay-header-text"></span>
+            <span class="ion-android-close close-overlay" onclick="close_overlay()"></span>
+        </div>
+        <div class="lay-content">
+            <ul class="lay-content-items">
+
+            </ul>
+        </div>
+    </div>
     <div class="container">
         <div class="answer" style="margin-top: 70px;">
             <div class="row">
-                <div class="col-lg-7">
-                    <div class='row'>
-                        <div class="answer-title">
-                            <h4><a href="/questions/{{ answer.question.slug }}">{{ answer.question.title }}</a></h4>
-                            <hr class="divider">
-                        </div>
+                <div class="col-lg-3">
 
-                        <div class='col-lg-1'>
-                            <img src='{{ answer.writer.get_dp_url }}' alt='{{ answer.writer.user.first_name }}'
-                                 style='float: left' class='commenter-dp'>
-                        </div>
-                        <div class='col-lg-11' style='line-height: 25px;'>
-                            <span class='commenter-name'><a
-                                    href="/profile/{{ answer.writer.user.username }}">{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }}</a></span>
-                            <span class='bio'>{{ answer.writer.bio }}</span>
-                            <span class='pull-right badge'>{{ answer.writer.profile_no_of_views }}</span>
-                            <br/><span
-                                class='total-user-views glyphicon glyphicon-eye-open'> {{ answer.no_of_views }} </span>
-                            views
-                            <br>
-                        </div>
-                    </div>
-                    <br>
-
-                    <div class='answer-content answer-{{ answer.id }}'>
-                        <div class="answer-body">
-                            {{ answer.body|safe }}
-                        </div>
-
-                        <br>
-                        <p>
-                            {% if answer.no_of_upvotes != 0 %}
-                                {{ answer.no_of_upvotes }} upvoted this answer &bullet;
-                                <a class="comment-link" onclick="open_upvoters_modal({{ answer.id }})">view upvotes</a>
-                            {% endif %}
-                        </p>
-                        <p>
-                            {% if user.is_authenticated %}
-                                {% if answer.writer.user == user %}
-                                    <span class='fa fa-thumbs-o-up'></span>  {{ answer.no_of_upvotes }}
-                                    <span style='margin-right: 10px;'></span>
-
-                                    <span class='fa fa-thumbs-o-up'></span>  {{ answer.no_of_downvotes }}
-                                    <span style='margin-right: 10px;'></span>
-                                {% else %}
-                                    {% if already_upvoted %}
-                                        <button class='btn btn-default btn-sm upvote-{{ answer.id }}'
-                                                onclick="r_upvote({{ answer.id }})"><span class='fa fa-thumbs-o-up'></span> Upvoted<span></span></button>
-                                    {% else %}
-                                        <button class='btn btn-default btn-sm upvote-{{ answer.id }}'
-                                                onclick="upvote({{ answer.id }})"><span class='fa fa-thumbs-o-up'></span> Upvote<span
-                                                ></span></button>
-                                        <span style='margin-right: 10px;'></span>
-                                    {% endif %}
-
-                                    {% if already_downvoted %}
-                                        <a class='comment-link downvote-{{ answer.id }}'
-                                                onclick="r_downvote({{ answer.id }})"><span
-                                                class='fa fa-thumbs-o-down'></span>Downvoted<span style='margin-right: 10px;'></span></a>
-                                    {% else %}
-                                        <a class='comment-link downvote-{{ answer.id }}'
-                                                onclick="downvote({{ answer.id }})"><span class='fa fa-thumbs-o-down'></span>Downvote<span style='margin-right: 10px;'></span></a>
-                                    {% endif %}
-                                {% endif %}
-                                {# Bookmark #}
-                                {% if is_bookmarked %}
-                                    <span class='btn-group' style='float: right; margin-right: 20px;'>
-                                        {% if user == answer.writer.user %}
-                                            <button class='btn btn-default btn-sm'><a
-                                                    href='/answers/edit/?answer={{ answer.id }}'><span
-                                                    class='fa fa-edit'></span> Edit</a></button>
-                                        {% endif %}
-                                        <button class='btn btn-primary btn-sm bookmark clicked'
-                                                onclick="unBookmarkAnswer({{ answer.id }})"><span
-                                                class='fa fa-thumb-tack'></span> archived
-                                        </button>
-                                                    </span>
-                                {% else %}
-                                    <span class='btn-group' style='float: right; margin-right: 20px;'>
-                                                        {% if user == answer.writer.user %}
-                                                            <button class='btn btn-default btn-sm'><a
-                                                                    href='/answers/edit/?answer={{ answer.id }}'><span
-                                                                    class='fa fa-edit'></span> Edit</a></button>
-                                                        {% endif %}
-                                        <button class='btn btn-primary btn-sm bookmark'
-                                                onclick="bookmarkAnswer({{ answer.id }})"><span
-                                                class='fa fa-thumb-tack'></span> archive
-                                        </button>
-                                                    </span>
-                                {% endif %}
-                            {% else %}
-                                <span class='fa fa-thumbs-o-up'></span>  {{ answer.no_of_upvotes }}
-                                <span style='margin-right: 10px;'></span>
-                                <span class='fa fa-thumbs-o-down'></span>  {{ answer.no_of_downvotes }}
-                                <span style='margin-right: 10px;'></span>
-                            {% endif %}
-                            <a class='comment-link' onclick='openAnswerCommentBox({{ answer.id }})'><span class='fa fa-comments-o'></span> comment</a>
-                        </p>
-                    </div>
-                    <hr>
-                    <h3>Comments</h3>
-
-                    <div class="answer-comments card answer-box" style="background-color: #fff; padding: 10px; width: 100%;">
-                        <!-->
-
-                    </div>
                 </div>
-                <div class="col-lg-5">
-                    <h4>About the Writer</h4>
-                    <hr class="divider">
+                <div class="col-lg-6">
+                    {% topic_tags as tt %}
+                    <ul class="answer-page-tags">
+                        {% for tag in tt %}
+                            <a href="/topics/{{ tag.under.slug }}"><li class="badge badge-follow-btn topic-tag">{{ tag.under.title }}</li></a>
+                        {% endfor %}
+                    </ul>
+                    <div class="answer-title">
+                        <h3><a href="/questions/{{ answer.question.slug }}">{{ answer.question.title }}</a></h3>
+                        <div>
+                            {{ answer.question.question_details|safe }}
+                        </div>
+                    </div>
+
+                    <br>
+                    <h4>{{ answer.writer.user.first_name }}'s Answer to {{ answer.question.title }}</h4>
+                    <hr class="answer-divider">
+
+                    <li class='list-group-item answer-{{ answer.id }} trending-answer-{{ answer.id }}' style="background-color: transparent; border: none;">
+                        <div class='writer-div'>
+                            {% if answer.anonymous %}
+                                <img class='answer-writer-thumbnail' src='{% static 'images/user.png' %}' alt='{{ answer.writer.user.username }}'>
+                                <div class="answer-writer-info">
+                                    <span class='list-group-item-heading'>Anonymous Writer</span>
+                                    {% if answer.time_written %}
+                                        <p class='small time-written'><span class="ion-ios-clock"></span> {{ answer.time_answered }}</p>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <img class='answer-writer-thumbnail' src='{{ answer.writer.display_picture.url }}' alt='{{ answer.writer.user.username }}'>
+                                <div class="answer-writer-info">
+                                    <a class='list-group-item-heading' target='_blank' href='/profile/{{ answer.writer.user.username }}'>{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }},</a>
+                                    <span class='small'>{{ answer.writer.bio }}</span>
+                                    <span class="writer-username">@{{ answer.writer.user.username }}</span>
+                                    {% if answer.time_written %}
+                                        <p class='small time-written'><span class="ion-ios-clock"></span> {{ answer.time_answered }}</p>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <p class="answer-stats"><span class="ion-eye stat-icon"></span>
+                                {% if answer.answerViews == 1 %}
+                                    {{ answer.no_of_views }} View
+                                {% else %}
+                                    {{ answer.no_of_views }} Views
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <div class='list-group-item-text feed-answer-page-text feed-answer-text-{{ answer.id }}' onclick='read_more({{ answer.id }})'>
+                            {{ answer.body | safe }}
+                            <br>
+                            {% isupvoted as u %}
+                            {% isdownvoted as d %}
+                            {% isthanked as t %}
+                            {% bookmarked as b %}
+                            {% editsuggested as e %}
+                        </div>
+                        {% if request.user.is_authenticated %}
+                            {% if request.user == answer.writer.user %}
+                                <div class="answer-toolbar writer-answer-toolbar">
+                                    <button disabled class='btn disabled btn-primary btn-xs'><span class='fa fa-thumbs-o-up'></span> upvotes | {{ answer.upvotesCount }}</button>
+                                    <a href="/answers/edit/?answer={{ answer.id }}"> EDIT</a> &middot;
+                                    <a href="#" onclick="delete_answer({{ answer.id }})"> DELETE</a>
+                                </div>
+                            {% else %}
+                                <div class='answer-toolbar'>
+                                    <p class='answer-toolbar-desktop'>
+                                        {% if u %}
+                                            <button class='btn btn-default clicked btn-xs upvote-{{ answer.id }}' onclick='r_upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvoted | {{ answer.upvotesCount }}</button>
+                                        {% else %}
+                                            <button class='btn btn-primary btn-xs upvote-{{ answer.id }}' onclick='upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvote | {{ answer.upvotesCount }}</button>
+                                        {% endif %}
+
+                                        {% if d %}
+                                            <a class='dwnv downvote-{{ answer.id }}' onclick='r_downvote({{ answer.id }})' href='#'> Downvoted </a>&middot;
+                                        {% else %}
+                                            <a class='dwnv downvote-{{ answer.id }}' onclick='downvote({{ answer.id }})' href='#'> Downvote </a>&middot;
+                                        {% endif %}
+
+                                        <a class='comment-link comment' onclick='showAnswerComments({{ answer.id }})'> comments <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>&middot;
+                                        <a href='/report/?type=A&type_id={{ answer.id }}&next={{ request.url }}'> report</a>&middot;
+
+                                        {% if t %}
+                                            <a class='thnk clicked thank-{{ answer.id }}'> Gratified </a>&middot;
+                                        {% else %}
+                                            <a class='thnk comment-link thank-{{ answer.id }}' onclick="thank({{ answer.id }})"> Gratify </a>&middot;
+                                        {% endif %}
+
+                                        {% if e %}
+                                            <a class='editsug clicked comment-link editsug-{{ answer.id }}' onclick='suggest_edit({{ answer.id }})'> Edit Suggested </a>
+                                        {% else %}
+                                            <a class='editsug comment-link editsug-{{ answer.id }}' onclick='suggest_edit({{ answer.id }})' href='#'> Suggest Edits </a>
+                                        {% endif %}
+
+                                        {% if b %}
+                                            <button class='btn clicked btn-primary btn-xs archive-{{ answer.id }}' style='float: right;' onclick='unBookmarkAnswer({{ answer.id }})'><span class='fa fa-bookmark'></span> archived</button>
+                                        {% else %}
+                                            <button class='btn btn-primary btn-xs archive-{{ answer.id }}' style='float: right;' onclick='bookmarkAnswer({{ answer.id }})'><span class='fa fa-bookmark'></span> archive</button>
+                                        {% endif %}
+
+                                    </p>
+                        <span class='answer-toolbar-mobile'>
+                            {% if u %}
+                                <button class='btn btn-primary clicked btn-xs upvote-{{ answer.id }}' onclick='r_upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvoted | {{ answer.upvotesCount }}</button>
+                            {% else %}
+                                <button class='btn btn-default clicked btn-xs upvote-{{ answer.id }}' onclick='upvote({{ answer.id }})'><span class='fa fa-thumbs-o-up'></span> upvote | {{ answer.upvotesCount }}</button>
+                            {% endif %}
+
+                            <a class='comment-link comment' onclick='showAnswerComments({{ answer.id }})'> comments <span class="badge badge-follow-btn item-no-badge">{{ answer.getComments }}</span></a>
+
+                            <div class='dropup more-options-dropdown pull-right'>
+                                <span class='ion-ios-more-outline answer-more-options-btn' type='button' id='dropdownMenu1' data-toggle='dropdown'></span>
+                                <ul class='dropdown-menu answer-dropdown-options' role='menu' aria-labelledby='dropdownMenu1'>
+                                    <li role='presentation' class='dropdown-header'>User Actions</li>
+                                    {% if d %}
+                                        <li role='presentation'><a role='menuitem' onclick='r_downvote({{ answer.id }})' tabindex='-1' class='comment-link downvote-{{ answer.id }}'>Downvoted</a></li>
+                                    {% else %}
+                                        <li role='presentation'><a role='menuitem' onclick='downvote({{ answer.id }})' tabindex='-1' class='comment-link downvote-{{ answer.id }}'>Downvote</a></li>
+                                    {% endif %}
+                                    {% if b %}
+                                        <li role='presentation'><a role='menuitem' onclick='unBookmarkAnswer({{ answer.id }})' tabindex='-1' class='comment-link archive-{{ answer.id }}'>Archived</a></li>
+                                    {% else %}
+                                        <li role='presentation'><a role='menuitem' onclick='unBookmarkAnswer({{ answer.id }})' tabindex='-1' class='comment-link archive-{{ answer.id }}'>Archive</a></li>
+                                    {% endif %}
+                                    {% if t %}
+                                        <li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link thank-{{ answer.id }}'>Gratified</a></li>
+                                    {% else %}
+                                        <li role='presentation'><a role='menuitem' onclick="thank({{ answer.id }})" tabindex='-1' class='comment-link thank-{{ answer.id }}'>Gratify</a></li>
+                                    {% endif %}
+
+                                    {% if e %}
+                                        <li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link editsug-{{ answer.id }}'>Edits Suggested</a></li>
+                                    {% else %}
+                                        <li role='presentation'><a role='menuitem' onclick='suggest_edit({{ answer.id }})' tabindex='-1' class='comment-link editsug-{{ answer.id }}'>Suggest Edits</a></li>
+                                    {% endif %}
+                                    <li role='presentation'><a role='menuitem' tabindex='-1' href='/report/?type=Q&type_id={{ answer.id }}&next={{ request.url }}'>Report</a></li>
+                                </ul>
+                            </div>
+                        </span>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </li>
+
+                    <h4 class="abt-writer">About the Writer</h4>
                     {% if answer.writer.display_picture != None %}
                         <img src="{{ answer.writer.get_dp_url }}" alt="{{ answer.writer.user.first_name }}"
                              class="profile-picture-answer">
@@ -124,7 +175,7 @@
                     {% endif %}
                     <hr>
                     <div class="answer-writer-details">
-                        <a href="/profile/{{ answer.writer.user.username }}"><p>{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }} </a>| <span class="badge">{{ answer.writer.profile_no_of_views }} profile views</span>
+                        <a href="/profile/{{ answer.writer.user.username }}"><p>{{ answer.writer.user.first_name }} {{ answer.writer.user.last_name }} </a>| <span class="badge badge-follow-btn">{{ answer.writer.answer_no_of_views }} Total Views</span>
                         {% if answer.writer.works != 'NA' %}
                             <p> &middot; {{ answer.writer.works }}</p>
                         {% endif %}
@@ -138,53 +189,23 @@
                         {% if user.is_authenticated %}
                             {% if user != answer.writer.user %}
                                 {% if is_following %}
-                                    <a onclick="unfollow({{ answer.writer.user.id }})" class="btn btn-default btn-sm follow"> - unfollow</a>
+                                    <a onclick="unfollow({{ answer.writer.user.id }})" class="btn btn-primary btn-md follow"> - unfollow</a>
                                 {% else %}
-                                    <a onclick="follow({{ answer.writer.user.id }})" class="btn btn-default btn-sm follow"> + follow </a>
+                                    <a onclick="follow({{ answer.writer.user.id }})" class="btn btn-default btn-md follow"> + follow </a>
                                 {% endif %}
                             {% endif %}
                         {% endif %}
                     </div>
+                </div>
+                <div class="col-lg-3">
 
                 </div>
             </div>
         </div>
     </div>
-
-
-    <!--Upvoters modal -->
-    <div class="modal fade" id="upvotersModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header upvoters-modal-header">
-
-                </div>
-                <h4 style="color: #444444; text-align: center">Upvoters</h4>
-                <div class="modal-body upvoters-modal-body">
-                    <ul class="upvoters-list">
-
-                    </ul>
-
-                    <div class="load-btn-upvoters">
-                        <div class="loading-1-upvoters">
-                            <img src="/static/images/loading-2.gif" alt="" class="loading"> Loading...
-                        </div>
-                        <a onclick='show_upvoters({{ answer.id }})' class='btn-load-upvoters' style="display: none;"><span class='fa fa-refresh'></span> Load More</a>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-sm btn-danger upvoters-modal-close" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-            <!-- /.modal-content -->
-        </div>
-    </div>
-    <!--end of upvoters modal -->
 
     <script src="{% static 'scripts/jquery.min.js' %}"></script>
     <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
-    <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
     <script src="{% static 'scripts/custom.js' %}"></script>
 
 
@@ -196,7 +217,17 @@
         var next_upvoters_url = original_upvoters_url;
 
         $(document).ready(function () {
-            loadComments(answer_id);
+{#            loadComments(answer_id);#}
+            $.ajax({
+                url: '/answers/add_view/?answer='+answer_id,
+                data: {'csrfmiddlewaretoken': csrftoken},
+                success: function (data) {
+                    //DO nOthing... view addedd
+                },
+                error: function () {
+
+                }
+            })
         });
 
     </script>

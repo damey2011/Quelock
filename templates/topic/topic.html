@@ -1,9 +1,21 @@
 {% extends 'base.html' %}
+
+{% block title %}
+    {{ topic.title }}
+{% endblock %}
+{% load staticfiles %}
 {% block body %}
-    {% block title %}
-        {{ topic.title }}
-    {% endblock %}
-    {% load staticfiles %}
+    <div class="getting-started-overlay">
+        <div class="lay-header">
+            <span class="overlay-header-text"></span>
+            <span class="ion-android-close close-overlay" onclick="close_overlay()"></span>
+        </div>
+        <div class="lay-content">
+            <ul class="lay-content-items">
+
+            </ul>
+        </div>
+    </div>
     <div class="container">
         <div class="row" style="margin-top: 50px;">
             <div class="col-lg-9">
@@ -13,9 +25,6 @@
                             <img src="{{ topic.image_name.url }}" alt="{{ topic.created_by.first_name }}" class="profile-picture" style="margin-bottom: 15px;">
                         {% else %}
                             <div class="profile-picture" style="font-size: 80pt; vertical-align: middle; text-align: center;">{{ topic.title|slice:":1" }}</div>
-                        {% endif %}
-                        {% if user == req_user.user %}
-                            <div class="upld-btn"><a href="{{ req_user.user.username }}/update" class="ion-android-settings btn btn-sm">  Edit Profile</a></div>
                         {% endif %}
                     </div>
 
@@ -61,11 +70,8 @@
                             <hr/>
                             <!--Post enters here-->
                         </div>
-                        <div class="load-btn">
-                            <div class="loading-1">
-                                <img src="/static/images/loading-2.gif" alt="" class="loading"> Loading...
-                            </div>
-                            <a onclick='load_more(5)' class='btn-load'><span class='fa fa-refresh'></span> Load More</a>
+                        <div class="answers-load-more-btn">
+                            <a onclick="loadTopicAnswers()" class="comment-link"><div class="load-more-inner"><span class="ion-android-arrow-down"></span> Load More</div></a>
                         </div>
                     </div>
                 </div>
@@ -105,7 +111,6 @@
     <!-- end of comments modal -->
 
     <script src="{% static 'scripts/jquery.min.js' %}"></script>
-    <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
     <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
     <script>
         var csrftoken = '{{ csrf_token }}';

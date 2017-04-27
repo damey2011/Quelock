@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from answers.views import AnswerAPIView, EditAnswerView, AnswersAPIView, DeleteAnswerView, \
+from answers.views import AnswerView, EditAnswerView, AnswersAPIView, DeleteAnswerView, \
     BookmarkAnswer, UnBookmarkAnswer, CheckUpvoted, Downvote, Upvote, CheckDownvoted, CheckBookmarked, ArchivedAnswers,\
     TrendingAnswersByUpvotes, TrendingAnswersByInteractions, GetUpvoters, Thank, SuggestEdit, \
     UserAnswersR2R, AddNewView
@@ -22,6 +22,6 @@ urlpatterns = [
     url(r'^thank/', Thank.as_view(), name='thank'),
     url(r'^suggest_edit/', SuggestEdit.as_view(), name='suggest_edit'),
     url(r'^add_view/', AddNewView.as_view(), name='add_new_view'),
-    url(r'^(?P<pk>\d+)/$', AnswerAPIView.as_view(), name='answer'),
+    url(r'^(?P<pk>\d+)/$', AnswerView.as_view(), name='answer'),
     url(r'^(?P<username>\w+)/', UserAnswersR2R.as_view()),
 ]

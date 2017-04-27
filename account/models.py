@@ -38,7 +38,7 @@ def shorten_number(n):
 
 class UserOtherDetails(models.Model):
     user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
-    profile_no_of_views = models.IntegerField(null=True, default=0)
+    answer_no_of_views = models.IntegerField(null=True, default=0)
     display_picture = models.ImageField(null=True, blank=True, upload_to='dps', default='/default/user.png')
     bio = models.TextField(null=True, blank=True, default='NA')
     college = models.CharField(max_length=50, blank=True, default='NA')
@@ -64,13 +64,11 @@ class UserOtherDetails(models.Model):
         return last_string
 
     def get_no_of_followers(self):
-        user = UserOtherDetails.objects.get(user=self.user)
-        u = UserFollowings.objects.filter(is_following=user).count()
+        u = UserFollowings.objects.filter(is_following=self.user).count()
         return shorten_number(u)
 
     def get_no_of_following(self):
-        user = UserOtherDetails.objects.get(user=self.user)
-        u = UserFollowings.objects.filter(user=user).count()
+        u = UserFollowings.objects.filter(user=self.user).count()
         return shorten_number(u)
 
     def get_no_of_questions(self):
@@ -84,8 +82,8 @@ class UserOtherDetails(models.Model):
 
 
 class UserFollowings(models.Model):
-    user = models.ForeignKey(UserOtherDetails, related_name='%(app_label)s_%(class)s_related', on_delete=models.CASCADE)
-    is_following = models.ForeignKey(UserOtherDetails, related_name='%(app_label)s_%(class)s', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='%(app_label)s_%(class)s_related', on_delete=models.CASCADE)
+    is_following = models.ForeignKey(User, related_name='%(app_label)s_%(class)s', on_delete=models.CASCADE)
     created = models.DateTimeField(null=True)
 
     def follows(self, user, flwrsOrflwngs):
@@ -93,7 +91,6 @@ class UserFollowings(models.Model):
             flwrsOrflwngs = self.is_following
         else:
             flwrsOrflwngs = self.user
-        user = UserOtherDetails.objects.get(user=user)
         try:
             user_following = UserFollowings.objects.get(user=user, is_following=flwrsOrflwngs)
         except:
@@ -121,11 +118,18 @@ TYPES = (
 class Reports(models.Model):
     type = models.CharField(max_length=1, choices=TYPES)
     type_id = models.PositiveIntegerField()
-    created = models.DateTimeField(auto_now_add=True,null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
     message = models.TextField(blank=True, null=True)
 
 
-class UserNotifications(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_user")
-    subscriber = models.ForeignKey(User, on_delete=models.CASCADE,
-                                   related_name="%(app_label)s_%(class)s_subscriber")
+class UserFigures(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    answers = models.PositiveIntegerField(default=0)
+    answer_views = models.PositiveIntegerField(default=0)
+    questions = models.PositiveIntegerField(default=0)
+    question_views = models.PositiveIntegerField(default=0)
+    followers = models.PositiveIntegerField(default=0)
+    followings = models.PositiveIntegerField(default=0)
+    upvotes = models.PositiveIntegerField(default=0)
+    thanks = models.PositiveIntegerField(default=0)
+    comments = models.PositiveIntegerField(default=0)
