@@ -1,0 +1,286 @@
+/*@import url(http://fonts.googleapis.com/css?family=Lato:700);*/
+/**,*/
+/**:after,*/
+/**:before {*/
+  /*-moz-box-sizing: border-box;*/
+  /*-webkit-box-sizing: border-box;*/
+  /*box-sizing: border-box;*/
+/*}*/
+/*html,*/
+/*body {*/
+  /*background: #fefefe;*/
+  /*color: #fefefe;*/
+  /*font-family: 'Lato';*/
+  /*font-size: 14px;*/
+  /*padding: 10px;*/
+  /*position: relative;*/
+/*}*/
+.button-default {
+  -webkit-transition: 0.25s ease-out 0.1s color;
+  -moz-transition: 0.25s ease-out 0.1s color;
+  -o-transition: 0.25s ease-out 0.1s color;
+  transition: 0.25s ease-out 0.1s color;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin: 0;
+  outline: none;
+  position: relative;
+  top: -5px;
+}
+
+.notifications-icon{
+  font-size: 35px;
+}
+
+.show-notifications {
+  position: relative;
+}
+.show-notifications:hover #icon-bell,
+.show-notifications:focus #icon-bell,
+.show-notifications.active #icon-bell {
+  fill: #34495e;
+}
+.show-notifications #icon-bell {
+  fill: #7f8c8d;
+}
+.show-notifications .notifications-count {
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  background: #3498db;
+  color: #fefefe;
+  font: normal 0.85em 'Lato';
+  height: 16px;
+  line-height: 1.75em;
+  position: absolute;
+  right: -1px;
+  text-align: center;
+  top: 2px;
+  width: 16px;
+  display: none;
+}
+
+.notifications-count span{
+  font-size: 12pt;
+  position: relative;
+  top: -11px;
+  font-weight: 600;
+}
+
+.show-notifications.active ~ .notifications {
+  opacity: 1;
+  top: 60px;
+}
+.notifications {
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -webkit-transition: 0.25s ease-out 0.1s opacity;
+  -moz-transition: 0.25s ease-out 0.1s opacity;
+  -o-transition: 0.25s ease-out 0.1s opacity;
+  transition: 0.25s ease-out 0.1s opacity;
+  background: #ecf0f1;
+  border: 1px solid #bdc3c7;
+  right: 5px;
+  opacity: 0;
+  position: absolute;
+  top: -999px;
+  font-size: 14px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.notifications:after {
+  border: 10px solid transparent);
+  border-bottom-color: #45494c;
+  content: '';
+  display: block;
+  height: 0;
+  right: 10px;
+  position: absolute;
+  top: -20px;
+  width: 0;
+}
+
+
+.notifications h3,
+.notifications .show-all {
+  background: #45494c;
+  color: #fefefe;
+  margin: 0;
+  padding: 10px;
+  max-width: 350px;
+}
+.notifications h3 {
+  cursor: default;
+  font-size: 1.05em;
+  font-weight: normal;
+}
+
+.notifications h3 a{
+  font-size: 10pt;
+  text-decoration: underline;
+  float: right;
+  cursor: pointer;
+  color:white;
+}
+
+.notifications .show-all {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+.notifications .show-all:hover,
+.notifications .show-all:focus {
+  text-decoration: underline;
+}
+.notifications .notifications-list {
+  list-style: none;
+  margin: 0;
+  overflow: auto;
+  padding: 0;
+}
+.notifications .notifications-list .item {
+  -webkit-transition: -webkit-transform 0.25s ease-out 0.1s;
+  -moz-transition: -moz-transform 0.25s ease-out 0.1s;
+  -o-transition: -o-transform 0.25s ease-out 0.1s;
+  transition: transform 0.25s ease-out 0.1s;
+  border-top: 1px solid #bdc3c7;
+  color: #7f8c8d;
+  cursor: pointer;
+  display: block;
+  padding: 10px;
+  position: relative;
+  white-space: nowrap;
+  width: 350px;
+}
+
+.notifications .notifications-list .item a{
+  display: inline;
+}
+
+
+.notifications .notifications-list .item:hover{
+  background-color: rgba(95, 82, 90, 0.1);
+}
+
+
+.notifications .notifications-list .item:before,
+.notifications .notifications-list .item .details,
+.notifications .notifications-list .item .button-dismiss {
+  display: inline-block;
+  vertical-align: middle;
+}
+.notifications .notifications-list .item:before {
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  background: #3498db;
+  content: '';
+  height: 8px;
+  width: 8px;
+}
+.notifications .notifications-list .item .details {
+  margin-left: 10px;
+  white-space: normal;
+  width: 280px;
+}
+.notifications .notifications-list .item .details .title,
+.notifications .notifications-list .item .details .date {
+  display: block;
+}
+.notifications .notifications-list .item .details .date {
+  color: #95a5a6;
+  font-size: .85em;
+  margin-top: 3px;
+}
+.notifications .notifications-list .item .button-dismiss {
+  color: #ff0013;
+  font-size: 1.9em;
+  font-weight: 500;
+}
+.notifications .notifications-list .item .button-dismiss:hover,
+.notifications .notifications-list .item .button-dismiss:focus {
+   color: #bdc3c7;
+}
+.notifications .notifications-list .item.no-data {
+  display: none;
+  text-align: center;
+}
+.notifications .notifications-list .item.no-data:before {
+  display: none;
+}
+.notifications .notifications-list .item.expired {
+  color: #bdc3c7;
+}
+.notifications .notifications-list .item.expired:before {
+  background: #bdc3c7;
+}
+.notifications .notifications-list .item.expired .details .date {
+  color: #bdc3c7;
+}
+.notifications .notifications-list .item.dismissed {
+  -webkit-transform: translateX(100%);
+  -moz-transform: translateX(100%);
+  -ms-transform: translateX(100%);
+  -o-transform: translateX(100%);
+  transform: translateX(100%);
+}
+.notifications.empty .notifications-list .no-data {
+  display: block;
+  padding: 10px;
+}
+/* variables */
+/* mixins */
+
+.notifications-list a{
+  cursor: pointer;
+}
+
+.notifications-list a:hover{
+  background-color: transparent;
+}
+
+.notifications-visible{
+  display: none;
+}
+
+.close-not{
+  float: right;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 768px){
+
+  .notifications{
+    top: 50px;
+    opacity: 1;
+  }
+
+  .notifications-count{
+    position: absolute;
+    background-color: #3498db;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    right: 0;
+    top: 8px;
+  }
+
+  .notifications-count span{
+    font-size: 12px;
+    position: absolute;
+    right: 5px;
+    top: -3px;
+  }
+
+}

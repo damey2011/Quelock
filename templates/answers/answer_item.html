@@ -137,7 +137,7 @@
                                     {% if b %}
                                         <li role='presentation'><a role='menuitem' onclick='unBookmarkAnswer({{ answer.id }})' tabindex='-1' class='comment-link archive-{{ answer.id }}'>Archived</a></li>
                                     {% else %}
-                                        <li role='presentation'><a role='menuitem' onclick='unBookmarkAnswer({{ answer.id }})' tabindex='-1' class='comment-link archive-{{ answer.id }}'>Archive</a></li>
+                                        <li role='presentation'><a role='menuitem' onclick='bookmarkAnswer({{ answer.id }})' tabindex='-1' class='comment-link archive-{{ answer.id }}'>Archive</a></li>
                                     {% endif %}
                                     {% if t %}
                                         <li role='presentation'><a role='menuitem' tabindex='-1' class='comment-link thank-{{ answer.id }}'>Gratified</a></li>

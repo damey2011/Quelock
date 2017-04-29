@@ -2,13 +2,14 @@ from django.conf.urls import url
 from answers.views import AnswerView, EditAnswerView, AnswersAPIView, DeleteAnswerView, \
     BookmarkAnswer, UnBookmarkAnswer, CheckUpvoted, Downvote, Upvote, CheckDownvoted, CheckBookmarked, ArchivedAnswers,\
     TrendingAnswersByUpvotes, TrendingAnswersByInteractions, GetUpvoters, Thank, SuggestEdit, \
-    UserAnswersR2R, AddNewView
+    UserAnswersR2R, AddNewView, DeleteArchive
 
 urlpatterns = [
     url(r'^$', AnswersAPIView.as_view()),
     url(r'^delete/', DeleteAnswerView.as_view()),
     url(r'^edit/$', EditAnswerView.as_view()),
     url(r'^archived/$', ArchivedAnswers.as_view(), name='archived'),
+    url(r'^delete_archive/$', DeleteArchive.as_view(), name='delete_archived'),
     url(r'^check_if_bookmarked/', CheckBookmarked.as_view()),
     url(r'^bookmark_answer/', BookmarkAnswer.as_view()),
     url(r'^un_bookmark_answer/', UnBookmarkAnswer.as_view()),

@@ -1,44 +1,44 @@
 {% extends 'base.html' %}
 {% block body %}
-{% load staticfiles %}
+    {% load staticfiles %}
     <body>
-        <div class="container">
+    <div class="container">
 
         <div class="row edit-page">
 
-        <div class="col-lg-3 edit-left-col">
-            <hr class="divider"/>
-            <h5 style="color: #777777">Community Rules</h5>
-            <hr class="divider"/>
+            <div class="col-lg-3 edit-left-col">
+                <hr class="divider"/>
+                <h5 style="color: #777777">Community Rules</h5>
+                <hr class="divider"/>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="center-pane">
+                    <h3 style="color: #444444">{{ page_title }}</h3>
+                    <hr>
+                    <b style="font-weight: bolder"><h1>{{ question.title }}</h1></b>
+                    <div class="post-content">
+                        {{ question.question_details|safe }}
+                    </div>
+                    <form action="" method="post" name="question-form" id="question-form">
+                        {% csrf_token %}
+                        <div id="details"></div>
+                        <br>
+                        <div class="anonymous">Answer Anonymously:- <input type="checkbox" value="1" name="anonymous"></div>
+
+                        <p><input type="submit" value="Submit Answer" class="btn btn-default"></p>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-3 edit-right-col">
+                <hr class="divider"/>
+                <h5 style="color: #777777">Guidelines to asking Questions</h5>
+                <hr class="divider"/>
+
+            </div>
+
         </div>
-
-        <div class="col-lg-6">
-           <div class="center-pane">
-                <h3 style="color: #444444">{{ page_title }}</h3>
-               <hr>
-                <b style="font-weight: bolder"><h1>{{ question.title }}</h1></b>
-               <div class="post-content">
-                   {{ question.question_details|safe }}
-               </div>
-                <form action="" method="post" name="question-form" id="question-form">
-                 {% csrf_token %}
-                 <div id="details"></div>
-                 <br>
-                 <div class="anonymous">Answer Anonymously:- <input type="checkbox" value="1" name="anonymous"></div>
-
-                <p><input type="submit" value="Submit Answer" class="btn btn-default"></p>
-                </form>
-           </div>
-        </div>
-
-        <div class="col-lg-3 edit-right-col">
-            <hr class="divider"/>
-            <h5 style="color: #777777">Guidelines to asking Questions</h5>
-            <hr class="divider"/>
-
-        </div>
-
-    </div>
     </div>
     </body>
 
@@ -75,40 +75,40 @@
         });
         $("#details").trumbowyg({
 
-      btnsDef: {
-            // Customizables dropdowns
-            image: {
-                dropdown: ['insertImage', 'upload', 'noEmbed'],
-                ico: 'insertImage'
+            btnsDef: {
+                // Customizables dropdowns
+                image: {
+                    dropdown: ['insertImage', 'upload', 'noEmbed'],
+                    ico: 'insertImage'
+                }
+            },
+            btns: [
+                ['viewHTML'],
+                ['undo', 'redo'],
+                ['formatting'],
+                'btnGrp-design',
+                ['link'],
+                ['image'],
+                'btnGrp-justify',
+                'btnGrp-lists',
+                ['foreColor', 'backColor'],
+                ['preformatted'],
+                ['horizontalRule'],
+                ['fullscreen']
+            ],
+            plugins: {
+                upload: {
+                    serverPath: 'http://' + window.location.host + '/upload/',
+                    fileFieldName: 'image',
+                }
             }
-        },
-        btns: [
-            ['viewHTML'],
-            ['undo', 'redo'],
-            ['formatting'],
-            'btnGrp-design',
-            ['link'],
-            ['image'],
-            'btnGrp-justify',
-            'btnGrp-lists',
-            ['foreColor', 'backColor'],
-            ['preformatted'],
-            ['horizontalRule'],
-            ['fullscreen']
-        ],
-        plugins: {
-            upload: {
-                serverPath: 'http://' + window.location.host + '/upload/',
-                fileFieldName: 'image',
-            }
-        }
         });
 
-    function csrfSafeMethod(method){
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
+        function csrfSafeMethod(method){
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
 
-    function organize_Posts(){
+        function organize_Posts(){
             var post_content = $('.post-content').html();
             var truncated_post = post_content.substr(0, 200);
 
@@ -142,5 +142,5 @@
     </script>
 
 
-</html>
+    </html>
 {% endblock %}

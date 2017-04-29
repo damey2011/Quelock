@@ -9,18 +9,23 @@
         <div class="row" style="margin-top: 60px;">
             <div class="col-lg-3"></div>
             <div class="col-lg-6 archived">
-                {% if answers %}
+                {% if archives %}
                     <h4>Answers you archived</h4>
+                    <button class="own-design"><span class="ion-trash-b"></span>  Delete All</button>
                 {% else %}
                     <h4>You have no archived answers</h4>
                 {% endif %}
-                <ul class="list-group common-user-group">
-                    {% for answer in answers %}
-                        <a href="/answers/{{ answer.answer.id }}">
-                            <li class="list-group-item">
-                                <h5 class="list-group-item-heading">{{ answer.answer.question.title }}</h5>
-                                <p class="list-group-item-text">&middot; <b> {{ answer.answer.writer.user.first_name }} {{ answer.answer.writer.user.last_name }} </b>, {{ answer.answer.time_answered }}
-                                </p>
+                <ul class="list-group common-user-group archive-list">
+                    {% for archive in archives %}
+                        <a href="/answers/{{ archive.answer.id }}" class="archive-{{ archive.id }}">
+                            <li class="list-group-item bm-list-item">
+                                <span class="ion-bookmark bookmark-icon"> </span>
+                                <div class="bm-content">
+                                    <h5 class="list-group-item-heading bm-content-header">{{ archive.answer.question.title }}</h5>
+                                    <p class="list-group-item-text"> <span class="ion-person"></span> {{ archive.answer.writer.user.first_name }} {{ archive.answer.writer.user.last_name }} |  <span class="ion-android-time"></span> {{ archive.answer.time_answered }}
+                                    </p>
+                                </div>
+                                <span class="ion-trash-b single-a" onclick="delete_archive({{ archive.id }})"></span>
                             </li>
                         </a>
                     {% endfor %}
@@ -31,6 +36,23 @@
     </div>
     <script src="{% static 'scripts/jquery.min.js' %}"></script>
     <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
-    <script src="{% static 'm-toast/jquery.m.toast.js' %}"></script>
+    <script>
+        var csrftoken = '{{ csrf_token }}';
+
+{#        DO not  move this function without proper testing whoever gaz#}
+        function delete_archive(id){
+            console.log('Deleting archive');
+            console.log(id);
+            event.preventDefault();
+            $.ajax({
+                url: '/answers/archived/delete',
+                data: { 'csrfmiddlewaretoken': csrftoken, 'archive': id },
+                success: function(){
+                    $('.archive'+id).fadeOut(3000);
+                }
+            })
+        }
+    </script>
+    <script src="{% static 'scripts/custom.js' %}"></script>
 
 {% endblock %}

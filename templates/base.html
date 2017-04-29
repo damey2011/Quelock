@@ -1,7 +1,8 @@
 <html lang="en">
 <head>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min_lumen.css'%}">
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min_lumen.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'ionic/css/ionicons.min.css' %}">
     <link rel="stylesheet" href="{% static 'Font Awesome/css/font-awesome.min.css' %}">
@@ -24,42 +25,90 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <button class="search-header-btn" onclick="show_hide_search_bar()">
-                <span class="ion-ios-search"></span>
-            </button>
+            {#            <button class="search-header-btn" onclick="show_hide_search_bar()">#}
+            {#                <span class="ion-ios-search"></span>#}
+            {#            </button>#}
+            <div class="search-header-btn">
+                <button type="button" class="button-default show-notifications active js-show-notifications"
+                        onclick="toggle_notifications()">
+                    <span class="ion-ios-bell-outline notifications-icon"></span>
+
+                    <div class="notifications-count js-count" data-count="6"><span class="n-counter">5</span></div>
+                </button>
+                <div class="notifications js-notifications notifications-visible"><h3>Notifications <span class="close-not"
+                        onclick="close_notifications()">close</span></h3>
+                    <ul class="notifications-list">
+                        <li class="item js-item">
+                            <div class="details"><span class="title">Hey, wait while I get them for you!</span><span
+                                    class="date"></span>
+                            </div>
+                            <button type="button" class="button-default button-dismiss js-dismiss"></button>
+                        </li>
+                    </ul>
+                    <a href="#" class="show-all">Show all notifications</a>
+                </div>
+            </div>
         </div>
 
         <div class="navbar-collapse collapse" id="navbar-main">
-{#            <form class="navbar-form navbar-left" role="search">#}
-{#                <div class="search-bar">#}
-{#                    <input type="text" class="form-control search-box" placeholder="Ask the community">#}
-{#                </div>#}
-{#            </form>#}
+            {#            <form class="navbar-form navbar-left" role="search">#}
+            {#                <div class="search-bar">#}
+            {#                    <input type="text" class="form-control search-box" placeholder="Ask the community">#}
+            {#                </div>#}
+            {#            </form>#}
 
             <ul class="navbar-right nav navbar-nav">
-            <li class="bar-search-btn-li"><a onclick="show_hide_search_bar()" href="#" class="bar-search-btn"><span class="ion-android-search"></span></a></li>
-                <li class="{{ feeds_active }}"><a href="{% url 'index_home' %}"><span class="fa fa-feed"></span> Feeds</a></li>
-{#                <li class="{{ trending_active }}"><a href="{% url 'trending_by_interactions' %}"><span class="ion-android-notifications"> </span>  Notifications</a></li>#}
-                <li><a href="{% url 'question_create' %}"><span class="ion-ios-help-empty"></span> Create Question</a></li>
-                <li class="{{ explore_active }}"><a href="{% url 'explore_questions' %}"><span class="fa fa-globe"></span> Explore</a></li>
-                <li class="{{ archive_active }}"><a href="{% url 'archived' %}"><span class="fa fa-thumb-tack"></span> Archives</a></li>
-                <li class="{{ account_active }}"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-user-md"> </span>  Account</a>
+                <li class="bar-search-btn-li"><a onclick="show_hide_search_bar()" href="#" class="bar-search-btn"><span
+                        class="ion-android-search"></span></a></li>
+                <li class="{{ feeds_active }}"><a href="{% url 'index_home' %}"><span class="fa fa-feed"></span>
+                    Feeds</a></li>
+                <li class="{{ explore_active }}"><a href="{% url 'explore_questions' %}"><span
+                        class="fa fa-globe"></span> Explore</a></li>
+                <li class="{{ archive_active }}"><a href="{% url 'archived' %}"><span class="fa fa-thumb-tack"></span>
+                    Archives</a></li>
+                <li class="notifications-li" onclick="toggle_notifications()"><a href="#"><span
+                        class="ion-android-notifications"> </span> Notifications
+                    <div class="notifications-count js-count" data-count="6" style="display: none;"><span class="n-counter"></span></div>
+                </a>
+
+                    <div class="notifications js-notifications notifications-visible">
+                        <h3>Notifications <a href="">show all</a></h3>
+
+                        <ul class="notifications-list">
+                            <li class="item js-item">
+                                <div class="details"><span class="title">Hey, wait while I get them for you!</span><span
+                                        class="date"></span>
+                                </div>
+                                <button type="button" class="button-default button-dismiss js-dismiss"></button>
+                                <a href="#" class="show-all">Show all notifications</a>
+                            </li>
+                        </ul>
+
+                    </div>
+
+                </li>
+
+
+                <li class="{{ account_active }}"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                        class="fa fa-user-md"> </span> Account</a>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                         {% if user.is_authenticated %}
-                            <li><a href="/profile/{{ user.username }}"><span class="fa fa-sign-out"> </span>View Profile</a></li>
+                            <li><a href="/profile/{{ user.username }}"><span class="fa fa-sign-out"> </span>View Profile</a>
+                            </li>
                             <li class="divider"></li>
                             <li><a href="/messages"><span class="fa fa-sign-out"> </span>Messages</a></li>
                             <li class="divider"></li>
                             <li><a href="/logout"><span class="fa fa-sign-out"> </span>Logout</a></li>
                         {% else %}
                             <li><a href="/login"><span class="fa fa-sign-in"> </span>Login</a></li>
-{#                            <li><a href="/signup"><span class="fa fa-sign-up"> </span>Signup</a></li>#}
+                            {#                            <li><a href="/signup"><span class="fa fa-sign-up"> </span>Signup</a></li>#}
                         {% endif %}
                     </ul>
                 </li>
 
 
             </ul>
+
         </div>
     </div>
 
@@ -77,9 +126,9 @@
 		<span class="notification-box-text">
 
 		</span>
-{#    <div class="dismiss-notification">#}
-{#        <span>x</span>#}
-{#    </div>#}
+    {#    <div class="dismiss-notification">#}
+    {#        <span>x</span>#}
+    {#    </div>#}
 </div>
 
 {% block body %}
@@ -92,10 +141,18 @@
     <div class="navbar-inner">
         <div class="container">
             <ul class="footer-menu-list">
-                <li><a href="/"><span class="ion-ios-home-outline"></span><br><p>Feed</p></a></li>
-                <li><a href="{% url 'explore_questions' %}"><span class="ion-ios-compose-outline"></span><br><p>Answer</p></a></li>
-                <li><a href="{% url 'archived' %}"><span class="ion-ios-pricetag-outline"></span><br><p>Archive</p></a></li>
-                <li><a href="/profile/{{ user.username }}"><span class="ion-ios-contact-outline"></span><br><p>Profile</p></a></li>
+                <li><a href="/"><span class="ion-ios-home-outline"></span><br>
+
+                    <p>Feed</p></a></li>
+                <li><a href="{% url 'explore_questions' %}"><span class="ion-ios-compose-outline"></span><br>
+
+                    <p>Answer</p></a></li>
+                <li><a href="{% url 'archived' %}"><span class="ion-ios-pricetag-outline"></span><br>
+
+                    <p>Archive</p></a></li>
+                <li><a href="/profile/{{ user.username }}"><span class="ion-ios-contact-outline"></span><br>
+
+                    <p>Profile</p></a></li>
             </ul>
         </div>
     </div>
@@ -103,14 +160,20 @@
 </nav>
 
 
-<script>
-    $('.search-input').keyup(function(e){
-    if(e.keyCode == 13){
-        window.location.href = '/search/?sort_type=1&search_term='+$(this).val();
-    }
-});
-</script>
 </body>
+<script>
 
+    $(document).ready(function () {
+        check_for_new_notifications();
+    });
+
+
+    $('.search-input').keyup(function (e) {
+        if (e.keyCode == 13) {
+            window.location.href = '/search/?sort_type=1&search_term=' + $(this).val();
+        }
+    });
+
+</script>
 </html>
 

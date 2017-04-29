@@ -1,0 +1,105 @@
+{% if notifications %}
+    {% for note in notifications %}
+
+        <a class="item js-item item-{{ note.id }}" data-id="2" href="/answers/{{ note.get_note_answer_object.id }}">
+            <div class="details"><span class="title">{{ note.get_html_equivalent | safe}}</span><span class="date">{{ note.time_added }}</span>
+            </div>
+            <button type="button" class="button-default button-dismiss js-dismiss" onclick="mark_as_read({{ note.id }})">×</button>
+        </a>
+        {#        {% if note.note_type == 1 %}#}
+        {#            <a class="item js-item" data-id="2" href="/answers/{{ note.get_note_answer_object.id }}">#}
+        {#                <div class="details"><span class="title">{{ note.get_html_equivalent }}</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 2 %}#}
+        {#            <a class="item js-item" data-id="2" href="/answers/{{ note.get_note_answer_object.id }}">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} sent you a message</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 3 %}#}
+        {#            <a class="item js-item" data-id="2" href="/answers/{{ note.get_note_answer_object.id }}">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} wrote an answer to {{ note.get_note_answer_object.question.title }}</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 4 %}#}
+        {#            < class="item js-item" data-id="2">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} upvoted your answer</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 5 %}#}
+        {#            < class="item js-item" data-id="2">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} upvoted your answer</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 6 %}#}
+        {#            < class="item js-item" data-id="2">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} upvoted your answer</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 7 %}#}
+        {#            < class="item js-item" data-id="2">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} upvoted your answer</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 8 %}#}
+        {#            < class="item js-item" data-id="2">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} upvoted your answer</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 9 %}#}
+        {#            < class="item js-item" data-id="2">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} upvoted your answer</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 10 %}#}
+        {#            < class="item js-item" data-id="2">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} upvoted your answer</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 11 %}#}
+        {#            < class="item js-item" data-id="2">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} upvoted your answer</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 12 %}#}
+        {#            < class="item js-item" data-id="2">#}
+        {#                <div class="details"><span class="title">{{ note.actor.first_name }} {{ note.actor.last_name }} upvoted your answer</span><span class="date">{{ note.time_added }}</span>#}
+        {#                </div>#}
+        {#                <button type="button" class="button-default button-dismiss js-dismiss">×</button>#}
+        {#            </a>#}
+        {#        {% endif %}#}
+        {#        {% if note.note_type == 13 %}#}
+        {##}
+        {#        {% endif %}#}
+    {% empty %}
+        <a class="item js-item expired">
+            <div class="details"><h4 class="title">Heyo, new notifications ATM</h4></div>
+        </a>
+    {% endfor %}
+{% else %}
+    <a class="item js-item expired">
+        <div class="details"><h4 class="title">Heyo, new notifications ATM</h4></div>
+    </a>
+{% endif %}

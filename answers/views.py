@@ -147,10 +147,29 @@ class ArchivedAnswers(View):
     def get(self, request):
         try:
             b = Bookmark.objects.filter(user=request.user)
-            return render(request, 'bookmarks/bookmarks.html', {'answers': b, 'archive_active': 'active'})
+            return render(request, 'bookmarks/bookmarks.html', {'archives': b, 'archive_active': 'active'})
         except:
             b = None
         return HttpResponse('You have to log in to access this page bruhh')
+
+
+class DeleteArchive(View):
+    def get(self, request):
+        print(request.GET)
+        archive_id = request.GET.get('archive')
+
+        print('Archive id : ' + str(archive_id))
+        if archive_id is not None:
+            try:
+                b = Bookmark.objects.get(pk=archive_id)
+                b.delete()
+                return JsonResponse(True, safe=False)
+            except Bookmark.DoesNotExist:
+                return JsonResponse(True, safe=False)
+        else:
+            # b = Bookmark.objects.filter(user=request.user)
+            # b.delete()
+            return JsonResponse(True, safe=False)
 
 
 class BookmarkAnswer(View):

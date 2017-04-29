@@ -289,7 +289,7 @@ class RequestUserAnswersToQuestions(View):
             q = QuestionTopic.objects.filter(under__in=topics_list).distinct().values('question')
 
             # Dev env
-            aw = Answer.objects.filter(question_id__in=q).select_related().values('writer').distinct()[:25]
+            aw = Answer.objects.filter(question_id__in=q).select_related().values('writer').distinct()
             users = User.objects.filter(id__in=aw).exclude(id__in=ar).exclude(pk=request.user.id).prefetch_related()
 
             # Production envir, does not work in dev env

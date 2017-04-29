@@ -6,6 +6,7 @@
 
     {% for comment in comments %}
         <blockquote class='custom-bq comment-{{ comment.id }}'>
+            <img src="{{ comment.writer.profile.display_picture.url }}" alt="{{ comment.writer.username }}" class="commenter-pix">
             <span class='answer-comment-writer'><a href='/profile/{{ comment.writer.username }}'>{{ comment.writer.first_name }} {{ comment.writer.last_name }}</a></span>
             <div class='quoted-answer small'>{{ comment.body }}</div>
             <p class="comment-p-links">

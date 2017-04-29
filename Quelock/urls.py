@@ -14,6 +14,7 @@ urlpatterns = [
     # Question API
     url(r'^questions/', include('questions.urls'), name='question'),
     url(r'^answers/', include('answers.urls')),
+    url(r'^notifications/', include('notifications.urls')),
     url(r'^login/', include('login.urls'), name='login'),
     url(r'^logout/', include('logout.urls'), name='logout'),
     url(r'^profile/', include('account.urls')),

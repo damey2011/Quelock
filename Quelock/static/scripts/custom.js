@@ -610,11 +610,11 @@ function showComments(answer_id){
 }
 
 function loadComments(answer_id){
+    $('.comment-modal-header').html('Loading..');
     $.ajax({
         url: '/comments/?answer='+answer_id,
         data: {'csrfmiddlewaretoken': csrftoken},
         success: function(data){
-            console.log(data);
             if(data.results.length == 0){
                 $('.comment-modal-body').html('<h4>No Comment Under This Answer This Yet!!</h4>');
                 $('.answer-comments').html('<h4>No Comment Under This Answer This Yet!!</h4>');
@@ -644,6 +644,7 @@ function loadComments(answer_id){
         },
         error: function(data){
             notify('Error Occured: <i>You might want to check your connection or reload the page</i>', 10000);
+            $('.comment-modal-header').html('Unable to fetch answer comments');
         }
     })
 }
@@ -1615,3 +1616,58 @@ function addQuestionView(question_id){
         }
     })
 }
+
+
+function check_for_new_notifications(){
+    $.ajax({
+        url: '/notifications/get_count',
+        data: {'csrfmiddlewaretoken': csrftoken},
+        dataType: 'json',
+        success: function (data) {
+            if(data.unread !== 0){
+                $('.notifications-count').show();
+                $('.notifications-count > span').html(''+data.unread);
+            }
+        }
+    })
+}
+
+function toggle_notifications(){
+    event.preventDefault();
+
+    $('.js-notifications').toggleClass('notifications-visible');
+
+    if(!$('.js-notifications').hasClass('notifications-visible')){
+        $.ajax({
+            url: '/notifications/all',
+            data: { 'csrfmiddlewaretoken':csrftoken },
+            dataType: 'html',
+            success: function (data) {
+                $('.notifications-list').html(data);
+            }
+        })
+    }
+    else{
+
+    }
+}
+
+function mark_as_read(id){
+    event.preventDefault();
+    $.getJSON('/notifications/mark/?notification='+id, {'csrfmiddlewaretoken': csrftoken}, function (data) {
+        $('.item-'+id).addClass('expired').fadeOut();
+        var n = $('.n-counter').html();
+        n = parseInt(n);
+        $('.n-counter').html(n-1);
+        if((n-1) == 0 ){
+            $('.notifications-count').hide();
+            $('.notifications-list').html('<li class="item no-data">Yo! You have no new notification</li>')
+        }
+    })
+};
+
+function close_notifications(){
+    $('.js-notifications').addClass('notifications-visible');
+}
+
+
