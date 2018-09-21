@@ -1,0 +1,11 @@
+amqp==2.3.2
+anyjson==0.3.3
+billiard==3.5.0.4
+celery==4.2.1
+Django==2.1.1
+djangorestframework==3.8.2
+kombu==4.2.1
+Pillow==5.2.0
+psycopg2==2.7.5
+pytz==2018.5
+vine==1.1.4

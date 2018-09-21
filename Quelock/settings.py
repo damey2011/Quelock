@@ -11,9 +11,6 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
-import djcelery
-
-djcelery.setup_loader()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -41,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djcelery',
     # 'kombu.transport.django',
     'rest_framework',
     'registration.apps.RegistrationConfig',
@@ -55,13 +51,12 @@ INSTALLED_APPS = [
     'notifications.apps.NotificationsConfig'
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -93,12 +88,12 @@ WSGI_APPLICATION = 'Quelock.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'quelock',
-        'USER': 'root',
-        'PASSWORD': 'greatness2011',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
+        'PORT': '5432',
     }
 }
 
@@ -141,9 +136,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
-    os.path.join(PROJECT_DIR, 'static')
+    os.path.join(BASE_DIR, 'static')
 ]
 
 
@@ -153,6 +148,8 @@ MEDIA_URL = '/media/'
 # SET BY ME
 CURRENT_HOST = 'http://127.0.0.1:8000'
 UPLOADED_IMAGES_DIR = '/static/images/uploads/'
+
+LOGIN_URL = '/login'
 
 
 # WHEN I HAD ISSUES MIGRATING TO MYSQL, THE ONE OF DELETING A PRIMARY KEY IN USEROTHERDETAILS

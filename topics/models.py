@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.functions import datetime
+from django.utils import timezone
 from django.utils.text import slugify
 
 
@@ -12,7 +12,7 @@ class Topic(models.Model):
     no_of_questions_under_topic = models.IntegerField(null=True, default=0, blank=True)
     slug = models.SlugField(max_length=100, unique=True, null=True, blank=True)
     created = models.DateTimeField(null=True, blank=True)
-    created_by = models.ForeignKey(User, blank=True, null=True)
+    created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -36,5 +36,5 @@ class TopicFollowing(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.created:
-            self.created = datetime.timezone.now()
+            self.created = timezone.now()
         super(TopicFollowing, self).save(*args, **kwargs)

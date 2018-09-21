@@ -3,7 +3,7 @@ from answers.models import UpVotes, DownVotes, Thanks, SuggestEdits, Bookmark
 from questions.models import QuestionTopic
 
 
-@register.assignment_tag(name="isupvoted", takes_context=True)
+@register.simple_tag(name="isupvoted", takes_context=True)
 def isupvoted(context, *args, **kwargs):
     return UpVotes.objects.filter(user=context['request'].user, answer=context['answer']).exists()
 
@@ -28,7 +28,7 @@ def bookmarked(context, *args, **kwargs):
     return Bookmark.objects.filter(user=context['request'].user, answer=context['answer']).exists()
 
 
-@register.assignment_tag(name="topic_tags", takes_context=True)
+@register.simple_tag(name="topic_tags", takes_context=True)
 def topic_tags(context, *args, **kwargs):
     print(context['answer'].question)
     return QuestionTopic.objects.filter(question=context['answer'].question)

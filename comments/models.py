@@ -9,8 +9,8 @@ class Comment(models.Model):
     body = models.TextField()
     no_of_upvotes = models.IntegerField(null=True, default=0)
     edited = models.IntegerField(null=True, default=0)
-    parent = models.ForeignKey("self", null=True, blank=True)
-    parent_answer = models.ForeignKey("answers.Answer", related_name='comment_ans', null=True, blank=True)
+    parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
+    parent_answer = models.ForeignKey("answers.Answer", related_name='comment_ans', null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['-timestamp']

@@ -45,7 +45,7 @@ class TopicDetailView(View):
         total_answers = 0
         for question in questions_under:
             total_answers += Answer.objects.filter(question=question.question).count()
-        user = request.user
+        user = self.request.user
         follows = topic
         tf = TopicFollowing.objects.filter(user=user, follows=follows).exists()
         context = {'topic': topic,
@@ -96,9 +96,9 @@ def follow_topic(request):
     else:
         return JsonResponse(True, safe=False, status=500)
         # try:
-        #     tf = TopicFollowing.objects.get(user=request.user, follows_id=request.GET.get('topic'))
+        #     tf = TopicFollowing.objects.get(user=self.request.user, follows_id=request.GET.get('topic'))
         # except ObjectDoesNotExist:
-        #     tf = TopicFollowing(user=request.user, follows_id=request.GET.get('topic'))
+        #     tf = TopicFollowing(user=self.request.user, follows_id=request.GET.get('topic'))
         #     tf.save()
         # return JsonResponse(True, safe=False)
 
@@ -177,8 +177,8 @@ class RecentTopicAnswers(View):
 
 class ExploreTopicAPI(ListAPIView):
     def get_queryset(self):
-        # profile = UserOtherDetails.objects.get(user=self.request.user)
-        tf = TopicFollowing.objects.filter(user=self.request.user).values('follows')
+        # profile = UserOtherDetails.objects.get(user=self.self.request.user)
+        tf = TopicFollowing.objects.filter(user=self.self.request.user).values('follows')
         t = Topic.objects.exclude(pk__in=tf).order_by('?')
         return t
 
@@ -194,7 +194,7 @@ class ExploreTopicView(View):
 class CommonInterestUsers(ListAPIView):
     def get_queryset(self):
         try:
-            user = self.request.user
+            user = self.self.request.user
             uf = UserFollowings.objects.filter(user=user).values('is_following')
             t = Topic.objects.get(pk=self.request.GET.get('topic'))
             tf = TopicFollowing.objects.filter(follows=t).exclude(user__in=uf).order_by('?').exclude(user=user).values(
@@ -230,7 +230,7 @@ class GettingStartedRecommendedTopics(View):
         for item in row:
             t = t | Topic.objects.filter(pk=item[1])
 
-        tf = TopicFollowing.objects.filter(user_id=request.user.id).values('follows')
+        tf = TopicFollowing.objects.filter(user_id=self.request.user.id).values('follows')
 
         t = t.exclude(pk__in=tf)
 
@@ -239,7 +239,7 @@ class GettingStartedRecommendedTopics(View):
 
 class CheckUserNoOfTopicsFollowed(View):
     def get(self, request):
-        no = TopicFollowing.objects.filter(user_id=request.user.id).count()
+        no = TopicFollowing.objects.filter(user_id=self.request.user.id).count()
 
         if no < 15:
             return JsonResponse(False, safe=False)

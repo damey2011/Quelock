@@ -1,11 +1,12 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, render_to_response
 from django.utils.datastructures import MultiValueDictKeyError
-from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import View
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -63,7 +64,7 @@ def upload(request):
 
 class Follow(View):
     def post(self, request):
-        user_that_clicked = request.user
+        user_that_clicked = self.request.user
         follows = request.GET.get('follows')
         is_following = User.objects.get(pk=follows)
         user_that_clicked = UserOtherDetails.objects.get(user=user_that_clicked)
@@ -78,7 +79,7 @@ class Follow(View):
 
 class UnFollow(View):
     def post(self, request):
-        user_that_clicked = request.user
+        user_that_clicked = self.request.user
         follows = request.GET.get('follows')
         try:
             user1 = UserOtherDetails.objects.get(user=User.objects.get(username=user_that_clicked))
@@ -92,7 +93,7 @@ class UnFollow(View):
 
 class IsFollowing(View):
     def post(self, request):
-        user = request.user
+        user = self.request.user
         is_following = request.GET.get('is_following')
         try:
             user1 = UserOtherDetails.objects.get(user=User.objects.get(username=user))
@@ -208,12 +209,12 @@ class FeedsAnswersAPI(ListAPIView):
 
     def get_queryset(self):
         # Answers under topics user is following
-        topics_followed = TopicFollowing.objects.filter(user_id=self.request.user.id).values('follows')
+        topics_followed = TopicFollowing.objects.filter(user_id=self.self.request.user.id).values('follows')
         questions = QuestionTopic.objects.filter(under_id__in=topics_followed).values('question')
         answers = Answer.objects.filter(question_id__in=questions).order_by('-time-written')
 
         # Answers written by people you follow
-        user_following = UserFollowings.objects.filter(user_id=self.request.user.id).values('is_following')
+        user_following = UserFollowings.objects.filter(user_id=self.self.request.user.id).values('is_following')
         answers2 = Answer.objects.filter(writer_id__in=user_following).order_by('-time_written').order_by('time-written')
 
         # Answers upvoted by people you follow
@@ -223,7 +224,7 @@ class FeedsAnswersAPI(ListAPIView):
         # Combining the result sets
         all_answers = answers | answers2 | answers3
 
-        already_read = AlreadyReadAnswers.objects.filter(user_id=self.request.user.id).values('answer')
+        already_read = AlreadyReadAnswers.objects.filter(user_id=self.self.request.user.id).values('answer')
 
         try:
             already_loaded = self.request.GET['loaded']
@@ -236,14 +237,14 @@ class FeedsAnswersAPI(ListAPIView):
         return all_answers
 
 
-class FeedAnswerR2R(View):
+class FeedAnswerR2R(LoginRequiredMixin, View):
     def get(self, request):
-        topics_followed = TopicFollowing.objects.filter(user_id=request.user.id).values('follows')
+        topics_followed = TopicFollowing.objects.filter(user_id=self.request.user.id).values('follows')
         questions = QuestionTopic.objects.filter(under_id__in=topics_followed).values('question')
         answers = Answer.objects.filter(question_id__in=questions).select_related()
 
         # Answers written by people you follow
-        user_following = UserFollowings.objects.filter(user_id=request.user.id).values('is_following')
+        user_following = UserFollowings.objects.filter(user_id=self.request.user.id).values('is_following')
         answers2 = Answer.objects.filter(writer_id__in=user_following).select_related()
 
         # Answers upvoted by people you follow
@@ -251,18 +252,18 @@ class FeedAnswerR2R(View):
         answers3 = Answer.objects.filter(id__in=upvotes).select_related()
 
         # Answers in questions followed by those you follow
-        qf = QuestionFollowing.objects.filter(user_id=request.user).values('question')
+        qf = QuestionFollowing.objects.filter(user_id=self.request.user).values('question')
         answers4 = Answer.objects.filter(question_id__in=qf)
 
         # Combining the result sets
         all_answers = answers | answers2 | answers3 | answers4
 
-        already_read = AlreadyReadAnswers.objects.filter(user_id=request.user.id).values('answer')
+        already_read = AlreadyReadAnswers.objects.filter(user_id=self.request.user.id).values('answer')
 
         if int(request.GET['page']) == 1:
-            all_answers = all_answers.exclude(id__in=already_read).exclude(writer_id=request.user.id)
+            all_answers = all_answers.exclude(id__in=already_read).exclude(writer_id=self.request.user.id)
         else:
-            all_answers = all_answers.exclude(writer_id=request.user.id)
+            all_answers = all_answers.exclude(writer_id=self.request.user.id)
 
         all_answers = all_answers.distinct().order_by('-time_written')[:300]
 
@@ -282,12 +283,12 @@ class FeedQuestionsAPI(ListAPIView):
     serializer_class = QuestionSerializer
 
     def get_queryset(self):
-        user_following = UserFollowings.objects.filter(user_id=self.request.user.id).values('is_following')
+        user_following = UserFollowings.objects.filter(user_id=self.self.request.user.id).values('is_following')
         # Questions followed by people you follow
         question_ff = QuestionFollowing.objects.filter(user_id__in=user_following).values('question')
         questions = Question.objects.filter(id__in=question_ff).order_by('?')
 
-        topics_followed = TopicFollowing.objects.filter(user_id=self.request.user.id).values('follows')
+        topics_followed = TopicFollowing.objects.filter(user_id=self.self.request.user.id).values('follows')
         questions2 = QuestionTopic.objects.filter(under_id__in=topics_followed).values('question')
         questions2 = Question.objects.filter(id__in=questions2).order_by('?')
 
@@ -298,13 +299,13 @@ class FeedQuestionsAPI(ListAPIView):
         except MultiValueDictKeyError:
             loaded_questions = []
 
-        read_questions = ReadQuestions.objects.filter(user_id=self.request.user.id).values('question')
+        read_questions = ReadQuestions.objects.filter(user_id=self.self.request.user.id).values('question')
         questions.exclude(id__in=read_questions).exclude(id__in=loaded_questions).distinct()
 
         return questions
 
 
-class FeedAnswersView(View):
+class FeedAnswersView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'home/index.html')
 
@@ -315,7 +316,7 @@ class FeedAnswersView(View):
         except:
             anonymous = 0
 
-        author = request.user
+        author = self.request.user
 
         q = Question(title=question, anonymous=anonymous, question_details='', author=author)
         q.save()
@@ -323,6 +324,6 @@ class FeedAnswersView(View):
         return redirect('/questions/' + q.slug)
 
 
-class FeedQuestionsView(View):
+class FeedQuestionsView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'home/index.html')
